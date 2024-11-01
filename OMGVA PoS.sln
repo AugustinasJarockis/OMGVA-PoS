@@ -5,6 +5,10 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMGVA PoS", "OMGVA PoS\OMGVA PoS.csproj", "{A238D6EA-273E-472C-AF81-AF1A4D267443}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit tests", "Unit tests\Unit tests.csproj", "{2C54A871-E1E7-49B9-BC9D-803BF7064909}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{17DD5854-DFFC-4412-BAA6-6AA259E5CCC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{A238D6EA-273E-472C-AF81-AF1A4D267443}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A238D6EA-273E-472C-AF81-AF1A4D267443}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A238D6EA-273E-472C-AF81-AF1A4D267443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C54A871-E1E7-49B9-BC9D-803BF7064909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C54A871-E1E7-49B9-BC9D-803BF7064909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C54A871-E1E7-49B9-BC9D-803BF7064909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C54A871-E1E7-49B9-BC9D-803BF7064909}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2C54A871-E1E7-49B9-BC9D-803BF7064909} = {17DD5854-DFFC-4412-BAA6-6AA259E5CCC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C968589D-4286-40AE-A1A1-9FC5D6795036}
