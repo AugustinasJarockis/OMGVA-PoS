@@ -18,19 +18,17 @@ namespace OMGVA_PoS.Datalayer.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Business", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -54,17 +52,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesses", (string)null);
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Customer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -72,22 +69,21 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Discount", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<short>("Amount")
                         .HasColumnType("smallint");
 
-                    b.Property<ulong>("IsArchived")
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("TimeValidUntil")
@@ -98,17 +94,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts", (string)null);
+                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.EmployeeSchedule", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -119,7 +114,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<ulong>("IsCancelled")
+                    b.Property<bool>("IsCancelled")
                         .HasColumnType("bit");
 
                     b.Property<TimeSpan>("StartTime")
@@ -129,17 +124,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("EmployeeSchedules", (string)null);
+                    b.ToTable("EmployeeSchedules");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCard", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Giftcard", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
@@ -149,39 +143,37 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GiftCards", (string)null);
+                    b.ToTable("Giftcards");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCardPayment", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftcardPayment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("AmountUsed")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<long>("GiftCardId")
+                    b.Property<long>("GiftcardId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GiftCardId");
+                    b.HasIndex("GiftcardId");
 
-                    b.ToTable("GiftCardPayments", (string)null);
+                    b.ToTable("GiftcardPayments");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Item", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BusinessId")
                         .HasColumnType("bigint");
@@ -203,7 +195,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
                     b.Property<int>("InventoryQuantity")
                         .HasColumnType("int");
 
-                    b.Property<ulong>("IsArchived")
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<string>("ItemGroup")
@@ -223,22 +215,21 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("DiscountId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.ItemVariation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int>("InventoryQuantity")
                         .HasColumnType("int");
 
-                    b.Property<ulong>("IsArchived")
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<long>("ItemId")
@@ -259,20 +250,23 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("ItemVariations", (string)null);
+                    b.ToTable("ItemVariations");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Order", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("PaymentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RefundReason")
                         .IsRequired()
@@ -291,19 +285,21 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("DiscountId");
 
+                    b.HasIndex("PaymentId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.OrderItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
@@ -323,17 +319,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.OrderItemVariation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("ItemVariationId")
                         .HasColumnType("bigint");
@@ -347,49 +342,39 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("OrderItemId");
 
-                    b.ToTable("OrderItemVariations", (string)null);
+                    b.ToTable("OrderItemVariations");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Payment", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GiftCardPaymentId")
+                    b.Property<long?>("GiftcardPaymentId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Method")
                         .HasColumnType("int");
 
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("GiftCardPaymentId");
+                    b.HasIndex("GiftcardPaymentId");
 
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Reservation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
@@ -412,7 +397,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.StripeReader", b =>
@@ -427,19 +412,18 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("StripeReaders", (string)null);
+                    b.ToTable("StripeReaders");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Tax", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
 
-                    b.Property<ulong>("IsArchived")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<short>("Percent")
@@ -451,17 +435,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Taxes", (string)null);
+                    b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.TaxItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("ItemId")
                         .HasColumnType("bigint");
@@ -475,17 +458,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("TaxId");
 
-                    b.ToTable("TaxItems", (string)null);
+                    b.ToTable("TaxItems");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BusinessId")
                         .HasColumnType("bigint");
@@ -494,7 +476,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<ulong>("HasLeft")
+                    b.Property<bool>("HasLeft")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -512,7 +494,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.EmployeeSchedule", b =>
@@ -526,15 +508,15 @@ namespace OMGVA_PoS.Datalayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCardPayment", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftcardPayment", b =>
                 {
-                    b.HasOne("OMGVA_PoS.Data_layer.Models.GiftCard", "GiftCard")
-                        .WithMany("GiftCardPayments")
-                        .HasForeignKey("GiftCardId")
+                    b.HasOne("OMGVA_PoS.Data_layer.Models.Giftcard", "Giftcard")
+                        .WithMany("GiftcardPayments")
+                        .HasForeignKey("GiftcardId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("GiftCard");
+                    b.Navigation("Giftcard");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Item", b =>
@@ -573,6 +555,12 @@ namespace OMGVA_PoS.Datalayer.Migrations
                         .HasForeignKey("DiscountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("OMGVA_PoS.Data_layer.Models.Payment", "Payment")
+                        .WithOne("Order")
+                        .HasForeignKey("OMGVA_PoS.Data_layer.Models.Order", "PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("OMGVA_PoS.Data_layer.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -580,6 +568,8 @@ namespace OMGVA_PoS.Datalayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Discount");
+
+                    b.Navigation("Payment");
 
                     b.Navigation("User");
                 });
@@ -629,22 +619,14 @@ namespace OMGVA_PoS.Datalayer.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OMGVA_PoS.Data_layer.Models.GiftCardPayment", "GiftCardPayment")
+                    b.HasOne("OMGVA_PoS.Data_layer.Models.GiftcardPayment", "GiftcardPayment")
                         .WithMany()
-                        .HasForeignKey("GiftCardPaymentId")
+                        .HasForeignKey("GiftcardPaymentId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("OMGVA_PoS.Data_layer.Models.Order", "Order")
-                        .WithMany("Payments")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.Navigation("Customer");
 
-                    b.Navigation("GiftCardPayment");
-
-                    b.Navigation("Order");
+                    b.Navigation("GiftcardPayment");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Reservation", b =>
@@ -732,9 +714,9 @@ namespace OMGVA_PoS.Datalayer.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCard", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Giftcard", b =>
                 {
-                    b.Navigation("GiftCardPayments");
+                    b.Navigation("GiftcardPayments");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Item", b =>
@@ -752,13 +734,17 @@ namespace OMGVA_PoS.Datalayer.Migrations
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.OrderItem", b =>
                 {
                     b.Navigation("OrderItemVariations");
+                });
+
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Payment", b =>
+                {
+                    b.Navigation("Order")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Tax", b =>
