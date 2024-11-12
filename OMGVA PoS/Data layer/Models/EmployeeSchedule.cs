@@ -1,4 +1,6 @@
-﻿namespace OMGVA_PoS.Data_layer.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace OMGVA_PoS.Data_layer.Models
 {
     public class EmployeeSchedule
     {
@@ -8,5 +10,10 @@
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public bool IsCancelled { get; set; }
+
+        // navigational properties
+        // for foreign keys
+        [ForeignKey(nameof(EmployeeId))] // explicit since not called UserId
+        public User User { get; set; }
     }
 }

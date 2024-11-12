@@ -9,5 +9,11 @@
         public decimal PriceChange { get; set; }
         public string ItemVariationGroup { get; set; }
         public bool IsArchived { get; set; }
+
+        // navigational properties
+        public ICollection<OrderItemVariation> OrderItemVariations { get; set; } // can be used in orders
+
+        // for foreign keys
+        public Item Item { get; set; } 
     }
 }
