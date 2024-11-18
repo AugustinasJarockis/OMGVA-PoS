@@ -16,9 +16,13 @@ const App: React.FC = () => {
 
     useEffect(() => {
         getWeatherForecast()
-            .then((data) => setForecasts(data))
+            .then((data) => {
+                console.log('Received data:', data); // Add this line
+                setForecasts(data);
+            })
             .catch((err) => setError(err.message));
     }, []);
+
 
     return (
         <div>
