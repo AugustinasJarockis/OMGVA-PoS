@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Newtonsoft.Json;
 using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
 using OMGVA_PoS.Business_layer.Services.UserManagement;
 using OMGVA_PoS.Data_layer.Models;
@@ -6,7 +8,7 @@ using OMGVA_PoS.Helper_modules.Utilities;
 
 namespace OMGVA_PoS.Business_layer.Controllers
 {
-    [Route("[controller]")]
+    [Route("user")]
     [ApiController]
     public class UserController(IUserAuthenticationRepository userAuthenticationRepository, IUserRepository userRepository) : Controller
     {
@@ -45,12 +47,63 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet]
+        public IActionResult GetAllUsers()
+        {
+            return Ok(JsonConvert.SerializeObject(_userRepository.GetUsers));
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetUser(long id)
+        {
+            var user = _userRepository.GetUser(id);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(JsonConvert.SerializeObject(user));
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update([FromBody] User user, long id)
+        {
+            _userRepository.UpdateUser(id, user);
+            if(_userRepository.GetUser(id).Equals(user))
+                return Ok();
+
+            return StatusCode(500, "Internal server error");
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
             if (_userRepository.DeleteUser(id))
                 return Ok();
             return StatusCode(500, "Internal server error");
+        }
+
+        [HttpGet("business/{businessId}")]
+        public IActionResult GetBusinessUsers(long businessId)
+        {
+            var businessUsers = _userRepository.GetBusinessUsers(businessId);
+
+            if(businessUsers == null)
+                return NotFound();
+
+            return Ok(JsonConvert.SerializeObject(businessUsers));
+        }
+
+        [HttpGet("{userId}/schedules")]
+        public IActionResult GetUserSchedules(long userId)
+        {
+            return Ok(JsonConvert.SerializeObject(_userRepository.GetUserSchedules(userId)));
+        }
+
+        [HttpGet("{userId}/order")]
+        public IActionResult GetUserOrders(long userId)
+        {
+            return Ok(JsonConvert.SerializeObject(_userRepository.GetUserOrders(userId)));
         }
     }
 }
