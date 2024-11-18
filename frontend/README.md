@@ -1,5 +1,19 @@
 # React + TypeScript + Vite
 
+To run, make sure to first install the dependencies:
+
+```bash
+npm i # npm install (same command)
+```
+
+Then, run the development server:
+
+```bash
+npm run dev
+```
+
+
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
