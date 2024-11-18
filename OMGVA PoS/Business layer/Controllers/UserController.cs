@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
+using OMGVA_PoS.Business_layer.Services.UserManagement;
 using OMGVA_PoS.Data_layer.Models;
 using OMGVA_PoS.Helper_modules.Utilities;
 
 namespace OMGVA_PoS.Business_layer.Controllers
 {
-    public class UserController(IUserAuthenticationRepository userAuthenticationRepository) : Controller
+    [Route("[controller]")]
+    [ApiController]
+    public class UserController(IUserAuthenticationRepository userAuthenticationRepository, IUserRepository userRepository) : Controller
     {
         private readonly IUserAuthenticationRepository _userAuthenticationRepository = userAuthenticationRepository;
-        [HttpPost("/user")]
-        public IActionResult SignInUser([FromBody]SignInModel signInModel)
+        private readonly IUserRepository _userRepository = userRepository;
+        [HttpPost]
+        public IActionResult SignIn([FromBody]SignInModel signInModel)
         {
             if(_userAuthenticationRepository.IsSignedIn(signInModel.Username, signInModel.Password))
                 return StatusCode(409, "User is already signed in or session exists.");
@@ -29,7 +33,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginDTO>> LoginUser([FromBody]LoginModel loginModel)
+        public async Task<ActionResult<LoginDTO>> Login([FromBody]LoginModel loginModel)
         {
 
             var result = await _userAuthenticationRepository.Login(loginModel);
@@ -40,6 +44,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
             Response.Headers.Add("Authorization", "Bearer " + result.Token);
 
             return Ok(result);
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(long id)
+        {
+            if (_userRepository.DeleteUser(id))
+                return Ok();
+            return StatusCode(500, "Internal server error");
         }
     }
 }

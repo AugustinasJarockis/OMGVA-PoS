@@ -31,12 +31,16 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
             }
         }
 
-        //galimai deleta istrint
-        public void DeleteUser(long id)
+        public bool DeleteUser(long id)
         {
             var user = _database.Users.SingleOrDefault(u => u.Id == id);
-            if(user != null)
-                _database.Users.Remove(user);
+            if (user != null)
+            {
+                user.HasLeft = true;
+                _database.SaveChanges();
+                return true;
+            }
+            return false;
         }
         public List<User> GetBusinessUsers(long businessId)
         {

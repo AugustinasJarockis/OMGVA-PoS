@@ -23,7 +23,8 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
                 Email = signInModel.Email,
                 Role = signInModel.Role,
                 Password = BCrypt.Net.BCrypt.EnhancedHashPassword(signInModel.Password, 13),
-                BusinessId = signInModel.BusinessId
+                BusinessId = signInModel.BusinessId,
+                HasLeft = false
             };
 
             _database.Users.Add(user);
@@ -50,6 +51,9 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
         {
             var getUserId = _userRepository.GetUserId(loginModel.Username);
             var getUser = _userRepository.GetUser(getUserId);
+
+            if (getUser.HasLeft)
+                return new LoginDTO(false, "This account is deactivated");
 
             bool checkPassword = BCrypt.Net.BCrypt.EnhancedVerify(loginModel.Password, getUser.Password);
             if (checkPassword)
