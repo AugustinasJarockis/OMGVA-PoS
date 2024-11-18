@@ -65,16 +65,16 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
             var userClaims = new[]
         {
              new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+             new Claim(ClaimTypes.Role, user.Role.ToString()!),
              new Claim(ClaimTypes.Name, user.Name!),
-             new Claim(ClaimTypes.Email, user.Email!),
-             new Claim(ClaimTypes.Role, user.Role.ToString()!)
+             new Claim(ClaimTypes.Sid, user.BusinessId.ToString()!)
          };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddDays(5),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials
                 );
 
