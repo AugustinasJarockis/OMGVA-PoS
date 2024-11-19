@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
 using OMGVA_PoS.Business_layer.Services.UserManagement;
@@ -8,25 +7,25 @@ using OMGVA_PoS.Helper_modules.Utilities;
 
 namespace OMGVA_PoS.Business_layer.Controllers
 {
-    [Route("user")]
     [ApiController]
-    public class UserController(IUserAuthenticationRepository userAuthenticationRepository, IUserRepository userRepository) : Controller
+    [Route("user")]
+    public class UserController(IAuthenticationRepository authenticationRepository, IUserRepository userRepository) : Controller
     {
-        private readonly IUserAuthenticationRepository _userAuthenticationRepository = userAuthenticationRepository;
+        private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
         private readonly IUserRepository _userRepository = userRepository;
         [HttpPost]
-        public IActionResult SignIn([FromBody]SignInModel signInModel)
+        public IActionResult SignIn([FromBody]SignInRequest signInRequest)
         {
-            if(_userAuthenticationRepository.IsSignedIn(signInModel.Username, signInModel.Password))
+            if(_authenticationRepository.IsSignedIn(signInRequest.Username, signInRequest.Password))
                 return StatusCode(409, "User is already signed in or session exists.");
 
-            if(_userAuthenticationRepository.IsEmailUsed(signInModel.Email))
+            if(_authenticationRepository.IsEmailUsed(signInRequest.Email))
                 return StatusCode(409, "This email is already in use.");
 
-            if(_userAuthenticationRepository.IsUsernamelUsed(signInModel.Username))
+            if(_authenticationRepository.IsUsernamelUsed(signInRequest.Username))
                 return StatusCode(409, "This username is already in use.");
 
-            User user = _userAuthenticationRepository.SignIn(signInModel);
+            User user = _authenticationRepository.SignIn(signInRequest);
 
             if (user == null)
                 return StatusCode(500, "Internal server error");
@@ -35,10 +34,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginDTO>> Login([FromBody]LoginModel loginModel)
+        public async Task<ActionResult<LoginDTO>> Login([FromBody]LoginRequest loginRequest)
         {
 
-            var result = await _userAuthenticationRepository.Login(loginModel);
+            var result = await _authenticationRepository.Login(loginRequest);
 
             if(!result.IsSuccess)
                 return StatusCode(401, result.Message);

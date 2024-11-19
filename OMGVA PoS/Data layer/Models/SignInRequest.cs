@@ -2,7 +2,7 @@
 
 namespace OMGVA_PoS.Data_layer.Models
 {
-    public class SignInModel
+    public class SignInRequest
     {
         public long? BusinessId { get; set; }
         public string Name { get; set; }

@@ -9,21 +9,21 @@ using System.Text;
 
 namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
 {
-    public class UserAuthenticationRepository(OMGVADbContext database, IUserRepository userRepository, IConfiguration config) : IUserAuthenticationRepository
+    public class AuthenticationRepository(OMGVADbContext database, IUserRepository userRepository, IConfiguration config) : IAuthenticationRepository
     {
         private readonly OMGVADbContext _database = database;
         private readonly IUserRepository _userRepository= userRepository;
         private readonly IConfiguration _config = config;
-        public User SignIn(SignInModel signInModel)
+        public User SignIn(SignInRequest signInRequest)
         {
             User user = new()
             {
-                Name = signInModel.Name,
-                Username = signInModel.Username,
-                Email = signInModel.Email,
-                Role = signInModel.Role,
-                Password = BCrypt.Net.BCrypt.EnhancedHashPassword(signInModel.Password, 13),
-                BusinessId = signInModel.BusinessId,
+                Name = signInRequest.Name,
+                Username = signInRequest.Username,
+                Email = signInRequest.Email,
+                Role = signInRequest.Role,
+                Password = BCrypt.Net.BCrypt.EnhancedHashPassword(signInRequest.Password, 13),
+                BusinessId = signInRequest.BusinessId,
                 HasLeft = false
             };
 
@@ -47,15 +47,15 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
             return _database.Users.Any(u => u.Username == username);
         }
 
-        public async Task<LoginDTO> Login (LoginModel loginModel)
+        public async Task<LoginDTO> Login (LoginRequest loginRequest)
         {
-            var getUserId = _userRepository.GetUserId(loginModel.Username);
+            var getUserId = _userRepository.GetUserId(loginRequest.Username);
             var getUser = _userRepository.GetUser(getUserId);
 
             if (getUser.HasLeft)
                 return new LoginDTO(false, "This account is deactivated");
 
-            bool checkPassword = BCrypt.Net.BCrypt.EnhancedVerify(loginModel.Password, getUser.Password);
+            bool checkPassword = BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, getUser.Password);
             if (checkPassword)
 
                 return new LoginDTO(true, "Login Successfully", GeneretateJWT(getUser));

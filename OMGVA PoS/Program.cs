@@ -49,7 +49,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserAuthenticationRepository, UserAuthenticationRepository>();
+builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true

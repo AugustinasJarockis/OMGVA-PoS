@@ -1,6 +1,6 @@
 ﻿namespace OMGVA_PoS.Data_layer.Models
 {
-    public class LoginModel
+    public class LoginRequest
     {
         public string Username { get; set; }
 
