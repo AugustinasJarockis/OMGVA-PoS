@@ -64,7 +64,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             return Ok(JsonConvert.SerializeObject(user));
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public IActionResult Update([FromBody] User user, long id)
         {
             _userRepository.UpdateUser(id, user);

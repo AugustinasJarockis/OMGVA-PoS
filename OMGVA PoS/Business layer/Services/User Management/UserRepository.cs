@@ -21,12 +21,12 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
             var userToUpdate = _database.Users.SingleOrDefault(u => u.Id == id);
             if (userToUpdate != null)
             {
-                userToUpdate.Name = user.Name;
-                userToUpdate.Username = user.Username;
-                userToUpdate.Email = user.Email;
+                userToUpdate.Name = user.Name ?? userToUpdate.Name;
+                userToUpdate.Username = user.Username ?? userToUpdate.Username;
+                userToUpdate.Email = user.Email ?? userToUpdate.Email;
                 userToUpdate.Role = user.Role;
-                userToUpdate.Password = user.Password;
-                userToUpdate.BusinessId = user.BusinessId;
+                userToUpdate.Password = user.Password ?? BCrypt.Net.BCrypt.EnhancedHashPassword(userToUpdate.Password, 13);
+                userToUpdate.BusinessId = user.BusinessId ?? userToUpdate.BusinessId;
                 _database.SaveChanges();
             }
         }
