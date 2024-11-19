@@ -127,7 +127,7 @@ namespace OMGVA_PoS.Migrations
                     b.ToTable("EmployeeSchedules");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Giftcard", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCard", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,7 +146,7 @@ namespace OMGVA_PoS.Migrations
                     b.ToTable("GiftCards");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftcardPayment", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCardPayment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -157,12 +157,12 @@ namespace OMGVA_PoS.Migrations
                     b.Property<decimal>("AmountUsed")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<long>("GiftcardId")
+                    b.Property<long>("GiftCardId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GiftcardId");
+                    b.HasIndex("GiftCardId");
 
                     b.ToTable("GiftCardPayments");
                 });
@@ -261,14 +261,8 @@ namespace OMGVA_PoS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("PaymentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RefundReason")
                         .IsRequired()
@@ -286,9 +280,6 @@ namespace OMGVA_PoS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DiscountId");
-
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -358,7 +349,7 @@ namespace OMGVA_PoS.Migrations
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GiftcardPaymentId")
+                    b.Property<long?>("GiftCardPaymentId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Method")
@@ -371,7 +362,9 @@ namespace OMGVA_PoS.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("GiftcardPaymentId");
+                    b.HasIndex("GiftCardPaymentId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Payments");
                 });
@@ -520,15 +513,15 @@ namespace OMGVA_PoS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftcardPayment", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCardPayment", b =>
                 {
-                    b.HasOne("OMGVA_PoS.Data_layer.Models.Giftcard", "Giftcard")
-                        .WithMany("GiftcardPayments")
-                        .HasForeignKey("GiftcardId")
+                    b.HasOne("OMGVA_PoS.Data_layer.Models.GiftCard", "GiftCard")
+                        .WithMany("GiftCardPayments")
+                        .HasForeignKey("GiftCardId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Giftcard");
+                    b.Navigation("GiftCard");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Item", b =>
@@ -567,12 +560,6 @@ namespace OMGVA_PoS.Migrations
                         .HasForeignKey("DiscountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("OMGVA_PoS.Data_layer.Models.Payment", "Payment")
-                        .WithOne("Order")
-                        .HasForeignKey("OMGVA_PoS.Data_layer.Models.Order", "PaymentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("OMGVA_PoS.Data_layer.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -580,8 +567,6 @@ namespace OMGVA_PoS.Migrations
                         .IsRequired();
 
                     b.Navigation("Discount");
-
-                    b.Navigation("Payment");
 
                     b.Navigation("User");
                 });
@@ -631,9 +616,9 @@ namespace OMGVA_PoS.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OMGVA_PoS.Data_layer.Models.GiftcardPayment", "GiftcardPayment")
+                    b.HasOne("OMGVA_PoS.Data_layer.Models.GiftCardPayment", "GiftCardPayment")
                         .WithMany()
-                        .HasForeignKey("GiftcardPaymentId")
+                        .HasForeignKey("GiftCardPaymentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("OMGVA_PoS.Data_layer.Models.Order", "Order")
@@ -644,7 +629,9 @@ namespace OMGVA_PoS.Migrations
 
                     b.Navigation("Customer");
 
-                    b.Navigation("GiftcardPayment");
+                    b.Navigation("GiftCardPayment");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Reservation", b =>
@@ -731,9 +718,9 @@ namespace OMGVA_PoS.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Giftcard", b =>
+            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.GiftCard", b =>
                 {
-                    b.Navigation("GiftcardPayments");
+                    b.Navigation("GiftCardPayments");
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Item", b =>
@@ -758,12 +745,6 @@ namespace OMGVA_PoS.Migrations
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.OrderItem", b =>
                 {
                     b.Navigation("OrderItemVariations");
-                });
-
-            modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Payment", b =>
-                {
-                    b.Navigation("Order")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("OMGVA_PoS.Data_layer.Models.Tax", b =>

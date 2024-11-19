@@ -12,8 +12,8 @@ using OMGVA_PoS.Data_layer.Context;
 namespace OMGVA_PoS.Migrations
 {
     [DbContext(typeof(OMGVADbContext))]
-    [Migration("20241118123049_AddUsernameToUSer")]
-    partial class AddUsernameToUSer
+    [Migration("20241119114334_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
