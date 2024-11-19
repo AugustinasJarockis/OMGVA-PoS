@@ -10,8 +10,8 @@ namespace OMGVA_PoS.Data_layer.Context
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<EmployeeSchedule> EmployeeSchedules { get; set; }
-        public DbSet<Giftcard> Giftcards { get; set; }
-        public DbSet<GiftcardPayment> GiftcardPayments { get; set; }
+        public DbSet<GiftCard> GiftCards { get; set; }
+        public DbSet<GiftCardPayment> GiftCardPayments { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemVariation> ItemVariations { get; set; }
         public DbSet<Order> Orders { get; set; }

@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace OMGVA_PoS.Datalayer.Migrations
+namespace OMGVA_PoS.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialModel : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,7 +58,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Giftcards",
+                name: "GiftCards",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -68,7 +68,7 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Giftcards", x => x.Id);
+                    table.PrimaryKey("PK_GiftCards", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,8 +110,9 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    BusinessId = table.Column<long>(type: "bigint", nullable: false),
+                    BusinessId = table.Column<long>(type: "bigint", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -163,21 +164,21 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GiftcardPayments",
+                name: "GiftCardPayments",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    GiftcardId = table.Column<long>(type: "bigint", nullable: false),
+                    GiftCardId = table.Column<long>(type: "bigint", nullable: false),
                     AmountUsed = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GiftcardPayments", x => x.Id);
+                    table.PrimaryKey("PK_GiftCardPayments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GiftcardPayments_Giftcards_GiftcardId",
-                        column: x => x.GiftcardId,
-                        principalTable: "Giftcards",
+                        name: "FK_GiftCardPayments_GiftCards_GiftCardId",
+                        column: x => x.GiftCardId,
+                        principalTable: "GiftCards",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -200,6 +201,35 @@ namespace OMGVA_PoS.Datalayer.Migrations
                     table.ForeignKey(
                         name: "FK_EmployeeSchedules_Users_EmployeeId",
                         column: x => x.EmployeeId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Tip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RefundReason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    DiscountId = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Discounts_DiscountId",
+                        column: x => x.DiscountId,
+                        principalTable: "Discounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -285,68 +315,6 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Method = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<long>(type: "bigint", nullable: false),
-                    GiftcardPaymentId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Payments_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Payments_GiftcardPayments_GiftcardPaymentId",
-                        column: x => x.GiftcardPaymentId,
-                        principalTable: "GiftcardPayments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Tip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    RefundReason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    PaymentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DiscountId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_Discounts_DiscountId",
-                        column: x => x.DiscountId,
-                        principalTable: "Discounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Orders_Payments_PaymentId",
-                        column: x => x.PaymentId,
-                        principalTable: "Payments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Orders_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
                 {
@@ -368,6 +336,40 @@ namespace OMGVA_PoS.Datalayer.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Method = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<long>(type: "bigint", nullable: false),
+                    GiftCardPaymentId = table.Column<long>(type: "bigint", nullable: true),
+                    OrderId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Payments_GiftCardPayments_GiftCardPaymentId",
+                        column: x => x.GiftCardPaymentId,
+                        principalTable: "GiftCardPayments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Payments_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
@@ -406,9 +408,9 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GiftcardPayments_GiftcardId",
-                table: "GiftcardPayments",
-                column: "GiftcardId");
+                name: "IX_GiftCardPayments_GiftCardId",
+                table: "GiftCardPayments",
+                column: "GiftCardId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_BusinessId",
@@ -451,12 +453,6 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 column: "DiscountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_PaymentId",
-                table: "Orders",
-                column: "PaymentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserId",
                 table: "Orders",
                 column: "UserId");
@@ -467,9 +463,14 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_GiftcardPaymentId",
+                name: "IX_Payments_GiftCardPaymentId",
                 table: "Payments",
-                column: "GiftcardPaymentId");
+                column: "GiftCardPaymentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_OrderId",
+                table: "Payments",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_CustomerId",
@@ -512,6 +513,9 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 name: "OrderItemVariations");
 
             migrationBuilder.DropTable(
+                name: "Payments");
+
+            migrationBuilder.DropTable(
                 name: "Reservations");
 
             migrationBuilder.DropTable(
@@ -527,6 +531,12 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
+                name: "GiftCardPayments");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
                 name: "Taxes");
 
             migrationBuilder.DropTable(
@@ -536,25 +546,16 @@ namespace OMGVA_PoS.Datalayer.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Discounts");
+                name: "GiftCards");
 
             migrationBuilder.DropTable(
-                name: "Payments");
+                name: "Discounts");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "GiftcardPayments");
-
-            migrationBuilder.DropTable(
                 name: "Businesses");
-
-            migrationBuilder.DropTable(
-                name: "Giftcards");
         }
     }
 }
