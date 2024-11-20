@@ -30,8 +30,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT"
     });
-
-    // Apply security to endpoints
+  // Apply security to endpoints
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
@@ -45,6 +44,18 @@ builder.Services.AddSwaggerGen(options =>
                 },
                 Array.Empty<string>()
             }
+        });
+});
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
         });
 });
 
@@ -95,11 +106,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
