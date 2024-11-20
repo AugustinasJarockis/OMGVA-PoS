@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using OMGVA_PoS.Data_layer.Context;
 
 var builder = WebApplication.CreateBuilder(args);
