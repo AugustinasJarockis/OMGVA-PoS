@@ -21,7 +21,7 @@
     public enum PaymentMethod {
         Cash,
         Card,
-        Giftcard
+        GiftCard
     }
 
     public enum ReservationStatus {
