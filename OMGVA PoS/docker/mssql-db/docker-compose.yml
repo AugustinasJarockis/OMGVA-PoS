@@ -1,0 +1,10 @@
+services:
+  mssql:
+    build: .
+    container_name: mssql_container
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=omgva_POS_999
+    restart: unless-stopped
