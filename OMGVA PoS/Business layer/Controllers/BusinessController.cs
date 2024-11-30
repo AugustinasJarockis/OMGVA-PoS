@@ -19,6 +19,9 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
+        [ProducesResponseType<List<Business>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult GetAllBusinesses() {
             return Ok(JsonConvert.SerializeObject(_businessRepository.GetBusinesses()));
         }
@@ -26,6 +29,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Owner")]
+        [ProducesResponseType<Business>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetBusiness(long id) {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
             if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
@@ -41,6 +48,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
+        [ProducesResponseType<Business>(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult CreateBusiness([FromBody]CreateBusinessRequest createBusinessRequest) {
             if (!createBusinessRequest.Email.IsValidEmail() || !createBusinessRequest.Phone.IsValidPhone()){
                 return BadRequest();
@@ -51,6 +62,11 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin,Owner")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateBusiness([FromBody] Business business, long id) {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
             if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
