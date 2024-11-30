@@ -1,6 +1,8 @@
-﻿using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
+﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
 using OMGVA_PoS.Data_layer.Context;
 using OMGVA_PoS.Data_layer.DTOs;
+using OMGVA_PoS.Data_layer.Enums;
 using OMGVA_PoS.Data_layer.Models;
 
 namespace OMGVA_PoS.Data_layer.Repositories.Business_Management
@@ -22,12 +24,34 @@ namespace OMGVA_PoS.Data_layer.Repositories.Business_Management
             _database.SaveChanges();
             
             createBusinessRequest.Owner.BusinessId = business.Id;
+            createBusinessRequest.Owner.Role = UserRole.Owner;
             _authenticationRepository.SignIn(createBusinessRequest.Owner);
 
             return business;
         }
+
+        public bool UpdateBusiness(long businessId, Business business) {
+            var businessToUpdate = _database.Businesses.SingleOrDefault(b => b.Id == businessId);
+            if (businessToUpdate != null) {
+                businessToUpdate.StripeAccId = business.StripeAccId ?? businessToUpdate.Name;
+                businessToUpdate.Name = business.Name ?? businessToUpdate.Name;
+                businessToUpdate.Address = business.Address ?? businessToUpdate.Address;
+                businessToUpdate.Phone = business.Phone ?? businessToUpdate.Phone;
+                businessToUpdate.Email = business.Email ?? businessToUpdate.Email;
+                _database.SaveChanges();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
         public List<Business> GetBusinesses() {
             return [.. _database.Businesses];
+        }
+
+        public Business GetBusiness(long businessId) {
+            return _database.Businesses.Where(b => b.Id == businessId).FirstOrDefault();
         }
     }
 }
