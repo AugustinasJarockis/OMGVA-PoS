@@ -22,11 +22,6 @@ namespace OMGVA_PoS.Data_layer.Repositories.Business_Management
 
             _database.Businesses.Add(business);
             _database.SaveChanges();
-            
-            createBusinessRequest.Owner.BusinessId = business.Id;
-            createBusinessRequest.Owner.Role = UserRole.Owner;
-            _authenticationRepository.SignIn(createBusinessRequest.Owner);
-
             return business;
         }
 

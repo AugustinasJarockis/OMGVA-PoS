@@ -8,6 +8,5 @@ namespace OMGVA_PoS.Data_layer.DTOs
         public string Address { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public SignInRequest Owner { get; set; }
     }
 }

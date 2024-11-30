@@ -27,14 +27,25 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Owner")]
         public IActionResult GetBusiness(long id) {
-            return Ok(JsonConvert.SerializeObject(_businessRepository.GetBusinesses()));
+            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
+            if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
+                return Forbid();
+            }
+            Business business = _businessRepository.GetBusiness(id);
+
+            if (business == null)
+                return NotFound();
+            else
+                return Ok(JsonConvert.SerializeObject(business));
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public IActionResult CreateBusiness([FromBody]CreateBusinessRequest createBusinessRequest) {
-            Business business = _businessRepository.CreateBusiness(createBusinessRequest); 
-            //Check email field
+            if (!createBusinessRequest.Email.IsValidEmail() || !createBusinessRequest.Phone.IsValidPhone()){
+                return BadRequest();
+            }
+            Business business = _businessRepository.CreateBusiness(createBusinessRequest);
             return Created($"/business/{business.Id}", business);
         }
 
@@ -44,6 +55,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
             if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
                 return Forbid();
+            }
+
+            if (!business.Email.IsValidEmail() || !business.Phone.IsValidPhone()) {
+                return BadRequest();
             }
 
             if (_businessRepository.UpdateBusiness(id, business))
