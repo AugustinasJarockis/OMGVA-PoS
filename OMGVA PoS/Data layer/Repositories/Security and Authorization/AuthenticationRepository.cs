@@ -12,7 +12,7 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
     public class AuthenticationRepository(OMGVADbContext database, IUserRepository userRepository, IConfiguration config) : IAuthenticationRepository
     {
         private readonly OMGVADbContext _database = database;
-        private readonly IUserRepository _userRepository= userRepository;
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly IConfiguration _config = config;
         public User SignIn(SignInRequest signInRequest)
         {

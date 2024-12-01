@@ -50,7 +50,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            return Ok(JsonConvert.SerializeObject(_userRepository.GetUsers));
+            return Ok(JsonConvert.SerializeObject(_userRepository.GetUsers()));
         }
 
         [HttpGet("{id}")]
