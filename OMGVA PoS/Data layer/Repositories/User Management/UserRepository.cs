@@ -12,8 +12,8 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
         {
             try
             {
-            return [.. _database.Users];
-        }
+                return [.. _database.Users];
+            }
             catch (Exception ex)
             {
                 throw new ApplicationException("Error retrieving users.", ex);
@@ -79,8 +79,8 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
         {
             try
             {
-            return [.. _database.Users.Where(u => u.BusinessId == businessId)];
-        }
+                return [.. _database.Users.Where(u => u.BusinessId == businessId)];
+            }
             catch (Exception ex)
             {
                 throw new ApplicationException("Error retrieving business users.", ex);

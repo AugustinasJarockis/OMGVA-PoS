@@ -20,11 +20,26 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpPost]
         [ProducesResponseType<User>(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // Uncomment this line when all of the admin users have their accounts:
+        // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult SignIn([FromBody]SignInRequest signInRequest)
         {
-            if(_authenticationRepository.IsSignedIn(signInRequest.Username, signInRequest.Password))
+            if (!signInRequest.Email.IsValidEmail())
+                return StatusCode(400, "Email is not valid.");
+
+            if (!signInRequest.Username.IsValidName())
+                return StatusCode(400, "Name is not valid.");
+
+            if (!signInRequest.Username.IsValidUsername())
+                return StatusCode(400, "Username is not valid.");
+
+            if (!signInRequest.Username.IsValidPassword())
+                return StatusCode(400, "Password is not valid.");
+
+            if (_authenticationRepository.IsSignedIn(signInRequest.Username, signInRequest.Password))
                 return StatusCode(409, "User is already signed in or session exists.");
 
             if(_authenticationRepository.IsEmailUsed(signInRequest.Email))
@@ -60,6 +75,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType<List<User>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllUsers()
@@ -70,6 +86,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<User>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -102,6 +119,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -116,6 +134,9 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
             try
             {
+                if(user.Email != null && !user.Email.IsValidEmail())
+                    return BadRequest();
+
                 _userRepository.UpdateUser(id, user);
                 return Ok();
             }
@@ -133,6 +154,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin, Owner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -162,6 +184,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet("business/{businessId}")]
         [Authorize(Roles = "Admin, Owner")]
         [ProducesResponseType<List<User>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetBusinessUsers(long businessId)
         {
@@ -180,6 +203,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet("{userId}/schedules")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<EmployeeSchedule>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserSchedules(long userId)
@@ -210,6 +234,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpGet("{userId}/order")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<Order>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserOrders(long userId)
