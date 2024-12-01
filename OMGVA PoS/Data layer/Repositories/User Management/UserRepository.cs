@@ -12,8 +12,8 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
         {
             try
             {
-                return [.. _database.Users];
-            }
+            return [.. _database.Users];
+        }
             catch (Exception ex)
             {
                 throw new ApplicationException("Error retrieving users.", ex);
@@ -26,15 +26,15 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
             {
                 return _database.Users.FirstOrDefault(u => u.Id == id)
                     ?? throw new KeyNotFoundException("User not found.");
-            }
+        }
             catch (Exception ex)
-            {
+        {
                 throw new ApplicationException("Error retrieving the user.", ex);
             }
         }
 
         public void UpdateUser(long id, UpdateUserRequest user)
-        {
+            {
             try
             {
                 var userToUpdate = _database.Users.SingleOrDefault(u => u.Id == id);
@@ -54,14 +54,14 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
             catch (Exception ex)
             {
                 throw new ApplicationException("Error updating the user.", ex);
-            }
+        }
         }
 
         public bool DeleteUser(long id)
         {
             try
             {
-                var user = _database.Users.SingleOrDefault(u => u.Id == id);
+            var user = _database.Users.SingleOrDefault(u => u.Id == id);
                 if (user == null)
                     return false;
 
@@ -79,8 +79,8 @@ namespace OMGVA_PoS.Business_layer.Services.UserManagement
         {
             try
             {
-                return [.. _database.Users.Where(u => u.BusinessId == businessId)];
-            }
+            return [.. _database.Users.Where(u => u.BusinessId == businessId)];
+        }
             catch (Exception ex)
             {
                 throw new ApplicationException("Error retrieving business users.", ex);

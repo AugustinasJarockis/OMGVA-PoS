@@ -64,16 +64,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllUsers()
         {
-            try
-            {
-                var users = _userRepository.GetUsers();
-                return Ok(JsonConvert.SerializeObject(users));
-            }
-            catch (Exception ex)
-            {
-                // Log the exception with logger
-                return StatusCode(500, "Internal server error.");
-            }
+            return Ok(JsonConvert.SerializeObject(_userRepository.GetUsers));
         }
 
         [HttpGet("{id}")]
