@@ -134,7 +134,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
             try
             {
-                if(user.Email != null && !user.Email.IsValidEmail())
+                if(!user.Email.IsValidEmail())
                     return BadRequest();
 
                 _userRepository.UpdateUser(id, user);
