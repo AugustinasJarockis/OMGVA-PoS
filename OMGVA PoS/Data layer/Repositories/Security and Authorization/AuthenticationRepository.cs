@@ -14,24 +14,60 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
         private readonly OMGVADbContext _database = database;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IConfiguration _config = config;
+
         public User SignIn(SignInRequest signInRequest)
         {
-            User user = new()
+            try
             {
-                Name = signInRequest.Name,
-                Username = signInRequest.Username,
-                Email = signInRequest.Email,
-                Role = signInRequest.Role,
-                Password = BCrypt.Net.BCrypt.EnhancedHashPassword(signInRequest.Password, 13),
-                BusinessId = signInRequest.BusinessId,
-                HasLeft = false
-            };
+                if (signInRequest == null)
+                    throw new ArgumentNullException(nameof(signInRequest));
 
-            _database.Users.Add(user);
-            _database.SaveChanges();
+                User user = new()
+                {
+                    Name = signInRequest.Name,
+                    Username = signInRequest.Username,
+                    Email = signInRequest.Email,
+                    Role = signInRequest.Role,
+                    Password = BCrypt.Net.BCrypt.EnhancedHashPassword(signInRequest.Password, 13),
+                    BusinessId = signInRequest.BusinessId,
+                    HasLeft = false
+                };
 
-            return _userRepository.GetUser(_userRepository.GetUserId(user.Username));
+                _database.Users.Add(user);
+                _database.SaveChanges();
+
+                return _userRepository.GetUser(_userRepository.GetUserId(user.Username));
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error during sign-in.", ex);
+            }
         }
+
+        public async Task<LoginDTO> Login(LoginRequest loginRequest)
+        {
+            try
+            {
+                if (loginRequest == null)
+                    throw new ArgumentNullException(nameof(loginRequest));
+
+                var getUserId = _userRepository.GetUserId(loginRequest.Username);
+                var getUser = _userRepository.GetUser(getUserId);
+
+                if (getUser.HasLeft)
+                    return new LoginDTO(false, "This account is deactivated");
+
+                bool checkPassword = BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, getUser.Password);
+                return checkPassword
+                    ? new LoginDTO(true, "Login Successfully", GenerateJWT(getUser))
+                    : new LoginDTO(false, "Invalid Password");
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error during login.", ex);
+            }
+        }
+
         public bool IsSignedIn(string username, string password)
         {
             return _database.Users.Where(u => u.Username == username && u.Password == password).Any();
@@ -47,22 +83,7 @@ namespace OMGVA_PoS.Business_layer.Services.Security_and_Authorization
             return _database.Users.Any(u => u.Username == username);
         }
 
-        public async Task<LoginDTO> Login (LoginRequest loginRequest)
-        {
-            var getUserId = _userRepository.GetUserId(loginRequest.Username);
-            var getUser = _userRepository.GetUser(getUserId);
-
-            if (getUser.HasLeft)
-                return new LoginDTO(false, "This account is deactivated");
-
-            bool checkPassword = BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, getUser.Password);
-            if (checkPassword)
-
-                return new LoginDTO(true, "Login Successfully", GeneretateJWT(getUser));
-            else
-                return new LoginDTO(false, "Invalid Password");
-        }
-        private string GeneretateJWT(User user)
+        private string GenerateJWT(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
