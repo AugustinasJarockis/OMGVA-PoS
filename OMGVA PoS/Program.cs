@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using OMGVA_PoS.Data_layer.Repositories.Business_Management;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -61,6 +62,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true

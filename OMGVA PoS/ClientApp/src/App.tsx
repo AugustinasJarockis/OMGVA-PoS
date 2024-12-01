@@ -1,41 +1,36 @@
-// frontend/src/App.tsx
-
-import React, { useEffect, useState } from 'react';
-import { getWeatherForecast } from './services/weatherService';
-
-interface WeatherForecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import WeatherPage from './pages/WeatherPage';
+import './App.css';
 
 const App: React.FC = () => {
-    const [forecasts, setForecasts] = useState<WeatherForecast[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('authToken'));
 
-    useEffect(() => {
-        getWeatherForecast()
-            .then((data) => {
-                console.log('Received data:', data); // Add this line
-                setForecasts(data);
-            })
-            .catch((err) => setError(err.message));
-    }, []);
+    const handleLoginSuccess = () => {
+        setIsAuthenticated(true);
+    };
 
+    const handleLogout = () => {
+        localStorage.removeItem('authToken');
+        setIsAuthenticated(false);
+    };
 
     return (
-        <div>
-            <h1>Weather Forecast</h1>
-            {error && <p>Error: {error}</p>}
-            <ul>
-                {forecasts.map((forecast, index) => (
-                    <li key={index}>
-                        <strong>{forecast.date}</strong>: {forecast.summary} - {forecast.temperatureC}°C / {forecast.temperatureF}°F
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <Router>
+            <div className="app-container">
+                <Routes>
+                    {!isAuthenticated ? (
+                        <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+                    ) : (
+                        <>
+                            <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
+                            <Route path="*" element={<Navigate to="/weather" />} />
+                        </>
+                    )}
+                </Routes>
+            </div>
+        </Router>
     );
 };
 
