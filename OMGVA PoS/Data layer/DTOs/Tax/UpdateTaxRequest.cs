@@ -11,6 +11,5 @@ namespace OMGVA_PoS.Data_layer.DTOs
         [Range(0, short.MaxValue, ErrorMessage = "Percent must be 0 or greater.")]
         public short? Percent { get; set; }
 
-        public bool? IsArchived { get; set; }
     }
 }

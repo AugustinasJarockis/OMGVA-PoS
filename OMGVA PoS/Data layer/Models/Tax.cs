@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace OMGVA_PoS.Data_layer.Models
+﻿namespace OMGVA_PoS.Data_layer.Models
 {
     public class Tax
     {

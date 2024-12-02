@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using OMGVA_PoS.Data_layer.Repositories.Business_Management;
-using OMGVA_PoS.Data_layer.Repositories.Tax;
+using OMGVA_PoS.Data_layer.Repositories.TaxManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DO_NOTHING;

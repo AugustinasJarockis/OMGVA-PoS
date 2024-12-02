@@ -10,8 +10,7 @@ public class TaxMapper
         return new Tax()
         {
             TaxType = createTaxRequest.TaxType,
-            Percent = createTaxRequest.Percent,
-            IsArchived = createTaxRequest.IsArchived
+            Percent = createTaxRequest.Percent
         };
     }
 
@@ -19,7 +18,6 @@ public class TaxMapper
     {
         tax.TaxType = updateTaxRequest.TaxType ?? tax.TaxType;
         tax.Percent = updateTaxRequest.Percent ?? tax.Percent;
-        tax.IsArchived = updateTaxRequest.IsArchived ?? tax.IsArchived;
         return tax;
     }
 
