@@ -10,6 +10,7 @@ using OMGVA_PoS.Data_layer.Repositories.Business_Management;
 using OMGVA_PoS.Data_layer.Repositories.Tax;
 
 var builder = WebApplication.CreateBuilder(args);
+var initDatabaseAction = DbInitializerAction.DO_NOTHING;
 
 // Add services to the container.
 
@@ -108,6 +109,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<OMGVADbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbInitializer>>();
+    var dbInitializer = new DbInitializer(dbContext, logger);
+    await dbInitializer.InitDb(initDatabaseAction);
 }
 
 app.UseHttpsRedirection();
