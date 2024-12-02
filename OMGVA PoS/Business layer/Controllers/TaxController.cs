@@ -90,6 +90,11 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteTaxById(long id)
         {
+            var tax = await _taxRepository.GetTaxByIdAsync(id);
+            if (tax == null)
+            {
+                return NotFound(TaxNotFoundMessage);
+            }
             await _taxRepository.DeleteTaxAsync(id);
             return NoContent();
         }
