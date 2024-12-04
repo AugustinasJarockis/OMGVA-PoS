@@ -7,7 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using OMGVA_PoS.Data_layer.Repositories.Business_Management;
+using OMGVA_PoS.Data_layer.Repositories.TaxManagement;
+
 var builder = WebApplication.CreateBuilder(args);
+var initDatabaseAction = DbInitializerAction.DO_NOTHING;
 
 // Add services to the container.
 
@@ -63,6 +66,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
@@ -105,6 +109,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<OMGVADbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbInitializer>>();
+    var dbInitializer = new DbInitializer(dbContext, logger);
+    await dbInitializer.InitDb(initDatabaseAction);
 }
 
 app.UseHttpsRedirection();
