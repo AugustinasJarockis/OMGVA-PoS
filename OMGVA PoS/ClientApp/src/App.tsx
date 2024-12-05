@@ -25,7 +25,7 @@ const App: React.FC = () => {
                         <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
                     ) : (
                         <>
-                            <Route path="/business" element={<SelectBusinessPage/>} />
+                                <Route path="/business" element={<SelectBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
                             <Route path="*" element={<Navigate to="/weather" />} />
                         </>

@@ -8,9 +8,11 @@ export interface Business {
     email: string
 }
 
-const getAllBusinesses = async (): Promise<{ result?: Array<Business>, error?: string} > => {
+const getAllBusinesses = async (token: string | null): Promise<{ result?: Array<Business>, error?: string} > => {
     try {
-        const response = await axios.get('/api/business');
+        const response = await axios.get('/api/business', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.status === 200) {
             return { result: response.data };
         } else {

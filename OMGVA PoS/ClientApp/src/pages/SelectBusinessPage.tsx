@@ -2,24 +2,23 @@
 import { getAllBusinesses } from '../services/businessService';
 
 interface SelectBusinessPageProps {
+    token : string | null
 }
 
-const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({}) => {
+const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken}) => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
     //const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    useEffect(() => {
-        getBusinesses();
-    }, []);
 
     const getBusinesses = async () => {
         setError(null);
         //setIsLoading(true);
 
         try {
-            const { result, error } = await getAllBusinesses();
+            const { result, error } = await getAllBusinesses(authToken);
 
+            console.log(result);
             if (!result) {
                 setError('Problem acquiring businesses: ' + error);
             }
@@ -32,6 +31,10 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({}) => {
             //setIsLoading(false);
         }
     }
+
+    useEffect(() => {
+        getBusinesses();
+    }, []);
     
     //const handleLogin = async (e: React.FormEvent) => {
     //    e.preventDefault();
