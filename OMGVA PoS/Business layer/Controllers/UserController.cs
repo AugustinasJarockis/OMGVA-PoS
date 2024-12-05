@@ -13,10 +13,11 @@ namespace OMGVA_PoS.Business_layer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IAuthenticationRepository authenticationRepository, IUserRepository userRepository) : Controller
+    public class UserController(IAuthenticationRepository authenticationRepository, IUserRepository userRepository, ILogger<UserController> logger) : Controller
     {
         private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly ILogger<UserController> _logger = logger;
 
         [HttpPost]
         [ProducesResponseType<User>(StatusCodes.Status201Created)]
@@ -50,8 +51,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
             User user = _authenticationRepository.SignIn(signInRequest);
 
-            if (user == null)
+            if (user == null) {
+                _logger.LogError("An unexpected internal server error occured while creating user.");
                 return StatusCode(500, "Internal server error");
+            }
 
             return Created($"/user/{user.Id}", user);
         }
@@ -93,7 +96,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         public IActionResult GetUser(long id)
         {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id))
+            if (token == null || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id))
                 return Forbid();
 
             try
@@ -105,13 +108,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
                 return Ok(JsonConvert.SerializeObject(user));
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NotFound();
             }
             catch (Exception ex)
             {
-                //log the exception with logger
+                _logger.LogError(ex, "An unexpected internal server error occured while getting user.");
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -126,27 +129,27 @@ namespace OMGVA_PoS.Business_layer.Controllers
         public IActionResult Update([FromBody] UpdateUserRequest user, long id)
         {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id))
-                return Forbid();
-
-            if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId))
+            if (token == null 
+                || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId)
+                )
                 return Forbid();
 
             try
             {
                 if(!user.Email.IsValidEmail())
-                    return BadRequest();
+                    return StatusCode(400, "Email is not valid.");
 
                 _userRepository.UpdateUser(id, user);
                 return Ok();
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NotFound();
             }
             catch (Exception ex)
             {
-                // Log the exception with logger
+                _logger.LogError(ex, "An unexpected internal server error occured while updating user.");
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -162,10 +165,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
         {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
 
-            if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId))
-                return Forbid();
-
-            if (token.UserRoleEquals(UserRole.Owner) && token.UserIdEquals(id))
+            if (token == null 
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId)
+                || token.UserRoleEquals(UserRole.Owner) && token.UserIdEquals(id)
+                )
                 return Forbid();
 
             try
@@ -176,7 +179,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception with logger
+                _logger.LogError(ex, "An unexpected internal server error occured while deleting user.");
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -189,12 +192,12 @@ namespace OMGVA_PoS.Business_layer.Controllers
         public IActionResult GetBusinessUsers(long businessId)
         {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(businessId))
+            if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(businessId))
                 return Forbid();
 
             var businessUsers = _userRepository.GetBusinessUsers(businessId);
 
-            if(businessUsers == null)
+            if (businessUsers == null)
                 return NotFound();
 
             return Ok(JsonConvert.SerializeObject(businessUsers));
@@ -209,10 +212,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
         public IActionResult GetUserSchedules(long userId)
         {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId))
-                return Forbid();
-
-            if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId))
+            if (token == null 
+                || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId)
+                )
                 return Forbid();
 
             try
@@ -220,13 +223,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 var schedules = _userRepository.GetUserSchedules(userId);
                 return Ok(JsonConvert.SerializeObject(schedules));
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NotFound();
             }
             catch (Exception ex)
             {
-                // Log the exception with logger
+                _logger.LogError(ex, "An unexpected internal server error occured while getting user schedules.");
                 return StatusCode(500, "Internal server error.");
             }
         }
@@ -240,10 +243,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
         public IActionResult GetUserOrders(long userId)
         {
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId))
-                return Forbid();
-
-            if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId))
+            if (token == null
+                || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId)
+                )
                 return Forbid();
 
             try
@@ -251,13 +254,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 var orders = _userRepository.GetUserOrders(userId);
                 return Ok(JsonConvert.SerializeObject(orders));
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NotFound();
             }
             catch (Exception ex)
             {
-                // Log the exception with logger
+                _logger.LogError(ex, "An unexpected internal server error occured while getting user orders.");
                 return StatusCode(500, "Internal server error.");
             }
         }

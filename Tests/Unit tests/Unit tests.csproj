@@ -26,4 +26,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\OMGVA PoS\OMGVA PoS.csproj" />
+  </ItemGroup>
+
 </Project>
