@@ -12,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 namespace OMGVA_PoS.Business_layer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("user")]
     public class UserController(IAuthenticationRepository authenticationRepository, IUserRepository userRepository, ILogger<UserController> logger) : Controller
     {
         private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
