@@ -20,7 +20,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
         try {
             const response = await login(loginRequest);
-            if (response.isSuccess) {
+            if (response.isSuccess && response.token !== undefined) {
                 localStorage.setItem('authToken', response.token);
                 onLoginSuccess();
             } else {

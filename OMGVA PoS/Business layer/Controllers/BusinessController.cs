@@ -19,7 +19,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType<List<Business>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<BusinessDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -36,19 +36,19 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Owner")]
-        [ProducesResponseType<Business>(StatusCodes.Status200OK)]
+        [ProducesResponseType<BusinessDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetBusiness(long id) {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
+            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization!);
             if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
                 return Forbid();
             }
 
             try {
-                Business business = _businessRepository.GetBusiness(id);
+                BusinessDTO business = _businessRepository.GetBusiness(id);
 
                 if (business == null)
                     return NotFound();
@@ -63,7 +63,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType<Business>(StatusCodes.Status201Created)]
+        [ProducesResponseType<BusinessDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -75,7 +75,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 return StatusCode(400, "Phone is not valid");
 
             try {
-                Business business = _businessRepository.CreateBusiness(createBusinessRequest);
+                BusinessDTO business = _businessRepository.CreateBusiness(createBusinessRequest);
                 if (business == null) {
                     _logger.LogError("An unexpected internal server error occured while creating the business.");
                     return StatusCode(500, "Internal server error.");
@@ -96,8 +96,8 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateBusiness([FromBody] Business business, long id) {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
+        public IActionResult UpdateBusiness([FromBody] BusinessDTO business, long id) {
+            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization!);
             if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
                 return Forbid();
             }
