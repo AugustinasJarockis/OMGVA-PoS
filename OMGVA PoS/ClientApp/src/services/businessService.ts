@@ -20,7 +20,7 @@ const getAllBusinesses = async (token: string | null): Promise<{ result?: Array<
         }
     } catch (error: any) {
         return { error: error.message || 'An unexpected error occurred.' };
-    }
+}
 };
 
 const getBusiness = async (token: string | null, id: string): Promise<{ result?: Business, error?: string }> => {
