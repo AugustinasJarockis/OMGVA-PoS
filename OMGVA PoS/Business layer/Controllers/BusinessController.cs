@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OMGVA_PoS.Data_layer.DTOs;
 using OMGVA_PoS.Data_layer.Enums;
 using OMGVA_PoS.Data_layer.Models;
 using OMGVA_PoS.Data_layer.Repositories.Business_Management;
-using OMGVA_PoS.Data_layer.Repositories.TaxManagement;
 using OMGVA_PoS.Helper_modules.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 
