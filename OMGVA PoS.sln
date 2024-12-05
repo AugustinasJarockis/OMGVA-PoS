@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMGVA PoS", "OMGVA PoS\OMGVA PoS.csproj", "{A238D6EA-273E-472C-AF81-AF1A4D267443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit tests", "Unit tests\Unit tests.csproj", "{2C54A871-E1E7-49B9-BC9D-803BF7064909}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit tests", "Tests\Unit tests\Unit tests.csproj", "{2C54A871-E1E7-49B9-BC9D-803BF7064909}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{17DD5854-DFFC-4412-BAA6-6AA259E5CCC3}"
 EndProject
