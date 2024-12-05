@@ -1,25 +1,28 @@
 ﻿import React, { useState } from 'react';
-import { login, LoginRequest } from '../../services/authService';
+import { login } from '../../services/authService';
 
-const LoginForm: React.FC = () => {
+interface LoginFormProps {
+    onLoginSuccess: () => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        setSuccessMessage(null);
         setIsLoading(true);
 
-        const loginRequest: LoginRequest = { username, password };
+        const loginRequest = { username, password };
 
         try {
             const response = await login(loginRequest);
-            if (response.isSuccess) {
-                setSuccessMessage('Login successful!');
+            if (response.isSuccess && response.token != null) {
+                localStorage.setItem('authToken', response.token);
+                onLoginSuccess();
             } else {
                 setError(response.message);
             }
@@ -55,7 +58,6 @@ const LoginForm: React.FC = () => {
                     />
                 </div>
                 {error && <p className="error-message">{error}</p>}
-                {successMessage && <p className="success-message">{successMessage}</p>}
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Logging in...' : 'Login'}
                 </button>
