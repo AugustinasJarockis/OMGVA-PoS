@@ -102,9 +102,9 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 return Forbid();
             }
 
-            if (!business.Email.IsValidEmail())
+            if (!business.Email?.IsValidEmail() ?? false)
                 return StatusCode(400, "Email is not valid");
-            if (!business.Phone.IsValidPhone())
+            if (!business.Phone?.IsValidPhone() ?? false)
                 return StatusCode(400, "Phone is not valid");
 
             try {
