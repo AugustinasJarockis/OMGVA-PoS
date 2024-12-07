@@ -56,7 +56,7 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
         if (authToken) {
             const role = getTokenRole(authToken);
             const businessId = getTokenBusinessId(authToken);
-            if (!((role === "Owner" && businessId === id) || role === "Admin")) {
+            if (!(businessId === id || role === "Admin")) {
                 navigate('/');
             }
             setRole(role);
