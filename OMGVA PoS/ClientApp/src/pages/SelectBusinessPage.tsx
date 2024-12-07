@@ -1,5 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'
 import { getAllBusinesses } from '../services/businessService';
+import ClickableListItem from '../components/List/ClickableListItem';
+import '../index.css';
+import '../components/List/ClickableListItem.css';
+import { getTokenRole } from '../utils/tokenUtils';
 
 interface SelectBusinessPageProps {
     token : string | null
@@ -8,88 +13,50 @@ interface SelectBusinessPageProps {
 const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken}) => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
-    //const [isLoading, setIsLoading] = useState<boolean>(false);
-
+    const navigate = useNavigate();
 
     const getBusinesses = async () => {
         setError(null);
-        //setIsLoading(true);
 
         try {
             const { result, error } = await getAllBusinesses(authToken);
 
-            console.log(result);
             if (!result) {
                 setError('Problem acquiring businesses: ' + error);
             }
             else {
-                setListItems(result.map(business => <li key={ business.id }>{ business.name }</li>));
+                setListItems(result.map(business =>
+                    <ClickableListItem key={business.Id} text={business.Name} url={'/business/' + business.Id}/>));
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
-        } finally {
-            //setIsLoading(false);
         }
     }
 
     useEffect(() => {
-        getBusinesses();
+        if (authToken) {
+            const role = getTokenRole(authToken);
+            if (role !== "Admin") {
+                navigate('/');
+                return;
+            }
+            getBusinesses();
+        }
+        else {
+            setError("Authorization token is missing!");
+        }
     }, []);
-    
-    //const handleLogin = async (e: React.FormEvent) => {
-    //    e.preventDefault();
-    //    setError(null);
-    //    setIsLoading(true);
-
-    //    const loginRequest = { username, password };
-
-    //    try {
-    //        const response = await login(loginRequest);
-    //        if (response.isSuccess && response.token !== undefined) {
-    //            localStorage.setItem('authToken', response.token);
-    //            onLoginSuccess();
-    //        } else {
-    //            setError(response.message);
-    //        }
-    //    } catch (err: any) {
-    //        setError(err.message || 'An unexpected error occurred.');
-    //    } finally {
-    //        setIsLoading(false);
-    //    }
-    //};
-    //const businesses: List<Business> = 
 
     return (
-        <div className="business-list-container">
+        <div>
             <h1>Select the business to open</h1>
-            <ul>{listItems}</ul>
+            <div className="business-list-container">
+                {listItems}
+                <div className="create-button-wrapper">
+                    <ClickableListItem key="create" text="Create a new business" url={'/business/create'} />
+                </div>
+            </div>
             {error && <p className="error-message">{error}</p>}
-            {/*<form onSubmit={handleLogin} className="login-form">*/}
-            {/*    <div className="input-group">*/}
-            {/*        <label htmlFor="username">Username</label>*/}
-            {/*        <input*/}
-            {/*            type="text"*/}
-            {/*            id="username"*/}
-            {/*            value={username}*/}
-            {/*            onChange={(e) => setUsername(e.target.value)}*/}
-            {/*            required*/}
-            {/*        />*/}
-            {/*    </div>*/}
-            {/*    <div className="input-group">*/}
-            {/*        <label htmlFor="password">Password</label>*/}
-            {/*        <input*/}
-            {/*            type="password"*/}
-            {/*            id="password"*/}
-            {/*            value={password}*/}
-            {/*            onChange={(e) => setPassword(e.target.value)}*/}
-            {/*            required*/}
-            {/*        />*/}
-            {/*    </div>*/}
-            {/*    {error && <p className="error-message">{error}</p>}*/}
-            {/*    <button type="submit" disabled={isLoading}>*/}
-            {/*        {isLoading ? 'Logging in...' : 'Login'}*/}
-            {/*    </button>*/}
-            {/*</form>*/}
         </div>
     );
 };
