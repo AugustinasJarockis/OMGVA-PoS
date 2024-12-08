@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
-using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
+﻿using OMGVA_PoS.Business_layer.Services.Security_and_Authorization;
 using OMGVA_PoS.Data_layer.Context;
 using OMGVA_PoS.Data_layer.DTOs;
-using OMGVA_PoS.Data_layer.Enums;
 using OMGVA_PoS.Data_layer.Models;
 
 namespace OMGVA_PoS.Data_layer.Repositories.Business_Management
@@ -11,24 +9,30 @@ namespace OMGVA_PoS.Data_layer.Repositories.Business_Management
     {
         private readonly OMGVADbContext _database = database;
         private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
-        public Business CreateBusiness(CreateBusinessRequest createBusinessRequest) {
+        public BusinessDTO CreateBusiness(CreateBusinessRequest createBusinessRequest) {
             Business business = new() {
                 StripeAccId = "/////////////////////////",//TODO: somehow acquire stripe acc id
                 Name = createBusinessRequest.Name,
                 Address = createBusinessRequest.Address,
                 Phone = createBusinessRequest.Phone,
-                Email = createBusinessRequest.Email,
+                Email = createBusinessRequest.Email
             };
 
             _database.Businesses.Add(business);
             _database.SaveChanges();
-            return business;
+
+            return new () {
+                Id = business.Id,
+                Name = business.Name,
+                Address = business.Address,
+                Phone = business.Phone,
+                Email = business.Email
+            };
         }
 
-        public bool UpdateBusiness(long businessId, Business business) {
+        public bool UpdateBusiness(long businessId, BusinessDTO business) {
             var businessToUpdate = _database.Businesses.SingleOrDefault(b => b.Id == businessId);
             if (businessToUpdate != null) {
-                businessToUpdate.StripeAccId = business.StripeAccId ?? businessToUpdate.Name;
                 businessToUpdate.Name = business.Name ?? businessToUpdate.Name;
                 businessToUpdate.Address = business.Address ?? businessToUpdate.Address;
                 businessToUpdate.Phone = business.Phone ?? businessToUpdate.Phone;
@@ -41,12 +45,26 @@ namespace OMGVA_PoS.Data_layer.Repositories.Business_Management
             }
         }
 
-        public List<Business> GetBusinesses() {
-            return [.. _database.Businesses];
+        public List<BusinessDTO> GetBusinesses() {
+            return [.. _database.Businesses.Select<Business, BusinessDTO>(
+                b => new() {
+                    Id = b.Id,
+                    Name = b.Name,
+                    Address = b.Address,
+                    Phone = b.Phone,
+                    Email = b.Email
+                })]; ;
         }
 
-        public Business GetBusiness(long businessId) {
-            return _database.Businesses.Where(b => b.Id == businessId).FirstOrDefault();
+        public BusinessDTO GetBusiness(long businessId) {
+            return _database.Businesses.Where(b => b.Id == businessId).Select<Business, BusinessDTO>(
+                b => new() {
+                    Id = b.Id,
+                    Name = b.Name,
+                    Address = b.Address,
+                    Phone = b.Phone,
+                    Email = b.Email
+                }).FirstOrDefault()!;
         }
     }
 }

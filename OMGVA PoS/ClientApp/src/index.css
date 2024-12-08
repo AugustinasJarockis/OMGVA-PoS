@@ -55,6 +55,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.business-list-container {
+    align-content: center;
+}
+
 .login-container {
     max-width: 800px;
     width: 150%;
