@@ -50,7 +50,7 @@ const CreateBusinessPage: React.FC <CreateBusinessPageProps> = ({ token: authTok
             }
         }
         else {
-            setError("Authorization token is missing!");
+            setError("You have to authenticate first!");
         }
     }, []);
 

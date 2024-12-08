@@ -62,7 +62,7 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
             setRole(role);
         }
         else {
-            setError("Authorization token is missing!");
+            setError("You have to authenticate first!");
         }
     }, []);
 
