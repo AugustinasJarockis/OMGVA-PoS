@@ -21,7 +21,7 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
 
         try {
             if (!id) {
-                setError('Business id not provided');
+                setError('Could not identify the business');
                 return;
             }
             const { result, error } = await getBusiness(authToken, id);

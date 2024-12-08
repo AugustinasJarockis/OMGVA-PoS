@@ -27,7 +27,7 @@ const UpdateBusinessPage: React.FC<UpdateBusinessPageProps> = ({ token: authToke
                 navigate('/business/' + id);
             }
             else {
-                setError("The id of the business is missing");
+                setError("Could not identify the business");
             }
         }
         catch (err: any) {
