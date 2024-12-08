@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Business } from '../../services/businessService';
+import { Business } from '../../../services/businessService';
 
 interface BusinessDataFormProps {
     business?: Business;

@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { Business, getBusiness } from '../services/businessService';
-import { getTokenBusinessId, getTokenRole } from '../utils/tokenUtils';
-import '../index.css';
+import { Business, getBusiness } from '../../services/businessService';
+import { getTokenBusinessId, getTokenRole } from '../../utils/tokenUtils';
+import '../../index.css';
 
 interface BusinessPageProps {
     token: string | null

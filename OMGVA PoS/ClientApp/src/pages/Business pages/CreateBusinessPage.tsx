@@ -1,9 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { Business, createBusiness } from '../services/businessService';
-import { getTokenRole } from '../utils/tokenUtils';
-import '../index.css';
-import BusinessDataForm from '../components/Form/BusinessDataform';
+import { Business, createBusiness } from '../../services/businessService';
+import { getTokenRole } from '../../utils/tokenUtils';
+import '../../index.css';
+import BusinessDataForm from '../../components/Forms/BusinessDataForm';
 interface CreateBusinessPageProps
 {
     token: string | null;

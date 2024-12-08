@@ -1,10 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { getAllBusinesses } from '../services/businessService';
-import ClickableListItem from '../components/List/ClickableListItem';
-import '../index.css';
-import '../components/List/ClickableListItem.css';
-import { getTokenRole } from '../utils/tokenUtils';
+import { getAllBusinesses } from '../../services/businessService';
+import ClickableListItem from '../../components/List/ClickableListItem';
+import '../../index.css';
+import '../../components/List/ClickableListItem.css';
+import { getTokenRole } from '../../utils/tokenUtils';
 
 interface SelectBusinessPageProps {
     token : string | null

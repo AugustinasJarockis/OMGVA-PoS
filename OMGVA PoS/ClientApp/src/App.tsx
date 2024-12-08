@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-import BusinessPage from './pages/BusinessPage';
-import SelectBusinessPage from './pages/SelectBusinessPage';
-import UpdateBusinessPage from './pages/UpdateBusinessPage';
+import BusinessPage from './pages/Business pages/BusinessPage';
+import SelectBusinessPage from './pages/Business pages/SelectBusinessPage';
+import UpdateBusinessPage from './pages/Business pages/UpdateBusinessPage';
 import WeatherPage from './pages/WeatherPage';
 import './App.css';
 import { getTokenRole } from './utils/tokenUtils';
-import CreateBusinessPage from './pages/CreateBusinessPage';
+import CreateBusinessPage from './pages/Business pages/CreateBusinessPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('authToken'));
