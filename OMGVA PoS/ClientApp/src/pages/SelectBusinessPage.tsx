@@ -43,7 +43,7 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken
             getBusinesses();
         }
         else {
-            setError("Authorization token is missing!");
+            setError("You have to authenticate first!");
         }
     }, []);
 

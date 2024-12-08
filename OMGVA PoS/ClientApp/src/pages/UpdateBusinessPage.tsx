@@ -46,7 +46,7 @@ const UpdateBusinessPage: React.FC<UpdateBusinessPageProps> = ({ token: authToke
             }
         }
         else {
-            setError("Authorization token is missing!");
+            setError("You have to authenticate first!");
         }
     }, []);
 

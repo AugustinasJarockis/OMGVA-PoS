@@ -47,7 +47,9 @@ const BusinessDataForm: React.FC<BusinessDataFormProps> = (props: BusinessDataFo
                         pattern='\+?[0-9 \-]+'
                         maxLength={40}
                         required={props.required}
-                        onInvalid={e => e.currentTarget.setCustomValidity('Please enter a phone number.')}/><br /><br />
+                        onInvalid={e => e.currentTarget.setCustomValidity('Please enter a phone number.')}
+                        onInput={e => e.currentTarget.setCustomValidity('')}
+                    /><br /><br />
                     <label htmlFor="email">Email</label>
                     <input type="email" id="email" name="email" placeholder={props.business?.Email} required={props.required} /><br /><br />
                     <input type="submit" value={props.submitText ? props.submitText : "Submit"} />
