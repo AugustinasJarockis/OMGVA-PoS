@@ -24,9 +24,9 @@ namespace OMGVA_PoS.Helper_modules.Utilities
 
         public static bool IsValidName(this string str)
         {
-            if (str == null || str.Length == 0)
+            if (str == null || str.Length == 0 || str.Length > 150)
                 return false;
-            Regex validateNameRegex = new Regex("^[\\w'\\-,.][^0-9_!¡?÷?¿\\/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$");
+            Regex validateNameRegex = new Regex("^[a-zA-Z][a-zA-Z ]*$");
             if (validateNameRegex.IsMatch(str))
                 return true;
             return false;
@@ -34,9 +34,9 @@ namespace OMGVA_PoS.Helper_modules.Utilities
 
         public static bool IsValidUsername(this string str)
         {
-            if (str == null || str.Length == 0)
+            if (str == null || str.Length < 8 || str.Length > 30)
                 return false;
-            Regex validateUsernameRegex = new Regex("^[a-zA-Z][a-zA-Z0-9_]{2,14}$\r\n");
+            Regex validateUsernameRegex = new Regex("^[a-zA-Z0-9][a-zA-Z0-9\\S]*$");
             if (validateUsernameRegex.IsMatch(str))
                 return true;
             return false;
@@ -44,9 +44,9 @@ namespace OMGVA_PoS.Helper_modules.Utilities
 
         public static bool IsValidPassword(this string str)
         {
-            if (str == null || str.Length == 0 || str.Length < 8)
+            if (str == null || str.Length < 8 || str.Length > 100)
                 return false;
-            Regex validatePasswordRegex = new Regex("^(?=.*\\d).{ 8,}$");
+            Regex validatePasswordRegex = new Regex("^[a-zA-Z0-9](?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9\\W]*$");
             if (validatePasswordRegex.IsMatch(str))
                 return true;
             return false;
