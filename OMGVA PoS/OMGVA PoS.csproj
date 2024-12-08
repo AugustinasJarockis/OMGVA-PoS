@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Business layer\Services\" />
+    <Folder Include="Data layer\Migrations\" />
   </ItemGroup>
 
 </Project>
