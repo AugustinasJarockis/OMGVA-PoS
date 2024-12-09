@@ -103,8 +103,13 @@ input {
     margin-bottom: 15px;
 }
 
+.tax-list-container {
+    align-content: center;
+    width: 100%;
+}
+
 @media (prefers-color-scheme: light) {
-  :root {
+    : root {
     color: #213547;
     background-color: #ffffff;
   }

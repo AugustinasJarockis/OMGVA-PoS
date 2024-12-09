@@ -19,7 +19,7 @@ public class TaxRepository : ITaxRepository
     {
         try
         {
-            return await _context.Taxes.ToListAsync();
+            return await _context.Taxes.Where(t => t.IsArchived == false).ToListAsync();
         }
         catch (Exception ex)
         {
