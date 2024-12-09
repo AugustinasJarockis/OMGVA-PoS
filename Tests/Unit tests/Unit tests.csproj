@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OMGVA PoS\OMGVA PoS.csproj" />
+    <ProjectReference Include="..\..\OmgvaPOS\OmgvaPOS.csproj" />
   </ItemGroup>
 
 </Project>

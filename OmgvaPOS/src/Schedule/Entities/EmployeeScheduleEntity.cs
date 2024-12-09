@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using OmgvaPOS.UserManagement.Entities;
+
+namespace OmgvaPOS.Schedule.Entities
+{
+    public class EmployeeScheduleEntity
+    {
+        public long Id { get; set; }
+        public long EmployeeId { get; set; }
+        public DateOnly Date { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
+        public bool IsCancelled { get; set; }
+
+        // navigational properties
+        // for foreign keys
+        [ForeignKey(nameof(EmployeeId))] // explicit since not called UserId
+        public UserEntity UserEntity { get; set; }
+    }
+}
