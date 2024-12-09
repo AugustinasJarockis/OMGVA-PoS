@@ -1,4 +1,5 @@
-﻿
+﻿using OmgvaPOS.Item.Entities;
+
 namespace OmgvaPOS.TaxManagement.Entities
 {
     public class TaxItemEntity
@@ -10,6 +11,6 @@ namespace OmgvaPOS.TaxManagement.Entities
         // navigational properties
         // for foreign keys
         public TaxEntity TaxEntity { get; set; }
-        public Item.Entities.ItemEntity ItemEntity {  get; set; }
+        public ItemEntity ItemEntity {  get; set; }
     }
 }

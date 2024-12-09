@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using OmgvaPOS.Customer.Entities;
 using OmgvaPOS.Reservation.Enums;
 using OmgvaPOS.UserManagement.Entities;
 
@@ -17,6 +18,6 @@ namespace OmgvaPOS.Reservation.Entities
         // for foreign keys
         [ForeignKey(nameof(EmployeeId))] // explicit since not called UserId
         public UserEntity UserEntity { get; set; }
-        public Customer.Entities.CustomerEntity CustomerEntity { get; set; }
+        public CustomerEntity CustomerEntity { get; set; }
     }
 }

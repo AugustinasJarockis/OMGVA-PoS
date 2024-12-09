@@ -1,4 +1,8 @@
-﻿namespace OmgvaPOS.OrderItem.Entities
+﻿using OmgvaPOS.Discount.Entities;
+using OmgvaPOS.Order.Entities;
+using OmgvaPOS.OrderItemVariation.Entities;
+
+namespace OmgvaPOS.OrderItem.Entities
 {
     public class OrderItemEntity
     {
@@ -9,10 +13,10 @@
         public long? DiscountId { get; set; }
 
         // navigational properties
-        public ICollection<OrderItemVariation.Entities.OrderItemVariationEntity> OrderItemVariations { get; set; } // OrderItem can have variations
+        public ICollection<OrderItemVariationEntity> OrderItemVariations { get; set; } // OrderItem can have variations
 
         // for foreign keys
-        public Order.Entities.OrderEntity OrderEntity { get; set; }
-        public Discount.Entities.DiscountEntity DiscountEntity { get; set; }
+        public OrderEntity OrderEntity { get; set; }
+        public DiscountEntity DiscountEntity { get; set; }
     }
 }

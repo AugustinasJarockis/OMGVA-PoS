@@ -1,4 +1,6 @@
 ﻿using OmgvaPOS.BusinessManagement.Entities;
+using OmgvaPOS.Discount.Entities;
+using OmgvaPOS.ItemVariation.Entities;
 using OmgvaPOS.TaxManagement.Entities;
 
 namespace OmgvaPOS.Item.Entities
@@ -19,10 +21,10 @@ namespace OmgvaPOS.Item.Entities
 
         // navigational properties
         public ICollection<TaxItemEntity> TaxItems { get; set; } // Item can have taxes
-        public ICollection<ItemVariation.Entities.ItemVariationEntity> ItemVariations { get; set; } // Item can have variations
+        public ICollection<ItemVariationEntity> ItemVariations { get; set; } // Item can have variations
 
         // for foreign keys
         public BusinessEntity BusinessEntity { get; set; } 
-        public Discount.Entities.DiscountEntity DiscountEntity { get; set; }
+        public DiscountEntity DiscountEntity { get; set; }
     }
 }

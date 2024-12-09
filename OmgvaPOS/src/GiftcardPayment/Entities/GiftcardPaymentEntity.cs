@@ -1,4 +1,6 @@
-﻿namespace OmgvaPOS.GiftcardPayment.Entities
+﻿using OmgvaPOS.Giftcard.Entities;
+
+namespace OmgvaPOS.GiftcardPayment.Entities
 {
     public class GiftcardPaymentEntity
     {
@@ -8,6 +10,6 @@
 
         // navigation properties
         // for foreign keys
-        public Giftcard.Entities.GiftcardEntity GiftcardEntity { get; set; }
+        public GiftcardEntity GiftcardEntity { get; set; }
     }
 }

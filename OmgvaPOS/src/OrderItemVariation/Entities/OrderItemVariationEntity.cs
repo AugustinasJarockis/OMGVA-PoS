@@ -1,4 +1,7 @@
-﻿namespace OmgvaPOS.OrderItemVariation.Entities
+﻿using OmgvaPOS.ItemVariation.Entities;
+using OmgvaPOS.OrderItem.Entities;
+
+namespace OmgvaPOS.OrderItemVariation.Entities
 {
     public class OrderItemVariationEntity
     {
@@ -8,7 +11,7 @@
 
         // navigational properties
         // for foreign keys
-        public ItemVariation.Entities.ItemVariationEntity ItemVariationEntity { get; set; }
-        public OrderItem.Entities.OrderItemEntity OrderItemEntity { get; set; }
+        public ItemVariationEntity ItemVariationEntity { get; set; }
+        public OrderItemEntity OrderItemEntity { get; set; }
     }
 }

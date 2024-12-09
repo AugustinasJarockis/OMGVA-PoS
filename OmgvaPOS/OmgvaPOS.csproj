@@ -28,6 +28,7 @@
     <Folder Include="src\AuthManagement\Entities\" />
     <Folder Include="src\AuthManagement\Models\" />
     <Folder Include="src\Customer\Models\" />
+    <Folder Include="src\Database\Migrations\" />
     <Folder Include="src\Discount\Model\" />
     <Folder Include="src\GiftcardPayment\Models\" />
     <Folder Include="src\Giftcard\Models\" />

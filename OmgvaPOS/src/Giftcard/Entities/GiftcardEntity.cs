@@ -1,4 +1,6 @@
-﻿namespace OmgvaPOS.Giftcard.Entities
+﻿using OmgvaPOS.GiftcardPayment.Entities;
+
+namespace OmgvaPOS.Giftcard.Entities
 {
     public class GiftcardEntity
     {
@@ -7,6 +9,6 @@
         public decimal Balance { get; set; }
 
         // navigation properties
-        public ICollection<GiftcardPayment.Entities.GiftcardPaymentEntity> GiftcardPayments { get; set; } // Giftcard can be paid with
+        public ICollection<GiftcardPaymentEntity> GiftcardPayments { get; set; } // Giftcard can be paid with
     }
 }

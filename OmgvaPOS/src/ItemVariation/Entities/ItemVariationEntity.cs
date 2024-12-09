@@ -1,4 +1,7 @@
-﻿namespace OmgvaPOS.ItemVariation.Entities
+﻿using OmgvaPOS.Item.Entities;
+using OmgvaPOS.OrderItemVariation.Entities;
+
+namespace OmgvaPOS.ItemVariation.Entities
 {
     public class ItemVariationEntity
     {
@@ -11,9 +14,9 @@
         public bool IsArchived { get; set; }
 
         // navigational properties
-        public ICollection<OrderItemVariation.Entities.OrderItemVariationEntity> OrderItemVariations { get; set; } // can be used in orders
+        public ICollection<OrderItemVariationEntity> OrderItemVariations { get; set; } // can be used in orders
 
         // for foreign keys
-        public Item.Entities.ItemEntity ItemEntity { get; set; } 
+        public ItemEntity ItemEntity { get; set; } 
     }
 }

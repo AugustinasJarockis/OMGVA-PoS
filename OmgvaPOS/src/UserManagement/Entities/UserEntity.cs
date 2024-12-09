@@ -1,4 +1,6 @@
 ﻿using OmgvaPOS.BusinessManagement.Entities;
+using OmgvaPOS.Order.Entities;
+using OmgvaPOS.Reservation.Entities;
 using OmgvaPOS.Schedule.Entities;
 using OmgvaPOS.UserManagement.Enums;
 
@@ -16,8 +18,8 @@ namespace OmgvaPOS.UserManagement.Entities
         public bool HasLeft { get; set; }
 
         // navigational properties
-        public ICollection<Order.Entities.OrderEntity> Orders { get; set; } // User can do Orders
-        public ICollection<Reservation.Entities.ReservationEntity> Reservations { get; set; } // User (employee) can have reservations
+        public ICollection<OrderEntity> Orders { get; set; } // User can do Orders
+        public ICollection<ReservationEntity> Reservations { get; set; } // User (employee) can have reservations
         public ICollection<EmployeeScheduleEntity> EmployeeSchedules { get; set; } // several since EmployeeScehdule is for one day only
         
         // for foreign keys
