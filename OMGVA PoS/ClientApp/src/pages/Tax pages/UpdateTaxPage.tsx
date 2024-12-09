@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { getTokenBusinessId, getTokenRole } from '../../utils/tokenUtils';
+import { getTokenRole } from '../../utils/tokenUtils';
 import '../../index.css';
 import TaxDataForm from '../../components/Forms/TaxDataForm';
 import { Tax, TaxUpdateRequest, getTax, updateTax } from '../../services/taxService';
