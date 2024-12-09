@@ -1,4 +1,6 @@
-﻿function getTokenPayload(token: string) {
+﻿import { jwtDecode } from "jwt-decode";
+
+function getTokenPayload(token: string) {
     const arrayToken = token.split('.');
     return JSON.parse(atob(arrayToken[1]));
 }
@@ -18,4 +20,14 @@ function getTokenUserName(token: string) {
     return getTokenPayload(token)['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
 }
 
-export { getTokenRole, getTokenBusinessId, getTokenUserId, getTokenUserName }
+const isTokenValid = (token: string): boolean => {
+    try {
+        const decodedToken: any = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000);
+        return decodedToken.exp > currentTime;
+    } catch (error) {
+        return false;
+    }
+};
+
+export { getTokenRole, getTokenBusinessId, getTokenUserId, getTokenUserName, isTokenValid }

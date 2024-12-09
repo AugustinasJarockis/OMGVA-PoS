@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import BusinessPage from './pages/Business pages/BusinessPage';
@@ -6,14 +6,38 @@ import SelectBusinessPage from './pages/Business pages/SelectBusinessPage';
 import UpdateBusinessPage from './pages/Business pages/UpdateBusinessPage';
 import WeatherPage from './pages/WeatherPage';
 import './App.css';
-import { getTokenRole } from './utils/tokenUtils';
+import { getTokenRole, isTokenValid } from './utils/tokenUtils';
 import CreateBusinessPage from './pages/Business pages/CreateBusinessPage';
 
 const App: React.FC = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('authToken'));
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+    const checkTokenValidity = () => {
+        const token = localStorage.getItem('authToken');
+        if (token && isTokenValid(token)) {
+            setIsAuthenticated(true);
+        } else {
+            localStorage.removeItem('authToken');
+            setIsAuthenticated(false);
+        }
+    };
+
+    useEffect(() => {
+        checkTokenValidity();
+
+        const handleUnload = () => {
+            localStorage.removeItem('authToken');
+        };
+
+        window.addEventListener('beforeunload', handleUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleUnload);
+        };
+    }, []);
 
     const handleLoginSuccess = () => {
-        setIsAuthenticated(true);
+        checkTokenValidity();
     };
 
     const handleLogout = () => {
