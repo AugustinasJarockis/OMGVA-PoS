@@ -72,9 +72,9 @@ const UpdateTaxPage: React.FC<UpdateTaxPageProps> = ({ token: authToken }) => {
 
         if (authToken) {
             const role = getTokenRole(authToken);
-            const businessId = getTokenBusinessId(authToken);
-            if (!((role === "Owner" && businessId === id) || role === "Admin")) {
+            if (role !== "Admin") {
                 navigate('/');
+                return;
             }
         }
         else {
