@@ -8,6 +8,9 @@ import WeatherPage from './pages/WeatherPage';
 import './App.css';
 import { getTokenRole, isTokenValid } from './utils/tokenUtils';
 import CreateBusinessPage from './pages/Business pages/CreateBusinessPage';
+import TaxListPage from './pages/Tax pages/TaxListPage';
+import CreateTaxPage from './pages/Tax pages/CreateTaxPage';
+import UpdateTaxPage from './pages/Tax pages/UpdateTaxPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -65,6 +68,9 @@ const App: React.FC = () => {
                             <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/create" element={<CreateBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/update/:id" element={<UpdateBusinessPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/tax" element={<TaxListPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/tax/create" element={<CreateTaxPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/tax/update/:id" element={<UpdateTaxPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
                                 {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
                                     ? (<Route path="*" element={<Navigate to="/business" />} />)

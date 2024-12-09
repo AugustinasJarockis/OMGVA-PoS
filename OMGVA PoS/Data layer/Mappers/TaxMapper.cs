@@ -27,8 +27,7 @@ public class TaxMapper
         {
             Id = tax.Id,
             TaxType = tax.TaxType,
-            Percent = tax.Percent,
-            IsArchived = tax.IsArchived,
+            Percent = tax.Percent
         };
     }
 
