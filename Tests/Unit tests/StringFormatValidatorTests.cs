@@ -1,4 +1,4 @@
-﻿using OMGVA_PoS.Helper_modules.Utilities;
+﻿using OmgvaPOS.Validators;
 
 namespace Utility_tests
 {

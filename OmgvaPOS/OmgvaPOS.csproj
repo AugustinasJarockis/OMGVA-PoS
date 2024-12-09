@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <RootNamespace>OmgvaPOS</RootNamespace>
+    <UserSecretsId>7586d1d5-4e04-4e76-aa3c-a98e29cd1036</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\AuthManagement\Entities\" />
+    <Folder Include="src\AuthManagement\Models\" />
+    <Folder Include="src\Customer\Models\" />
+    <Folder Include="src\Discount\Model\" />
+    <Folder Include="src\GiftcardPayment\Models\" />
+    <Folder Include="src\Giftcard\Models\" />
+    <Folder Include="src\ItemVariation\Models\" />
+    <Folder Include="src\Item\Models\" />
+    <Folder Include="src\OrderItemVariation\Models\" />
+    <Folder Include="src\OrderItem\Models\" />
+    <Folder Include="src\Order\Models\" />
+    <Folder Include="src\Payment\Models\" />
+    <Folder Include="src\Reservation\Models\" />
+    <Folder Include="src\Schedule\Models\" />
+  </ItemGroup>
+
+</Project>
