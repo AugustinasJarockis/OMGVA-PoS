@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -29,7 +30,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving all businesses.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -57,7 +58,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
             }
             catch (Exception ex){
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving a business.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -70,21 +71,21 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateBusiness([FromBody]CreateBusinessRequest createBusinessRequest) {
             if (!createBusinessRequest.Email.IsValidEmail())
-                return StatusCode(400, "Email is not valid");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid");
             if (!createBusinessRequest.Phone.IsValidPhone())
-                return StatusCode(400, "Phone is not valid");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
 
             try {
                 BusinessDTO business = _businessRepository.CreateBusiness(createBusinessRequest);
                 if (business == null) {
                     _logger.LogError("An unexpected internal server error occured while creating the business.");
-                    return StatusCode(500, "Internal server error.");
+                    return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
                 }
                 return Created($"/business/{business.Id}", business);
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while creating the business.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -103,9 +104,9 @@ namespace OmgvaPOS.BusinessManagement.Controller
             }
 
             if (!business.Email?.IsValidEmail() ?? false)
-                return StatusCode(400, "Email is not valid");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid");
             if (!business.Phone?.IsValidPhone() ?? false)
-                return StatusCode(400, "Phone is not valid");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
 
             try {
                 if (_businessRepository.UpdateBusiness(id, business))
@@ -115,7 +116,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while updating the business.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
     }
