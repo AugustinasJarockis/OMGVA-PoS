@@ -24,19 +24,24 @@ namespace OmgvaPOS.UserManagement.Repository
 
         public User GetUser(long id)
         {
-            try
-            {
+            try {
                 return _database.Users.FirstOrDefault(u => u.Id == id)
                     ?? throw new KeyNotFoundException("User not found.");
-        }
-            catch (Exception ex)
-        {
+            }
+            catch (Exception ex) {
                 throw new ApplicationException("Error retrieving the user.", ex);
             }
         }
-
+        public User? GetUserNoExcept(long id) {
+            try {
+                return _database.Users.FirstOrDefault(u => u.Id == id);
+            }
+            catch (Exception) {
+                return null;
+            }
+        }
         public void UpdateUser(long id, UpdateUserRequest user)
-            {
+        {
             try
             {
                 var userToUpdate = _database.Users.SingleOrDefault(u => u.Id == id);
@@ -56,14 +61,14 @@ namespace OmgvaPOS.UserManagement.Repository
             catch (Exception ex)
             {
                 throw new ApplicationException("Error updating the user.", ex);
-        }
+            }
         }
 
         public bool DeleteUser(long id)
         {
             try
             {
-            var user = _database.Users.SingleOrDefault(u => u.Id == id);
+                var user = _database.Users.SingleOrDefault(u => u.Id == id);
                 if (user == null)
                     return false;
 

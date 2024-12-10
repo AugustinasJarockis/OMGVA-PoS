@@ -15,7 +15,7 @@ namespace OmgvaPOS.HelperUtils
                     return token;
                 }
             }
-            return null;
+            return null!;
         }
 
         public static bool CanManageBusiness(string tokenString, long businessId) {
@@ -51,7 +51,7 @@ namespace OmgvaPOS.HelperUtils
         public static long? GetTokenBusinessId(string tokenString) {
             var token = GetJwtToken(tokenString);
             try {
-                return long.Parse(token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid")).Value);
+                return long.Parse(token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"))!.Value);
             }
             catch (Exception) {
                 return null;
@@ -61,7 +61,7 @@ namespace OmgvaPOS.HelperUtils
         public static long? GetTokenUserId(string tokenString) {
             var token = GetJwtToken(tokenString);
             try {
-                return long.Parse(token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value);
+                return long.Parse(token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))!.Value);
             }
             catch (Exception) {
                 return null;
@@ -69,21 +69,21 @@ namespace OmgvaPOS.HelperUtils
         }
 
         private static bool UserBusinessEquals(this JwtSecurityToken token, long businessId) {
-            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid")).Value == businessId.ToString();
+            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"))?.Value == businessId.ToString();
         }
 
         private static bool UserRoleEquals(this JwtSecurityToken token, UserRole role) {
-            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")).Value
+            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/role"))?.Value
                 == role.ToString();
         }
 
         private static bool UserIdEquals(this JwtSecurityToken token, long userId) {
-            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value == userId.ToString();
+            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))?.Value == userId.ToString();
         }
 
         //NOTE: Checks if name equals to the one in the token. Not if username is equal.
         private static bool UserNameEquals(this JwtSecurityToken token, string userName) {
-            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")).Value == userName;
+            return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"))?.Value == userName;
         }
     }
 }
