@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -32,31 +33,31 @@ namespace OmgvaPOS.UserManagement.Controller
         public IActionResult SignIn([FromBody]SignInRequest signInRequest)
         {
             if (!signInRequest.Email.IsValidEmail())
-                return StatusCode(400, "Email is not valid.");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
 
             if (!signInRequest.Username.IsValidName())
-                return StatusCode(400, "Name is not valid.");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Name is not valid.");
 
             if (!signInRequest.Username.IsValidUsername())
-                return StatusCode(400, "Username is not valid.");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Username is not valid.");
 
             if (!signInRequest.Username.IsValidPassword())
-                return StatusCode(400, "Password is not valid.");
+                return StatusCode((int)HttpStatusCode.BadRequest, "Password is not valid.");
 
             if (_authenticationRepository.IsSignedIn(signInRequest.Username, signInRequest.Password))
-                return StatusCode(409, "User is already signed in or session exists.");
+                return StatusCode((int)HttpStatusCode.Conflict, "User is already signed in or session exists.");
 
             if(_authenticationRepository.IsEmailUsed(signInRequest.Email))
-                return StatusCode(409, "This email is already in use.");
+                return StatusCode((int)HttpStatusCode.Conflict, "This email is already in use.");
 
             if(_authenticationRepository.IsUsernamelUsed(signInRequest.Username))
-                return StatusCode(409, "This username is already in use.");
+                return StatusCode((int)HttpStatusCode.Conflict, "This username is already in use.");
 
             User user = _authenticationRepository.SignIn(signInRequest);
 
             if (user == null) {
                 _logger.LogError("An unexpected internal server error occured while creating user.");
-                return StatusCode(500, "Internal server error");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error");
             }
 
             return Created($"/user/{user.Id}", user);
@@ -71,7 +72,7 @@ namespace OmgvaPOS.UserManagement.Controller
             var result = await _authenticationRepository.Login(loginRequest);
 
             if(!result.IsSuccess)
-                return StatusCode(401, result.Message);
+                return StatusCode((int)HttpStatusCode.Unauthorized, result.Message);
 
             Response.Headers.Add("Authorization", "Bearer " + result.Token);
 
@@ -118,7 +119,7 @@ namespace OmgvaPOS.UserManagement.Controller
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected internal server error occured while getting user.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -141,7 +142,7 @@ namespace OmgvaPOS.UserManagement.Controller
             try
             {
                 if(!user.Email.IsValidEmail())
-                    return StatusCode(400, "Email is not valid.");
+                    return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
 
                 _userRepository.UpdateUser(id, user);
                 return Ok();
@@ -153,7 +154,7 @@ namespace OmgvaPOS.UserManagement.Controller
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected internal server error occured while updating user.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -183,7 +184,7 @@ namespace OmgvaPOS.UserManagement.Controller
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected internal server error occured while deleting user.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -233,7 +234,7 @@ namespace OmgvaPOS.UserManagement.Controller
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected internal server error occured while getting user schedules.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
 
@@ -264,7 +265,7 @@ namespace OmgvaPOS.UserManagement.Controller
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected internal server error occured while getting user orders.");
-                return StatusCode(500, "Internal server error.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }
     }
