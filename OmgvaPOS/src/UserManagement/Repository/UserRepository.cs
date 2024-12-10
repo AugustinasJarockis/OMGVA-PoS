@@ -99,7 +99,7 @@ namespace OmgvaPOS.UserManagement.Repository
                 throw new ApplicationException("Error retrieving user schedules.", ex);
             }
         }
-        public List<Order> GetUserOrders(long id)
+        public List<OrderManagement.Models.Order> GetUserOrders(long id)
         {
             try
             {
