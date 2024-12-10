@@ -1,0 +1,13 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "LocalDatabase": "Server=(localdb)\\MSSQLLocalDB;Database=OMGVAPOS;Trusted_Connection=True;"
+  },
+  "UseCloudDatabase": false
+}

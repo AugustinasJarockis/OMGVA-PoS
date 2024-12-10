@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OMGVA PoS", "OMGVA PoS\OMGVA PoS.csproj", "{A238D6EA-273E-472C-AF81-AF1A4D267443}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmgvaPOS", "OmgvaPOS\OmgvaPOS.csproj", "{A238D6EA-273E-472C-AF81-AF1A4D267443}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit tests", "Tests\Unit tests\Unit tests.csproj", "{2C54A871-E1E7-49B9-BC9D-803BF7064909}"
 EndProject

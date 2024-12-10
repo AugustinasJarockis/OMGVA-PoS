@@ -1,6 +1,0 @@
-@OMGVA_PoS_HostAddress = http://localhost:5260
-
-GET {{OMGVA_PoS_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
