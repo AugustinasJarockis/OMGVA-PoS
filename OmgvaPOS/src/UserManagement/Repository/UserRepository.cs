@@ -32,7 +32,7 @@ namespace OmgvaPOS.UserManagement.Repository
                 throw new ApplicationException("Error retrieving the user.", ex);
             }
         }
-        public User? GetUserNoExcept(long id) {
+        public User? GetUserNoException(long id) {
             try {
                 return _database.Users.FirstOrDefault(u => u.Id == id);
             }

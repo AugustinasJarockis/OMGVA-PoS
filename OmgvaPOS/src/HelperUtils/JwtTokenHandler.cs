@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using OmgvaPOS.UserManagement.Enums;
-using OmgvaPOS.UserManagement.Repository;
 
 namespace OmgvaPOS.HelperUtils
 {

@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,7 +7,6 @@ using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.ScheduleManagement.Models;
 using OmgvaPOS.UserManagement.DTOs;
-using OmgvaPOS.UserManagement.Enums;
 using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.Validators;
@@ -99,7 +97,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUser(long id)
         {
-            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoExcept(id)?.BusinessId, id))
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
             try
@@ -127,7 +125,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Update([FromBody] UpdateUserRequest user, long id)
         {
-            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoExcept(id)?.BusinessId, id))
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
             try
@@ -158,7 +156,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete(long id)
         {
-            if (!JwtTokenHandler.CanDeleteUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoExcept(id)?.BusinessId, id))
+            if (!JwtTokenHandler.CanDeleteUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
             try
@@ -200,7 +198,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserSchedules(long userId)
         {
-            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoExcept(userId)?.BusinessId, userId))
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(userId)?.BusinessId, userId))
                 return Forbid();
 
             try
@@ -227,7 +225,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserOrders(long userId)
         {
-            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoExcept(userId)?.BusinessId, userId))
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(userId)?.BusinessId, userId))
                 return Forbid();
 
             try
