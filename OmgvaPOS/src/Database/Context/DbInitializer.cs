@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.TaxManagement.Models;
+﻿using OmgvaPOS.Database.Context.MockDataHelpers;
 
 namespace OmgvaPOS.Database.Context;
 
@@ -22,10 +21,10 @@ public class DbInitializer
         {
             Task actionTask = dbInitializerAction switch
             {
-                DbInitializerAction.DO_NOTHING => Task.CompletedTask,
-                DbInitializerAction.RESET_DATABASE => ResetDatabaseAsync(),
-                DbInitializerAction.REMOVE_ALL_DATA => RemoveAllDataAsync(),
-                DbInitializerAction.INITIALIZE_MOCK_DATA => InitializeMockDataAsync(),
+                DbInitializerAction.DoNothing => Task.CompletedTask,
+                DbInitializerAction.ResetDatabaseData => ResetDatabaseDataAsync(),
+                DbInitializerAction.RemoveAllData => RemoveAllDataAsync(),
+                DbInitializerAction.SeedMockData => InitializeMockDataAsync(),
                 _ => throw new ArgumentException("Invalid DbInitializerAction", nameof(dbInitializerAction))
             };
 
@@ -39,51 +38,30 @@ public class DbInitializer
         }
     }
 
-    private async Task ResetDatabaseAsync()
+    private async Task ResetDatabaseDataAsync()
     {
-        _logger.LogDebug("Resetting database...");
+        _logger.LogInformation("Resetting database data...");
         await RemoveAllDataAsync();
         await InitializeMockDataAsync();
-    }
-
-    private async Task RemoveAllDataAsync()
-    {
-        _logger.LogDebug("Removing all data from the database...");
-        await RemoveAllTaxAsync();
-        _logger.LogDebug("All data removed");
+        _logger.LogInformation("Resetting database data complete...");
     }
 
     private async Task InitializeMockDataAsync()
     {
-        _logger.LogDebug("Initializing mock data...");
-        await InitializeTaxesAsync();
-        _logger.LogDebug("Mock data initialized");
+        _logger.LogInformation("Initializing mock data...");
+        await MockBusinessesDataHelper.InitializeMockBusinessesAsync(_context, _logger);
+        await MockUserDataHelper.InitializeMockUsersAsync(_context, _logger);
+        await MockTaxesDataHelper.InitializeMockTaxesAsync(_context, _logger);
+        _logger.LogInformation("Mock data initialized");
     }
 
-    private async Task RemoveAllTaxAsync()
+    private async Task RemoveAllDataAsync()
     {
-        _logger.LogDebug("Removing all taxes...");
-        var allTaxes = await _context.Taxes.ToListAsync();
-        _context.Taxes.RemoveRange(allTaxes);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("All taxes removed.");
+        _logger.LogInformation("Removing all data from the database...");
+        await MockUserDataHelper.RemoveAllUsersAsync(_context, _logger);
+        await MockTaxesDataHelper.RemoveAllTaxAsync(_context, _logger);
+        await MockBusinessesDataHelper.RemoveAllBusinessesAsync(_context, _logger);
+        _logger.LogInformation("All data removed");
     }
 
-    private async Task InitializeTaxesAsync()
-    {
-        _logger.LogDebug("Adding mock taxes...");
-        await _context.AddRangeAsync(MockTax());
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Mock taxes added.");
-    }
-    
-    private IEnumerable<Tax> MockTax()
-    {
-        return new List<Tax>
-        {
-            new() { TaxType = "VAT", Percent = 20, IsArchived = false },
-            new() { TaxType = "Service Tax", Percent = 5, IsArchived = false },
-            new() { TaxType = "Sales Tax", Percent = 10, IsArchived = true }
-        };
-    }
 }
