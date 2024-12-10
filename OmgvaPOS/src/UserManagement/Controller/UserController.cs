@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OmgvaPOS.Auth.Repository;
+using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.HelperUtils;
-using OmgvaPOS.Schedule.Entities;
-using OmgvaPOS.UserManagement.Models;
-using OmgvaPOS.UserManagement.Entities;
+using OmgvaPOS.OrderManagement.Models;
+using OmgvaPOS.ScheduleManagement.Models;
+using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.UserManagement.Enums;
+using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.Validators;
 
@@ -22,7 +23,7 @@ namespace OmgvaPOS.UserManagement.Controller
         private readonly ILogger<UserController> _logger = logger;
 
         [HttpPost]
-        [ProducesResponseType<Entities.UserEntity>(StatusCodes.Status201Created)]
+        [ProducesResponseType<User>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         // Uncomment this line when all of the admin users have their accounts:
         // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
@@ -51,7 +52,7 @@ namespace OmgvaPOS.UserManagement.Controller
             if(_authenticationRepository.IsUsernamelUsed(signInRequest.Username))
                 return StatusCode(409, "This username is already in use.");
 
-            UserEntity user = _authenticationRepository.SignIn(signInRequest);
+            User user = _authenticationRepository.SignIn(signInRequest);
 
             if (user == null) {
                 _logger.LogError("An unexpected internal server error occured while creating user.");
@@ -79,7 +80,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType<List<UserEntity>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<User>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -90,7 +91,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
-        [ProducesResponseType<UserEntity>(StatusCodes.Status200OK)]
+        [ProducesResponseType<User>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -188,7 +189,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
         [HttpGet("business/{businessId}")]
         [Authorize(Roles = "Admin, Owner")]
-        [ProducesResponseType<List<UserEntity>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<User>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetBusinessUsers(long businessId)
@@ -207,7 +208,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
         [HttpGet("{userId}/schedules")]
         [Authorize(Roles = "Admin, Owner, Employee")]
-        [ProducesResponseType<List<EmployeeScheduleEntity>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<EmployeeSchedule>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -238,7 +239,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
         [HttpGet("{userId}/order")]
         [Authorize(Roles = "Admin, Owner, Employee")]
-        [ProducesResponseType<List<Order.Entities.OrderEntity>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<OrderManagement.Models.Order>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

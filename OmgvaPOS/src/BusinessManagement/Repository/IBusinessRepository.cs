@@ -1,4 +1,4 @@
-﻿using OmgvaPOS.BusinessManagement.Models;
+﻿using OmgvaPOS.BusinessManagement.DTOs;
 
 namespace OmgvaPOS.BusinessManagement.Repository
 {

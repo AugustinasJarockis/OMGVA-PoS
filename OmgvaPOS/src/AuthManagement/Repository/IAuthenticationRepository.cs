@@ -1,11 +1,11 @@
-﻿using OmgvaPOS.UserManagement.Entities;
+﻿using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.UserManagement.Models;
 
-namespace OmgvaPOS.Auth.Repository
+namespace OmgvaPOS.AuthManagement.Repository
 {
     public interface IAuthenticationRepository
     {
-        public UserEntity SignIn(SignInRequest signInRequest);
+        public User SignIn(SignInRequest signInRequest);
         public bool IsSignedIn(string email, string password);
         public bool IsEmailUsed(string email);
         public bool IsUsernamelUsed(string email);

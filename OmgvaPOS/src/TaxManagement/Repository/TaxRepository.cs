@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
-using OmgvaPOS.TaxManagement.Entities;
+using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.TaxManagement.Repository;
 
@@ -15,7 +15,7 @@ public class TaxRepository : ITaxRepository
         _logger = logger;
     }
 
-    public async Task<List<TaxEntity>> GetAllTaxesAsync()
+    public async Task<List<Tax>> GetAllTaxesAsync()
     {
         try
         {
@@ -28,7 +28,7 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task<TaxEntity> GetTaxByIdAsync(long id)
+    public async Task<Tax> GetTaxByIdAsync(long id)
     {
         try
         {
@@ -41,13 +41,13 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task<TaxEntity> SaveTaxAsync(TaxEntity taxEntity)
+    public async Task<Tax> SaveTaxAsync(Tax tax)
     {
         try
         {
-            _context.Taxes.Add(taxEntity);
+            _context.Taxes.Add(tax);
             await _context.SaveChangesAsync();
-            return taxEntity;
+            return tax;
         }
         catch (Exception ex)
         {
@@ -56,16 +56,16 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task UpdateTaxAsync(TaxEntity taxEntity)
+    public async Task UpdateTaxAsync(Tax tax)
     {
         try
         {
-            _context.Taxes.Update(taxEntity);
+            _context.Taxes.Update(tax);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"An error occurred while updating tax with ID {taxEntity.Id}.");
+            _logger.LogError(ex, $"An error occurred while updating tax with ID {tax.Id}.");
             throw new ApplicationException("Error updating tax.");
         }
     }

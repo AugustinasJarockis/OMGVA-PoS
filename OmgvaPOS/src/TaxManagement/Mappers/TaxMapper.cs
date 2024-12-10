@@ -1,38 +1,38 @@
-﻿using OmgvaPOS.TaxManagement.Entities;
+﻿using OmgvaPOS.TaxManagement.DTOs;
 using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.TaxManagement.Mappers;
 
 public class TaxMapper
 {
-    public static TaxEntity FromCreateTaxRequest(CreateTaxRequest createTaxRequest)
+    public static Tax FromCreateTaxRequest(CreateTaxRequest createTaxRequest)
     {
-        return new TaxEntity()
+        return new Tax()
         {
             TaxType = createTaxRequest.TaxType,
             Percent = createTaxRequest.Percent
         };
     }
 
-    public static TaxEntity FromUpdateTaxRequest(UpdateTaxRequest updateTaxRequest, TaxEntity taxEntity)
+    public static Tax FromUpdateTaxRequest(UpdateTaxRequest updateTaxRequest, Tax tax)
     {
-        taxEntity.TaxType = updateTaxRequest.TaxType ?? taxEntity.TaxType;
-        taxEntity.Percent = updateTaxRequest.Percent ?? taxEntity.Percent;
-        return taxEntity;
+        tax.TaxType = updateTaxRequest.TaxType ?? tax.TaxType;
+        tax.Percent = updateTaxRequest.Percent ?? tax.Percent;
+        return tax;
     }
 
-    public static TaxDTO ToDTO(TaxEntity taxEntity)
+    public static TaxDto ToDTO(Tax tax)
     {
-        return new TaxDTO()
+        return new TaxDto()
         {
-            Id = taxEntity.Id,
-            TaxType = taxEntity.TaxType,
-            Percent = taxEntity.Percent,
-            IsArchived = taxEntity.IsArchived,
+            Id = tax.Id,
+            TaxType = tax.TaxType,
+            Percent = tax.Percent,
+            IsArchived = tax.IsArchived,
         };
     }
 
-    public static IEnumerable<TaxDTO> ToDTOs(IEnumerable<TaxEntity> taxes)
+    public static IEnumerable<TaxDto> ToDTOs(IEnumerable<Tax> taxes)
     {
         return taxes.Select(tax => ToDTO(tax));
     }

@@ -3,11 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using OmgvaPOS.Database.Context;
-using OmgvaPOS.UserManagement.Entities;
+using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.UserManagement.Repository;
 
-namespace OmgvaPOS.Auth.Repository
+namespace OmgvaPOS.AuthManagement.Repository
 {
     public class AuthenticationRepository(OmgvaDbContext database, IUserRepository userRepository, IConfiguration config) : IAuthenticationRepository
     {
@@ -15,14 +15,14 @@ namespace OmgvaPOS.Auth.Repository
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IConfiguration _config = config;
 
-        public UserEntity SignIn(SignInRequest signInRequest)
+        public User SignIn(SignInRequest signInRequest)
         {
             try
             {
                 if (signInRequest == null)
                     throw new ArgumentNullException(nameof(signInRequest));
 
-                UserEntity user = new()
+                User user = new()
                 {
                     Name = signInRequest.Name,
                     Username = signInRequest.Username,
@@ -83,7 +83,7 @@ namespace OmgvaPOS.Auth.Repository
             return _database.Users.Any(u => u.Username == username);
         }
 
-        private string GenerateJWT(UserEntity user)
+        private string GenerateJWT(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

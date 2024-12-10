@@ -1,12 +1,12 @@
-﻿using OmgvaPOS.TaxManagement.Entities;
+﻿using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.TaxManagement.Repository;
 
 public interface ITaxRepository
 {
-    public Task<List<TaxEntity>> GetAllTaxesAsync();
-    public Task<TaxEntity> GetTaxByIdAsync(long id);
-    public Task<TaxEntity> SaveTaxAsync(TaxEntity taxEntity);
-    public Task UpdateTaxAsync(TaxEntity taxEntity);
+    public Task<List<Tax>> GetAllTaxesAsync();
+    public Task<Tax> GetTaxByIdAsync(long id);
+    public Task<Tax> SaveTaxAsync(Tax tax);
+    public Task UpdateTaxAsync(Tax tax);
     public Task DeleteTaxAsync(long id);
 }

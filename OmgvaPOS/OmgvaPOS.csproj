@@ -24,22 +24,4 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="src\AuthManagement\Entities\" />
-    <Folder Include="src\AuthManagement\Models\" />
-    <Folder Include="src\Customer\Models\" />
-    <Folder Include="src\Database\Migrations\" />
-    <Folder Include="src\Discount\Model\" />
-    <Folder Include="src\GiftcardPayment\Models\" />
-    <Folder Include="src\Giftcard\Models\" />
-    <Folder Include="src\ItemVariation\Models\" />
-    <Folder Include="src\Item\Models\" />
-    <Folder Include="src\OrderItemVariation\Models\" />
-    <Folder Include="src\OrderItem\Models\" />
-    <Folder Include="src\Order\Models\" />
-    <Folder Include="src\Payment\Models\" />
-    <Folder Include="src\Reservation\Models\" />
-    <Folder Include="src\Schedule\Models\" />
-  </ItemGroup>
-
 </Project>

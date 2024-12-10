@@ -1,6 +1,7 @@
 using OmgvaPOS.Database.Context;
-using OmgvaPOS.Schedule.Entities;
-using OmgvaPOS.UserManagement.Entities;
+using OmgvaPOS.OrderManagement.Models;
+using OmgvaPOS.ScheduleManagement.Models;
+using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.UserManagement.Models;
 
 namespace OmgvaPOS.UserManagement.Repository
@@ -9,7 +10,7 @@ namespace OmgvaPOS.UserManagement.Repository
     {
         private readonly OmgvaDbContext _database = database;
 
-        public List<UserEntity> GetUsers()
+        public List<User> GetUsers()
         {
             try
             {
@@ -21,7 +22,7 @@ namespace OmgvaPOS.UserManagement.Repository
             }
         }
 
-        public UserEntity GetUser(long id)
+        public User GetUser(long id)
         {
             try
             {
@@ -76,7 +77,7 @@ namespace OmgvaPOS.UserManagement.Repository
             }
         }
 
-        public List<UserEntity> GetBusinessUsers(long businessId)
+        public List<User> GetBusinessUsers(long businessId)
         {
             try
             {
@@ -87,7 +88,7 @@ namespace OmgvaPOS.UserManagement.Repository
                 throw new ApplicationException("Error retrieving business users.", ex);
             }
         }
-        public List<EmployeeScheduleEntity> GetUserSchedules(long id)
+        public List<EmployeeSchedule> GetUserSchedules(long id)
         {
             try
             {
@@ -98,7 +99,7 @@ namespace OmgvaPOS.UserManagement.Repository
                 throw new ApplicationException("Error retrieving user schedules.", ex);
             }
         }
-        public List<Order.Entities.OrderEntity> GetUserOrders(long id)
+        public List<OrderManagement.Models.Order> GetUserOrders(long id)
         {
             try
             {

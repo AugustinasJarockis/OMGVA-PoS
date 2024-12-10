@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.TaxManagement.Entities;
+using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.Database.Context;
 
@@ -77,9 +77,9 @@ public class DbInitializer
         _logger.LogInformation("Mock taxes added.");
     }
     
-    private IEnumerable<TaxEntity> MockTax()
+    private IEnumerable<Tax> MockTax()
     {
-        return new List<TaxEntity>
+        return new List<Tax>
         {
             new() { TaxType = "VAT", Percent = 20, IsArchived = false },
             new() { TaxType = "Service Tax", Percent = 5, IsArchived = false },

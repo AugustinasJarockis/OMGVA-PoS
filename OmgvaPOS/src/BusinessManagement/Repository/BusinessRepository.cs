@@ -1,5 +1,5 @@
-﻿using OmgvaPOS.Auth.Repository;
-using OmgvaPOS.BusinessManagement.Entities;
+﻿using OmgvaPOS.AuthManagement.Repository;
+using OmgvaPOS.BusinessManagement.DTOs;
 using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
 
@@ -10,7 +10,7 @@ namespace OmgvaPOS.BusinessManagement.Repository
         private readonly OmgvaDbContext _database = database;
         private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
         public BusinessDTO CreateBusiness(CreateBusinessRequest createBusinessRequest) {
-            BusinessEntity business = new() {
+            Business business = new() {
                 StripeAccId = "/////////////////////////",//TODO: somehow acquire stripe acc id
                 Name = createBusinessRequest.Name,
                 Address = createBusinessRequest.Address,
@@ -46,7 +46,7 @@ namespace OmgvaPOS.BusinessManagement.Repository
         }
 
         public List<BusinessDTO> GetBusinesses() {
-            return [.. _database.Businesses.Select<BusinessEntity, BusinessDTO>(
+            return [.. _database.Businesses.Select<Business, BusinessDTO>(
                 b => new() {
                     Id = b.Id,
                     Name = b.Name,
@@ -57,7 +57,7 @@ namespace OmgvaPOS.BusinessManagement.Repository
         }
 
         public BusinessDTO GetBusiness(long businessId) {
-            return _database.Businesses.Where(b => b.Id == businessId).Select<BusinessEntity, BusinessDTO>(
+            return _database.Businesses.Where(b => b.Id == businessId).Select<Business, BusinessDTO>(
                 b => new() {
                     Id = b.Id,
                     Name = b.Name,

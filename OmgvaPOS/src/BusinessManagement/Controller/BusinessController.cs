@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OmgvaPOS.BusinessManagement.Models;
+using OmgvaPOS.BusinessManagement.DTOs;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.UserManagement.Enums;

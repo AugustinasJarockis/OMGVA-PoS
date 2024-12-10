@@ -1,41 +1,41 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.BusinessManagement.Entities;
-using OmgvaPOS.Customer.Entities;
-using OmgvaPOS.Discount.Entities;
-using OmgvaPOS.Giftcard.Entities;
-using OmgvaPOS.GiftcardPayment.Entities;
-using OmgvaPOS.Item.Entities;
-using OmgvaPOS.ItemVariation.Entities;
-using OmgvaPOS.Order.Entities;
-using OmgvaPOS.OrderItem.Entities;
-using OmgvaPOS.OrderItemVariation.Entities;
-using OmgvaPOS.Payment.Entities;
-using OmgvaPOS.Reservation.Entities;
-using OmgvaPOS.Schedule.Entities;
-using OmgvaPOS.TaxManagement.Entities;
-using OmgvaPOS.UserManagement.Entities;
+using OmgvaPOS.BusinessManagement.Models;
+using OmgvaPOS.CustomerManagement.Models;
+using OmgvaPOS.DiscountManagement.Models;
+using OmgvaPOS.GiftcardManagement.Models;
+using OmgvaPOS.GiftcardPaymentManagement.Models;
+using OmgvaPOS.ItemManagement.Models;
+using OmgvaPOS.ItemVariationManagement.Models;
+using OmgvaPOS.OrderItemManagement.Models;
+using OmgvaPOS.OrderItemVariationManagement.Models;
+using OmgvaPOS.OrderManagement.Models;
+using OmgvaPOS.PaymentManagement.Models;
+using OmgvaPOS.ReservationManagement.Models;
+using OmgvaPOS.ScheduleManagement.Models;
+using OmgvaPOS.TaxManagement.Models;
+using OmgvaPOS.UserManagement.Models;
 
 namespace OmgvaPOS.Database.Context
 {
     public class OmgvaDbContext : DbContext
     {
-        public DbSet<BusinessEntity> Businesses { get; set; }
-        public DbSet<CustomerEntity> Customers { get; set; }
-        public DbSet<DiscountEntity> Discounts { get; set; }
-        public DbSet<EmployeeScheduleEntity> EmployeeSchedules { get; set; }
-        public DbSet<GiftcardEntity> Giftcards { get; set; }
+        public DbSet<Business> Businesses { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<EmployeeSchedule> EmployeeSchedules { get; set; }
+        public DbSet<Giftcard> Giftcards { get; set; }
         public DbSet<GiftcardPaymentEntity> GiftcardPayments { get; set; }
-        public DbSet<ItemEntity> Items { get; set; }
-        public DbSet<ItemVariationEntity> ItemVariations { get; set; }
-        public DbSet<OrderEntity> Orders { get; set; }
-        public DbSet<OrderItemEntity> OrderItems { get; set; }
-        public DbSet<OrderItemVariationEntity> OrderItemVariations { get; set; }
-        public DbSet<PaymentEntity> Payments { get; set; }
-        public DbSet<ReservationEntity> Reservations { get; set; }
-        public DbSet<StripeReaderEntity> StripeReaders { get; set; }
-        public DbSet<TaxEntity> Taxes { get; set; }
-        public DbSet<TaxItemEntity> TaxItems { get; set; }
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<ItemVariation> ItemVariations { get; set; }
+        public DbSet<OrderManagement.Models.Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OrderItemVariation> OrderItemVariations { get; set; }
+        public DbSet<PaymentManagement.Models.Payment> Payments { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<StripeReader> StripeReaders { get; set; }
+        public DbSet<Tax> Taxes { get; set; }
+        public DbSet<TaxItem> TaxItems { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OmgvaPOS.TaxManagement.DTOs;
 using OmgvaPOS.TaxManagement.Mappers;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Repository;
@@ -23,7 +24,7 @@ namespace OmgvaPOS.TaxManagement.Controller
 
         [HttpPost]
         [Authorize(Roles = "Admin,Owner")]
-        [ProducesResponseType<TaxDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType<TaxDto>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -56,11 +57,11 @@ namespace OmgvaPOS.TaxManagement.Controller
         
         [HttpGet]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<List<TaxDTO>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<TaxDto>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<TaxDTO>>> GetAllTaxes()
+        public async Task<ActionResult<IEnumerable<TaxDto>>> GetAllTaxes()
         {
             var taxes = await _taxRepository.GetAllTaxesAsync();
             return Ok(TaxMapper.ToDTOs(taxes));
@@ -71,7 +72,7 @@ namespace OmgvaPOS.TaxManagement.Controller
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<TaxDTO>> GetTaxById(long id)
+        public async Task<ActionResult<TaxDto>> GetTaxById(long id)
         {
             var tax = await _taxRepository.GetTaxByIdAsync(id);
             if (tax == null)
