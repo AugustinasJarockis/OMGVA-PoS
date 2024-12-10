@@ -26,11 +26,11 @@ namespace OmgvaPOS.UserManagement.Controller
         [HttpPost]
         [ProducesResponseType<User>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // Uncomment this line when all of the admin users have their accounts:
+        // TODO: Uncomment this line when all of the admin users have their accounts:
         // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult SignIn([FromBody]SignInRequest signInRequest) //sita reiks padaryti, kad tik admin ar owneriui butu butu
+        public IActionResult SignIn([FromBody]SignInRequest signInRequest) //TODO: Do not forget to make this accesable to owners and admins only later
         {
             if (!signInRequest.Email.IsValidEmail())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
