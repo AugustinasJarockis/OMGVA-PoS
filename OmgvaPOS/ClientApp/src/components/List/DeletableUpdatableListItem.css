@@ -1,0 +1,23 @@
+﻿.deletable-updatable-list-item {
+    align-content: center;
+    background: #DDCCCC;
+    border: 1px solid #999999AA;
+    border-collapse: collapse;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #444444;
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: left;
+    width: 100%;
+    button {
+        background: #555555AA;
+        border: 1px solid #ffffff;
+        float: right;
+    }
+}
+
+.deletable-updatable-list-item:hover {
+    background: #BBAAAACC;
+}

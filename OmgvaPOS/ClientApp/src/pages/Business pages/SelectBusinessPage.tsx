@@ -33,6 +33,10 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken
         }
     }
 
+    const goToTaxesList = async () => {
+        navigate("/tax/");
+    }
+
     useEffect(() => {
         if (authToken) {
             const role = getTokenRole(authToken);
@@ -49,6 +53,9 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken
 
     return (
         <div>
+            <header>
+                <button onClick={goToTaxesList}>Taxes</button>
+            </header>
             <h1>Select the business to open</h1>
             <div className="business-list-container">
                 {listItems}
