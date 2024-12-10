@@ -239,7 +239,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
         [HttpGet("{userId}/order")]
         [Authorize(Roles = "Admin, Owner, Employee")]
-        [ProducesResponseType<List<OrderManagement.Models.Order>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<List<Order>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
