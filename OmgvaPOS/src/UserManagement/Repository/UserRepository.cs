@@ -10,6 +10,19 @@ namespace OmgvaPOS.UserManagement.Repository
     {
         private readonly OmgvaDbContext _database = database;
 
+        public void CreateUser(User user)
+        {
+            try
+            {
+                _database.Users.Add(user);
+                _database.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error saving user.", ex);
+            }
+        }
+
         public List<User> GetUsers()
         {
             try
@@ -47,9 +60,7 @@ namespace OmgvaPOS.UserManagement.Repository
                 userToUpdate.Username = user.Username ?? userToUpdate.Username;
                 userToUpdate.Email = user.Email ?? userToUpdate.Email;
                 userToUpdate.Role = user.Role ?? userToUpdate.Role;
-                userToUpdate.Password = !string.IsNullOrEmpty(user.Password)
-                    ? BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password, 13)
-                    : userToUpdate.Password;
+                userToUpdate.Password = user.Password ?? userToUpdate.Password;
 
                 _database.SaveChanges();
             }
@@ -99,7 +110,7 @@ namespace OmgvaPOS.UserManagement.Repository
                 throw new ApplicationException("Error retrieving user schedules.", ex);
             }
         }
-        public List<OrderManagement.Models.Order> GetUserOrders(long id)
+        public List<Order> GetUserOrders(long id)
         {
             try
             {

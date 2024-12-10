@@ -13,7 +13,7 @@ export interface LoginResponse {
 
 const login = async (loginRequest: LoginRequest): Promise<LoginResponse> => {
     try {
-        const response = await axios.post('/api/user/login', loginRequest);
+        const response = await axios.post('/api/auth/login', loginRequest);
         if (response.status === 200) {
             return { isSuccess: true, message: response.data.message, token: response.data.token };
         } else {

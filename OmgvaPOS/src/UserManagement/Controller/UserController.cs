@@ -3,80 +3,66 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.ScheduleManagement.Models;
-using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.UserManagement.Enums;
+using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.UserManagement.Models;
-using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.Validators;
+using OmgvaPOS.UserManagement.Service;
+using OmgvaPOS.AuthManagement.DTOs;
+using OmgvaPOS.AuthManagement.Service;
 
 namespace OmgvaPOS.UserManagement.Controller
 {
     [ApiController]
     [Route("user")]
-    public class UserController(IAuthenticationRepository authenticationRepository, IUserRepository userRepository, ILogger<UserController> logger) : Microsoft.AspNetCore.Mvc.Controller
+    public class UserController(IUserService userService, IAuthService authService, ILogger<UserController> logger) : Microsoft.AspNetCore.Mvc.Controller
     {
-        private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
-        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUserService _userService = userService;
+        private readonly IAuthService _authService = authService;
         private readonly ILogger<UserController> _logger = logger;
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Owner")]
         [ProducesResponseType<User>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // Uncomment this line when all of the admin users have their accounts:
-        // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult SignIn([FromBody]SignInRequest signInRequest)
+        public IActionResult CreateUser([FromBody] SignUpRequest signUpRequest)
         {
-            if (!signInRequest.Email.IsValidEmail())
+            if (!signUpRequest.Email.IsValidEmail())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
 
-            if (!signInRequest.Username.IsValidName())
+            if (!signUpRequest.Username.IsValidName())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Name is not valid.");
 
-            if (!signInRequest.Username.IsValidUsername())
+            if (!signUpRequest.Username.IsValidUsername())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Username is not valid.");
 
-            if (!signInRequest.Username.IsValidPassword())
+            if (!signUpRequest.Username.IsValidPassword())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Password is not valid.");
 
-            if (_authenticationRepository.IsSignedIn(signInRequest.Username, signInRequest.Password))
-                return StatusCode((int)HttpStatusCode.Conflict, "User is already signed in or session exists.");
+            if (_authService.IsSignedUp(signUpRequest.Username, signUpRequest.Password))
+                return StatusCode((int)HttpStatusCode.Conflict, "User is already signed up or session exists.");
 
-            if(_authenticationRepository.IsEmailUsed(signInRequest.Email))
+            if (_authService.IsEmailUsed(signUpRequest.Email))
                 return StatusCode((int)HttpStatusCode.Conflict, "This email is already in use.");
 
-            if(_authenticationRepository.IsUsernamelUsed(signInRequest.Username))
+            if (_authService.IsUsernameUsed(signUpRequest.Username))
                 return StatusCode((int)HttpStatusCode.Conflict, "This username is already in use.");
 
-            User user = _authenticationRepository.SignIn(signInRequest);
+            UserResponse user = _userService.CreateUser(signUpRequest);
 
-            if (user == null) {
+            if (user == null)
+            {
                 _logger.LogError("An unexpected internal server error occured while creating user.");
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error");
             }
 
             return Created($"/user/{user.Id}", user);
-        }
-
-        [HttpPost("login")]
-        [ProducesResponseType<LoginDTO>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<LoginDTO>> Login([FromBody]LoginRequest loginRequest)
-        {
-
-            var result = await _authenticationRepository.Login(loginRequest);
-
-            if(!result.IsSuccess)
-                return StatusCode((int)HttpStatusCode.Unauthorized, result.Message);
-
-            Response.Headers.Add("Authorization", "Bearer " + result.Token);
-
-            return Ok(result);
         }
 
         [HttpGet]
@@ -87,7 +73,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllUsers()
         {
-            return Ok(JsonConvert.SerializeObject(_userRepository.GetUsers()));
+            return Ok(JsonConvert.SerializeObject(_userService.GetAllUsers()));
         }
 
         [HttpGet("{id}")]
@@ -105,7 +91,7 @@ namespace OmgvaPOS.UserManagement.Controller
 
             try
             {
-                var user = _userRepository.GetUser(id);
+                var user = _userService.GetUser(id);
 
                 if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)user.BusinessId))
                     return Forbid();
@@ -135,7 +121,7 @@ namespace OmgvaPOS.UserManagement.Controller
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
             if (token == null 
                 || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id)
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userService.GetUser(id).BusinessId!)
                 )
                 return Forbid();
 
@@ -144,7 +130,7 @@ namespace OmgvaPOS.UserManagement.Controller
                 if(!user.Email.IsValidEmail())
                     return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
 
-                _userRepository.UpdateUser(id, user);
+                _userService.UpdateUser(id, user);
                 return Ok();
             }
             catch (KeyNotFoundException)
@@ -170,14 +156,14 @@ namespace OmgvaPOS.UserManagement.Controller
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
 
             if (token == null 
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userService.GetUser(id).BusinessId!)
                 || token.UserRoleEquals(UserRole.Owner) && token.UserIdEquals(id)
                 )
                 return Forbid();
 
             try
             {
-                if (_userRepository.DeleteUser(id))
+                if (_userService.DeleteUser(id))
                     return NoContent();
                 return NotFound("User not found.");
             }
@@ -199,7 +185,7 @@ namespace OmgvaPOS.UserManagement.Controller
             if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(businessId))
                 return Forbid();
 
-            var businessUsers = _userRepository.GetBusinessUsers(businessId);
+            var businessUsers = _userService.GetBusinessUsers(businessId);
 
             if (businessUsers == null)
                 return NotFound();
@@ -218,13 +204,13 @@ namespace OmgvaPOS.UserManagement.Controller
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
             if (token == null 
                 || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId)
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userService.GetUser(userId).BusinessId!)
                 )
                 return Forbid();
 
             try
             {
-                var schedules = _userRepository.GetUserSchedules(userId);
+                var schedules = _userService.GetUserSchedules(userId);
                 return Ok(JsonConvert.SerializeObject(schedules));
             }
             catch (KeyNotFoundException)
@@ -249,13 +235,13 @@ namespace OmgvaPOS.UserManagement.Controller
             JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
             if (token == null
                 || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId)
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId)
+                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userService.GetUser(userId).BusinessId!)
                 )
                 return Forbid();
 
             try
             {
-                var orders = _userRepository.GetUserOrders(userId);
+                var orders = _userService.GetUserOrders(userId);
                 return Ok(JsonConvert.SerializeObject(orders));
             }
             catch (KeyNotFoundException)
