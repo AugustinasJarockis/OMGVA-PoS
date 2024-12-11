@@ -8,7 +8,7 @@ public static class MockBusinessesDataHelper
     public static long OmgvaBusinessId = 0;
     public static long DiffBusinessId = 0;
     
-    public static async Task InitializeMockBusinessesAsync(OmgvaDbContext dbContext, ILogger logger)
+    public static void InitializeMockBusinesses(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Adding mock businesses...");
         var omgvaBusiness = new Business
@@ -27,21 +27,21 @@ public static class MockBusinessesDataHelper
             Phone = "987654321",
             Email = "info@diffbusiness.com"
         };
-        await dbContext.Businesses.AddAsync(omgvaBusiness);
-        await dbContext.Businesses.AddAsync(diffBusiness);
-        await dbContext.SaveChangesAsync();
+        dbContext.Businesses.Add(omgvaBusiness);
+        dbContext.Businesses.Add(diffBusiness);
+        dbContext.SaveChanges();
         
         OmgvaBusinessId = omgvaBusiness.Id;
         DiffBusinessId = diffBusiness.Id;
         logger.LogDebug("Mock businesses added.");
     }
     
-    public static async Task RemoveAllBusinessesAsync(OmgvaDbContext dbContext, ILogger logger)
+    public static void RemoveAllBusinesses(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Removing all businesses...");
-        var allBusinesses = await dbContext.Businesses.ToListAsync();
+        var allBusinesses = dbContext.Businesses.ToList();
         dbContext.Businesses.RemoveRange(allBusinesses);
-        await dbContext.SaveChangesAsync();
+        dbContext.SaveChanges();
         logger.LogDebug("All businesses removed.");
     }
 

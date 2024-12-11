@@ -116,7 +116,7 @@ if (app.Environment.IsDevelopment())
         var dbContext = scope.ServiceProvider.GetRequiredService<OmgvaDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbInitializer>>();
         var dbInitializer = new DbInitializer(dbContext, logger);
-        await dbInitializer.InitDb(initDatabaseAction);
+        dbInitializer.InitDb(initDatabaseAction);
         logger.LogInformation($"Exiting after completing database action {initDatabaseAction}...");
         return;
     }

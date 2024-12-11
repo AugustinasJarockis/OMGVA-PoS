@@ -6,20 +6,20 @@ namespace OmgvaPOS.Database.Context.MockDataHelpers;
 public static class MockTaxesDataHelper
 {
     
-    public static async Task InitializeMockTaxesAsync(OmgvaDbContext dbContext, ILogger logger)
+    public static void InitializeMockTaxes(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Adding mock taxes...");
-        await dbContext.Taxes.AddRangeAsync(MockTaxes());
-        await dbContext.SaveChangesAsync();
+        dbContext.Taxes.AddRange(MockTaxes());
+        dbContext.SaveChanges();
         logger.LogDebug("Mock taxes added.");
     }
     
-    public static async Task RemoveAllTaxAsync(OmgvaDbContext dbContext, ILogger logger)
+    public static void RemoveAllTax(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Removing all taxes...");
-        var allTaxes = await dbContext.Taxes.ToListAsync();
+        var allTaxes = dbContext.Taxes.ToList();
         dbContext.Taxes.RemoveRange(allTaxes);
-        await dbContext.SaveChangesAsync();
+        dbContext.SaveChanges();
         logger.LogDebug("All taxes removed.");
     }
 

@@ -7,20 +7,20 @@ namespace OmgvaPOS.Database.Context.MockDataHelpers;
 public static class MockUserDataHelper
 {
 
-    public static async Task InitializeMockUsersAsync(OmgvaDbContext dbContext, ILogger logger)
+    public static void InitializeMockUsers(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Adding mock users...");
-        await dbContext.Users.AddRangeAsync(MockUsers());
-        await dbContext.SaveChangesAsync();
+        dbContext.Users.AddRange(MockUsers());
+        dbContext.SaveChanges();
         logger.LogDebug("Mock users added.");
     }
     
-    public static async Task RemoveAllUsersAsync(OmgvaDbContext dbContext, ILogger logger)
+    public static void RemoveAllUsers(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Removing all users...");
-        var allUsers = await dbContext.Users.ToListAsync();
+        var allUsers = dbContext.Users.ToList();
         dbContext.Users.RemoveRange(allUsers);
-        await dbContext.SaveChangesAsync();
+        dbContext.SaveChanges();
         logger.LogDebug("All users removed.");
     }
 
