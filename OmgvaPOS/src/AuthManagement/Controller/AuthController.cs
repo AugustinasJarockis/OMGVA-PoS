@@ -4,6 +4,7 @@ using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.Validators;
 using OmgvaPOS.AuthManagement.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace src.AuthManagement.Controller
 {
@@ -61,7 +62,24 @@ namespace src.AuthManagement.Controller
         public async Task<ActionResult<LoginDTO>> Login([FromBody] LoginRequest loginRequest)
         {
 
-            var result = await _authService.Login(loginRequest);
+            var result = _authService.Login(loginRequest);
+
+            if (!result.IsSuccess)
+                return StatusCode((int)HttpStatusCode.Unauthorized, result.Message);
+
+            Response.Headers.Add("Authorization", "Bearer " + result.Token);
+
+            return Ok(result);
+        }
+
+        [HttpPost("login/{businessId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType<LoginDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<LoginDTO>> Login([FromBody] long businessId)
+        {
+
+            var result = _authService.Login(loginRequest, businessId);
 
             if (!result.IsSuccess)
                 return StatusCode((int)HttpStatusCode.Unauthorized, result.Message);

@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { Business, getBusiness } from '../../services/businessService';
-import { getTokenBusinessId, getTokenRole } from '../../utils/tokenUtils';
+import { getTokenBusinessId, getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
 import '../../index.css';
 
 interface BusinessPageProps {
@@ -45,6 +45,13 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
         navigate("/business/");
     }
 
+    const goToUser = async () => {
+        if (authToken) {
+            const userId = getTokenUserId(authToken);
+            navigate(`/user/${userId}/`)
+        }
+    }
+
     useEffect(() => {
         if (state && state.business) {
             setBusiness(state.business);
@@ -74,6 +81,7 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
                 </header>)}
             {business ? (
                 <>
+                    <button onClick={goToUser}>Me</button>
                     <h1>{business.Name}</h1>
                     <section>
                         <p>Address: { business.Address }</p>

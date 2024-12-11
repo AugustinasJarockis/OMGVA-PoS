@@ -54,7 +54,7 @@ namespace OmgvaPOS.AuthManagement.Service
         {
             return _authenticationRepository.AnyUserUsernameDuplicate(username);
         }
-        public async Task<LoginDTO> Login(LoginRequest loginRequest)
+        public LoginDTO Login(LoginRequest loginRequest)
         {
             try
             {

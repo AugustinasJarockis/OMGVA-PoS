@@ -9,7 +9,7 @@ namespace OmgvaPOS.AuthManagement.Service
         public bool IsSignedUp(string username, string password);
         public bool IsEmailUsed(string email);
         public bool IsUsernameUsed(string username);
-        public Task<LoginDTO> Login(LoginRequest loginRequest);
+        public LoginDTO Login(LoginRequest loginRequest);
 
     }
 }

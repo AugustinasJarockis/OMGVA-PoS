@@ -11,8 +11,6 @@ import CreateBusinessPage from './pages/Business pages/CreateBusinessPage';
 import TaxListPage from './pages/Tax pages/TaxListPage';
 import CreateTaxPage from './pages/Tax pages/CreateTaxPage';
 import UpdateTaxPage from './pages/Tax pages/UpdateTaxPage';
-import UserListPage from './pages/UserPages/UserListPage';
-import CreateUserPage from './pages/UserPages/CreateUserPage';
 import UpdateUserPage from './pages/UserPages/UpdateUserPage';
 import UserDetailsPage from './pages/UserPages/UserDetailsPage';
 

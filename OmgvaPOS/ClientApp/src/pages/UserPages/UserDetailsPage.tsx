@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserResponse, getUser } from "../../services/userService";
-import { getTokenRole, getTokenUserId } from "../../utils/tokenUtils";
+import { getTokenBusinessId, getTokenRole, getTokenUserId } from "../../utils/tokenUtils";
 
 interface UserPageProps {
     token: string | null
@@ -35,8 +35,21 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
         }
     }
 
+    const roleMap: { [key: string]: string } = {
+        2: 'Admin',
+        1: 'Owner',
+        0: 'Employee',
+    };
+
     const handleUpdateUserOnclick = async () => {
         navigate("/user/update/" + id, { state: { user: user } });
+    }
+
+    const goToBusiness = async () => {
+        if (authToken) {
+            const businessId = getTokenBusinessId(authToken)
+            navigate('/business/' + businessId);
+        }
     }
 
     useEffect(() => {
@@ -63,11 +76,12 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
         <div>
             {user ? (
                 <>
+                    <button onClick={goToBusiness}>Return to business</button>
                     <h1>{user.Name}</h1>
                     <section>
                         <p>Username: {user.Username}</p>
                         <p>Email: {user.Email}</p>
-                        <p>Role: {user.Role}</p>
+                        <p>Role: {user && user.Role && roleMap[user.Role] ? roleMap[user.Role] : 'Unknown Role'}</p>
                     </section>
                     <button onClick={handleUpdateUserOnclick}>Update information</button>
                 </>

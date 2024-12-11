@@ -1,14 +1,15 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { UpdateUser, UserResponse, getUser, updateUser } from '../../services/userService';
-import { getTokenRole } from '../../utils/tokenUtils';
+import '../../index.css';
+import { getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
 import UserDataForm from '../../components/Forms/UserDataForm';
 
 interface UpdateUserPageProps {
     token: string | null;
 }
 
-const UpdateTaxPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
+const UpdateUserPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<UserResponse>();
     const { state } = useLocation();
@@ -34,10 +35,10 @@ const UpdateTaxPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
     }
 
     const acquireUser = async () => {
-        if (checkId() && id) {
+        if (id) {
             const { result, error } = await getUser(authToken, id);
             if (!result) {
-                setError('Problem acquiring tax: ' + error);
+                setError('Problem acquiring user: ' + error);
             }
             else {
                 setUser(result);
@@ -46,7 +47,7 @@ const UpdateTaxPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
     }
 
     const returnToUserDetails = async () => {
-        navigate("/user");
+        navigate(`/user/${id}`);
     }
 
     const userRole = (): string | undefined => {
@@ -56,9 +57,16 @@ const UpdateTaxPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
         }
     }
 
+    const userId = (): string | undefined => {
+        if (authToken) {
+            const userId = getTokenUserId(authToken);
+            return userId.toString();
+        }
+    }
+
     useEffect(() => {
         if (state) {
-            setUser(state.object);
+            setUser(state.user);
         }
         else {
             acquireUser();
@@ -75,8 +83,8 @@ const UpdateTaxPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
             </header>
             {!error && user ? (
                 <>
-                    <h1>Update tax</h1>
-                    <UserDataForm onSubmit={handleSubmission} user={user} roleFromToken={userRole()} submitText="Update user" />
+                    <h1>Update user</h1>
+                    <UserDataForm onSubmit={handleSubmission} user={user} roleFromToken={userRole()} idFromToken={userId()} submitText="Update user" />
                 </>
             )
                 : <p className="error-message">{error}</p>
@@ -85,4 +93,4 @@ const UpdateTaxPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
     );
 };
 
-export default UpdateTaxPage;
+export default UpdateUserPage;
