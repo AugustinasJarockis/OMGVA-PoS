@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,7 +7,6 @@ using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.ScheduleManagement.Models;
 using OmgvaPOS.UserManagement.DTOs;
-using OmgvaPOS.UserManagement.Enums;
 using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.Validators;
@@ -26,11 +24,11 @@ namespace OmgvaPOS.UserManagement.Controller
         [HttpPost]
         [ProducesResponseType<User>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // Uncomment this line when all of the admin users have their accounts:
+        // TODO: Uncomment this line when all of the admin users have their accounts:
         // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult SignIn([FromBody]SignInRequest signInRequest)
+        public IActionResult SignIn([FromBody]SignInRequest signInRequest) //TODO: Do not forget to make this accesable to owners and admins only later
         {
             if (!signInRequest.Email.IsValidEmail())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
@@ -99,17 +97,12 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUser(long id)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token == null || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id))
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
             try
             {
                 var user = _userRepository.GetUser(id);
-
-                if (token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)user.BusinessId))
-                    return Forbid();
-
                 return Ok(JsonConvert.SerializeObject(user));
             }
             catch (KeyNotFoundException)
@@ -132,11 +125,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Update([FromBody] UpdateUserRequest user, long id)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token == null 
-                || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(id)
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId)
-                )
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
             try
@@ -167,12 +156,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete(long id)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-
-            if (token == null 
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(id).BusinessId)
-                || token.UserRoleEquals(UserRole.Owner) && token.UserIdEquals(id)
-                )
+            if (!JwtTokenHandler.CanDeleteUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
             try
@@ -195,8 +179,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetBusinessUsers(long businessId)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(businessId))
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, businessId))
                 return Forbid();
 
             var businessUsers = _userRepository.GetBusinessUsers(businessId);
@@ -215,11 +198,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserSchedules(long userId)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token == null 
-                || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId)
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId)
-                )
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(userId)?.BusinessId, userId))
                 return Forbid();
 
             try
@@ -246,11 +225,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserOrders(long userId)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token == null
-                || token.UserRoleEquals(UserRole.Employee) && !token.UserIdEquals(userId)
-                || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals((long)_userRepository.GetUser(userId).BusinessId)
-                )
+            if (!JwtTokenHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(userId)?.BusinessId, userId))
                 return Forbid();
 
             try

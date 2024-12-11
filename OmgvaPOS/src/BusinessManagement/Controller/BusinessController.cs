@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OmgvaPOS.BusinessManagement.DTOs;
+using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.UserManagement.Enums;
@@ -43,10 +44,8 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetBusiness(long id) {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization!);
-            if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, id))
                 return Forbid();
-            }
 
             try {
                 BusinessDTO business = _businessRepository.GetBusiness(id);
@@ -98,10 +97,8 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateBusiness([FromBody] BusinessDTO business, long id) {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization!);
-            if (token == null || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(id)) {
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, id))
                 return Forbid();
-            }
 
             if (!business.Email?.IsValidEmail() ?? false)
                 return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid");
