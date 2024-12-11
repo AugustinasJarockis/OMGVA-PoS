@@ -10,7 +10,7 @@ using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.UserManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
-var initDatabaseAction = DbInitializerAction.DO_NOTHING;
+var initDatabaseAction = DbInitializerAction.DoNothing;
 
 // Add services to the container.
 
@@ -110,11 +110,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<OmgvaDbContext>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbInitializer>>();
-    var dbInitializer = new DbInitializer(dbContext, logger);
-    await dbInitializer.InitDb(initDatabaseAction);
+    if (initDatabaseAction != DbInitializerAction.DoNothing)
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<OmgvaDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DbInitializer>>();
+        var dbInitializer = new DbInitializer(dbContext, logger);
+        dbInitializer.InitDb(initDatabaseAction);
+        logger.LogInformation($"Exiting after completing database action {initDatabaseAction}...");
+        return;
+    }
 }
 
 app.UseHttpsRedirection();
