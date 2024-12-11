@@ -1,31 +1,31 @@
 ﻿import axios from 'axios';
 
 export interface UserResponse {
-    id?: string;
-    businessId?: string;
-    username?: string;
-    password?: string;
-    name?: string;
-    email?: string;
-    role?: number;
-    hasLeft?: boolean;
+    Id?: string;
+    BusinessId?: string;
+    Username?: string;
+    Password?: string;
+    Name?: string;
+    Email?: string;
+    Role?: number;
+    HasLeft?: boolean;
 }
 
 export interface CreateUser {
-    businessId?: string;
-    name: string;
-    username: string;
-    email: string;
-    role: string;
-    password: string;
+    BusinessId?: string;
+    Name: string;
+    Username: string;
+    Email: string;
+    Role: string;
+    Password: string;
 }
 
 export interface UpdateUser {
-    name?: string;
-    password?: string;
-    username?: string;
-    email?: string;
-    role?: string;
+    Name?: string;
+    Password?: string;
+    Username?: string;
+    Email?: string;
+    Role?: string;
 }
 
 const createUser = async (token: string | null, user: CreateUser): Promise<{ error?: string, result?: UserResponse }> => {

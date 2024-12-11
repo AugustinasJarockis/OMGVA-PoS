@@ -9,7 +9,6 @@ interface UserPageProps {
 
 const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
     const [error, setError] = useState<string | null>(null);
-    const [role, setRole] = useState<string>('');
     const [user, setUser] = useState<UserResponse>();
     const { state } = useLocation();
     const { id } = useParams();
@@ -54,7 +53,6 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
             if (!(userId === id || role === "Admin" || role === "Owner")) {
                 navigate('/');
             }
-            setRole(role);
         }
         else {
             setError("You have to authenticate first!");
@@ -65,12 +63,11 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
         <div>
             {user ? (
                 <>
-                    <h1>{user.name}</h1>
+                    <h1>{user.Name}</h1>
                     <section>
-                        <p>Username: {user.username}</p>
-                        <p>Email: {user.email}</p>
-                        <p>Role: {user.role}</p>
-                        <p>Account active: {!user.hasLeft}</p>
+                        <p>Username: {user.Username}</p>
+                        <p>Email: {user.Email}</p>
+                        <p>Role: {user.Role}</p>
                     </section>
                     <button onClick={handleUpdateUserOnclick}>Update information</button>
                 </>

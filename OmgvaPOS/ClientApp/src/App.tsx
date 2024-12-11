@@ -75,14 +75,12 @@ const App: React.FC = () => {
                             <Route path="/tax" element={<TaxListPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/create" element={<CreateTaxPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/update/:id" element={<UpdateTaxPage token={localStorage.getItem('authToken')} />} />
-                            <Route path="/user" element={<UserListPage token={localStorage.getItem('authToken')} />} />
-                            <Route path="/user/create" element={<CreateUserPage token={localStorage.getItem('authToken')} />} />
-                            <Route path="/user/update/:id" element={<UpdateUserPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/user/:id" element={<UserDetailsPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/user/update/:id" element={<UpdateUserPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
-                            {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
-                                ? (<Route path="*" element={<Navigate to="/business" />} />)
-                                : (<Route path="*" element={<Navigate to="/weather" />} />)}
+                                {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
+                                    ? (<Route path="*" element={<Navigate to="/business" />} />)
+                                    : (<Route path="*" element={<Navigate to="/weather" />} />)}
                         </>
                     )}
                 </Routes>

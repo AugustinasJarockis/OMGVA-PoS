@@ -4,7 +4,7 @@ import { getAllBusinesses } from '../../services/businessService';
 import ClickableListItem from '../../components/List/ClickableListItem';
 import '../../index.css';
 import '../../components/List/ClickableListItem.css';
-import { getTokenRole } from '../../utils/tokenUtils';
+import { getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
 
 interface SelectBusinessPageProps {
     token : string | null
@@ -37,6 +37,13 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken
         navigate("/tax/");
     }
 
+    const goToUser = async () => {
+        if (authToken) {
+            const userId = getTokenUserId(authToken);
+            navigate(`/user/${userId}/`)
+        }
+    }
+
     useEffect(() => {
         if (authToken) {
             const role = getTokenRole(authToken);
@@ -55,6 +62,7 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken
         <div>
             <header>
                 <button onClick={goToTaxesList}>Taxes</button>
+                <button onClick={goToUser}>Me</button>
             </header>
             <h1>Select the business to open</h1>
             <div className="business-list-container">

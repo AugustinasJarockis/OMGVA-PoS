@@ -57,7 +57,7 @@ namespace OmgvaPOS.UserManagement.Service
                     Id = user.Id,
                     BusinessId = user.BusinessId,
                     Name = user.Name,
-                    Username = user.Name,
+                    Username = user.Username,
                     Email = user.Email,
                     Role = user.Role,
                     HasLeft = user.HasLeft
@@ -74,7 +74,7 @@ namespace OmgvaPOS.UserManagement.Service
                 Id = user.Id,
                 BusinessId = user.BusinessId,
                 Name = user.Name,
-                Username = user.Name,
+                Username = user.Username,
                 Email = user.Email,
                 Role = user.Role,
                 HasLeft = user.HasLeft
