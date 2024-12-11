@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginPage from './pages/LoginPage';
 import WeatherPage from './pages/WeatherPage';
 import './App.css';
+import PaymentForm from './components/PaymentForm.tsx';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('authToken'));
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                     ) : (
                         <>
                             <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
+                            <Route path="/stripe-test" element={<PaymentForm/>}/>
                             <Route path="*" element={<Navigate to="/weather" />} />
                         </>
                     )}
