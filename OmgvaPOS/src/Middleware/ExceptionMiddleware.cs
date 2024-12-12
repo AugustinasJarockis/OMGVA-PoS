@@ -63,18 +63,6 @@ public class ExceptionMiddleware
         
         await context.Response.WriteAsJsonAsync(response);
     }
-
-    private static int GetStatusCodeBasedOnException(Exception ex)
-    {
-        
-        return ex switch
-        {
-            BadRequestException => StatusCodes.Status400BadRequest,
-            ForbiddenResourceException => StatusCodes.Status403Forbidden,
-            NotFoundException => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError
-        };
-    }
     
     public class ErrorResponse
     {
