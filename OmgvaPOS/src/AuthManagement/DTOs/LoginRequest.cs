@@ -1,4 +1,4 @@
-﻿namespace OmgvaPOS.UserManagement.DTOs
+﻿namespace OmgvaPOS.AuthManagement.DTOs
 {
     public class LoginRequest
     {

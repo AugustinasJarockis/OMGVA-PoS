@@ -93,6 +93,13 @@ input {
     border-radius: 4px;
 }
 
+select {
+    width: 30%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 .error-message {
     color: red;
     margin-bottom: 15px;

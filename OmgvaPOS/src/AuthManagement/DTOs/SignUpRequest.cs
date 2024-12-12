@@ -1,8 +1,8 @@
 ﻿using OmgvaPOS.UserManagement.Enums;
 
-namespace OmgvaPOS.UserManagement.DTOs
+namespace OmgvaPOS.AuthManagement.DTOs
 {
-    public class SignInRequest
+    public class SignUpRequest
     {
         public long? BusinessId { get; set; }
         public string Name { get; set; }

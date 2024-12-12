@@ -3,7 +3,7 @@ using OmgvaPOS.OrderItemVariationManagement.Models;
 
 namespace OmgvaPOS.ItemVariationManagement.Models
 {
-    public class ItemVariation
+    public class ItemVariation: ICloneable
     {
         public long Id { get; set; }
         public long ItemId { get; set; }
@@ -18,5 +18,16 @@ namespace OmgvaPOS.ItemVariationManagement.Models
 
         // for foreign keys
         public Item Item { get; set; } 
+
+        public object Clone() {
+            return new ItemVariation {
+                ItemId = this.ItemId,
+                Name = this.Name,
+                InventoryQuantity = this.InventoryQuantity,
+                PriceChange = this.PriceChange,
+                ItemVariationGroup = this.ItemVariationGroup,
+                IsArchived = this.IsArchived
+            };
+        }
     }
 }
