@@ -2,7 +2,8 @@ using OmgvaPOS.Exceptions;
 using OmgvaPOS.ReservationManagement.DTOs;
 using OmgvaPOS.ReservationManagement.Mappers;
 using OmgvaPOS.ReservationManagement.Repository;
-using static OmgvaPOS.Exceptions.ExceptionMessages;
+using OmgvaPOS.ReservationManagement.Validators;
+using static OmgvaPOS.Exceptions.ExceptionErrors;
 
 namespace OmgvaPOS.ReservationManagement.Service
 {
@@ -27,31 +28,36 @@ namespace OmgvaPOS.ReservationManagement.Service
             return reservation?.ToDto();
         }
 
-        public ReservationDto Create(CreateReservationDto createDto)
+        // TODO: make sure employee is available at that time (check schedule)
+        public ReservationDto Create(CreateReservationRequest createRequest)
         {
-            var reservation = createDto.ToModel();
+            ReservationValidator.ValidateCreateReservationRequest(createRequest);
+            var reservation = createRequest.ToModel();
             
             var createdReservation = _repository.Create(reservation);
             return createdReservation.ToDto();
         }
 
-        public ReservationDto Update(long id, UpdateReservationDto updateDto)
+        // TODO: think about historic data for reservation UPDATE
+        // for example cannot update if reservation is complete
+        public ReservationDto Update(long id, UpdateReservationRequest updateRequest)
         {
             var existingReservation = _repository.GetById(id);
             if (existingReservation == null)
-                throw new NotFoundException(ReservationNotFoundMessage(id));
+                throw new NotFoundException(GetReservationNotFoundMessage(id));
 
-            existingReservation.UpdateEntity(updateDto);
+            existingReservation.UpdateEntity(updateRequest);
             
             var updatedReservation = _repository.Update(existingReservation);
             return updatedReservation.ToDto();
         }
-
+    
+        // TODO: think about historic data for reservation DELETE
         public void Delete(long id)
         {
             var reservation = _repository.GetById(id);
             if (reservation == null)
-                throw new NotFoundException(ReservationNotFoundMessage(id));
+                throw new NotFoundException(GetReservationNotFoundMessage(id));
 
             _repository.Delete(id);
         }

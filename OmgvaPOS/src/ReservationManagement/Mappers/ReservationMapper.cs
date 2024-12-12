@@ -27,30 +27,27 @@ namespace OmgvaPOS.ReservationManagement.Mappers
 
         public static IEnumerable<ReservationDto> ToDtoList(this IEnumerable<Reservation> reservations)
         {
-            if (reservations == null)
-                return new List<ReservationDto>();
-
             return reservations.Select(ToDto).ToList();
         }
 
-        public static Reservation ToModel(this CreateReservationDto dto)
+        public static Reservation ToModel(this CreateReservationRequest request)
         {
             return new Reservation
             {
                 TimeCreated = DateTime.UtcNow,
                 Status = ReservationStatus.Open,
                 
-                TimeReserved = dto.TimeReserved,
-                EmployeeId = dto.EmployeeId,
-                CustomerId = dto.CustomerId
+                TimeReserved = request.TimeReserved,
+                EmployeeId = request.EmployeeId,
+                CustomerId = request.CustomerId
             };
         }
 
-        public static void UpdateEntity(this Reservation entity, UpdateReservationDto dto)
+        public static void UpdateEntity(this Reservation entity, UpdateReservationRequest updateRequest)
         {
-            entity.TimeReserved = dto.TimeReserved;
-            entity.Status = dto.Status;
-            entity.EmployeeId = dto.EmployeeId;
+            entity.TimeReserved = updateRequest.TimeReserved;
+            entity.Status = updateRequest.Status;
+            entity.EmployeeId = updateRequest.EmployeeId;
         }
     }
 }

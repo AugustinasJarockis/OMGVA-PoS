@@ -2,7 +2,7 @@
 
 namespace OmgvaPOS.ReservationManagement.DTOs;
 
-public class UpdateReservationDto
+public class UpdateReservationRequest
 {
     public DateTime TimeReserved { get; set; }
     public ReservationStatus Status { get; set; }

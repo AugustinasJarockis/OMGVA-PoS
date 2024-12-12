@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.Exceptions;
+using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ReservationManagement.DTOs;
 using OmgvaPOS.ReservationManagement.Service;
-using static OmgvaPOS.Exceptions.ExceptionMessages;
+using static OmgvaPOS.Exceptions.ExceptionErrors;
 
 namespace OmgvaPOS.ReservationManagement.Controller
 {
@@ -23,9 +24,9 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<ReservationDto> CreateReservation([FromBody] CreateReservationDto createDto)
+        public ActionResult<ReservationDto> CreateReservation([FromBody] CreateReservationRequest createRequest)
         {
-            var reservation = _reservationService.Create(createDto);
+            var reservation = _reservationService.Create(createRequest);
             return CreatedAtAction(nameof(GetReservation), new { reservationId = reservation.Id }, reservation);
         }
 
@@ -40,7 +41,7 @@ namespace OmgvaPOS.ReservationManagement.Controller
         {
             var reservation = _reservationService.GetById(reservationId);
             if (reservation == null)
-                throw new NotFoundException(ReservationNotFoundMessage(reservationId));
+                return NotFound(GetReservationNotFoundErrorResponse(reservationId));
             
             return Ok(reservation);
         }
@@ -52,9 +53,10 @@ namespace OmgvaPOS.ReservationManagement.Controller
         // TODO: add forbidden once we link reservation to business
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<ReservationDto> UpdateReservation(long reservationId, [FromBody] UpdateReservationDto updateDto)
+        // TODO: if reservation status is done, don't let to update it for historical reasons
+        public ActionResult<ReservationDto> UpdateReservation(long reservationId, [FromBody] UpdateReservationRequest updateRequest)
         {
-            var reservation = _reservationService.Update(reservationId, updateDto);
+            var reservation = _reservationService.Update(reservationId, updateRequest);
             return Ok(reservation);
         }
 
@@ -75,11 +77,13 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        // TODO: add forbidden once we link reservation to business
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<ReservationDto>> GetBusinessReservations(long businessId)
         {
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
+                throw new ForbiddenResourceException(GetForbiddenReservationErrorMessage(businessId));
+            
             var reservations = _reservationService.GetAll();
             return Ok(reservations);
         }

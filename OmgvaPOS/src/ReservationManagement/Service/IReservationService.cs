@@ -7,7 +7,7 @@ public interface IReservationService
 {
     IEnumerable<ReservationDto> GetAll();
     ReservationDto? GetById(long id);
-    ReservationDto Create(CreateReservationDto createDto);
-    ReservationDto Update(long id, UpdateReservationDto updateDto);
+    ReservationDto Create(CreateReservationRequest createRequest);
+    ReservationDto Update(long id, UpdateReservationRequest updateRequest);
     void Delete(long id);
 }

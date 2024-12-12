@@ -30,7 +30,7 @@ namespace OmgvaPOS.ItemManagement
                 return Forbid();
 
             try {
-                return Ok(JsonConvert.SerializeObject(_itemService.GetItems((long)businessId)));
+                return Ok(_itemService.GetItems((long)businessId));
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving all items.");

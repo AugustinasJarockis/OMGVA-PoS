@@ -1,6 +1,6 @@
 ﻿namespace OmgvaPOS.ReservationManagement.DTOs;
 
-public class CreateReservationDto
+public class CreateReservationRequest
 {
     public DateTime TimeReserved { get; set; }
     public long EmployeeId { get; set; }

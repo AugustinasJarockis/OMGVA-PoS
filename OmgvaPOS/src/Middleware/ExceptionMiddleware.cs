@@ -64,9 +64,4 @@ public class ExceptionMiddleware
         await context.Response.WriteAsJsonAsync(response);
     }
     
-    public class ErrorResponse
-    {
-        public string Message { get; set; }
-    }
-    
 }
