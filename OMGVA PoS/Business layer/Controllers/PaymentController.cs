@@ -1,36 +1,45 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.JsonWebTokens;
 using OMGVA_PoS.Data_layer.Models;
+using OMGVA_PoS.Helper_modules.Utilities;
 using Stripe;
 
 namespace OMGVA_PoS.Business_layer.Controllers
 {
     [ApiController]
-    [Route("checkout")]
-    public class CheckoutController : ControllerBase
+    [Route("payment")]
+    public class PaymentController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-
-        public CheckoutController(IConfiguration configuration)
+        public PaymentController(IConfiguration configuration)
         {
             _configuration = configuration;
             StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
         [HttpPost]
-        public IActionResult ProcessPayment([FromBody] PaymentRequest request)
+        [Route("process_card_payment")]
+        public IActionResult ProcessCardPayment([FromBody] PaymentRequest request)
         {
+            // JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
+            // if (token == null)
+            // {
+            //     return Forbid();
+            // }
+            
             try
             {
                 var paymentIntentService = new PaymentIntentService();
                 var options = new PaymentIntentCreateOptions
                 {
                     Amount = request.Amount,
-                    Currency = "usd",
+                    Currency = "eur",
                     PaymentMethod = request.PaymentMethodId,
                     ConfirmationMethod = "manual",
                     Confirm = true,
-                    PaymentMethodTypes = new List<string> { "card" } // Explicitly specify 'card' only
+                    PaymentMethodTypes = new List<string> { "card" }
                 };
 
                 var paymentIntent = paymentIntentService.Create(options);
@@ -47,7 +56,21 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 else if (paymentIntent.Status == "succeeded")
                 {
                     // Payment succeeded
-                    return Ok(new { success = true });
+                    return Ok(new
+                    {
+                        success = true,
+                        paymentIntent = new
+                        {
+                            id = paymentIntent.Id,
+                            amount = paymentIntent.Amount,
+                            currency = paymentIntent.Currency,
+                            status = paymentIntent.Status,
+                            description = paymentIntent.Description,
+                            metadata = paymentIntent.Metadata,
+                            created = paymentIntent.Created,
+                            // Add other fields as needed
+                        }
+                    });
                 }
                 else
                 {
