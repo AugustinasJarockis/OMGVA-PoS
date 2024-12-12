@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.TaxManagement.DTOs;
 using OmgvaPOS.TaxManagement.Mappers;
 using OmgvaPOS.TaxManagement.Models;
-using OmgvaPOS.TaxManagement.Repository;
+using OmgvaPOS.TaxManagement.Services;
+using System.Linq;
 
 namespace OmgvaPOS.TaxManagement.Controller
 {
@@ -11,12 +12,12 @@ namespace OmgvaPOS.TaxManagement.Controller
     [Route("tax")]
     public class TaxController : ControllerBase
     {
-        private readonly ITaxRepository _taxRepository;
+        private readonly ITaxService _taxService;
         private readonly ILogger<TaxController> _logger;
 
-        public TaxController(ITaxRepository taxRepository, ILogger<TaxController> logger)
+        public TaxController(ITaxService taxService, ILogger<TaxController> logger)
         {
-            _taxRepository = taxRepository;
+            _taxService = taxService;
             _logger = logger;
         }
         
@@ -24,35 +25,36 @@ namespace OmgvaPOS.TaxManagement.Controller
 
         [HttpPost]
         [Authorize(Roles = "Admin,Owner")]
-        [ProducesResponseType<TaxDto>(StatusCodes.Status200OK)]
+        [ProducesResponseType<TaxDto>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateTax([FromBody] CreateTaxRequest createTaxRequest)
+        public IActionResult CreateTax([FromBody] CreateTaxRequest createTaxRequest)
         {
             var tax = TaxMapper.FromCreateTaxRequest(createTaxRequest);
-            await _taxRepository.SaveTaxAsync(tax);
+            _taxService.CreateTax(tax);
 
             return CreatedAtAction(nameof(GetTaxById), new { tax.Id }, tax);
         }
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin,Owner")]
+        [ProducesResponseType<TaxDto>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateTax([FromBody] UpdateTaxRequest updateTaxRequest, long id)
+        public IActionResult UpdateTax([FromBody] UpdateTaxRequest updateTaxRequest, long id) //TODO: fix this method in frontend
         {
-            var tax = await _taxRepository.GetTaxByIdAsync(id);
+            var tax = _taxService.GetTaxById(id);
             if (tax == null)
             {
                 return NotFound(TaxNotFoundMessage);
             }
             
             tax = TaxMapper.FromUpdateTaxRequest(updateTaxRequest, tax);
-            await _taxRepository.UpdateTaxAsync(tax);
-            return NoContent();
+            var returnTax = _taxService.UpdateTax(tax);
+            return Ok(returnTax);
         }
         
         [HttpGet]
@@ -61,9 +63,9 @@ namespace OmgvaPOS.TaxManagement.Controller
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<TaxDto>>> GetAllTaxes()
+        public IActionResult GetAllTaxes()
         {
-            var taxes = await _taxRepository.GetAllTaxesAsync();
+            var taxes = _taxService.GetAllTaxes();
             return Ok(TaxMapper.ToDTOs(taxes));
         }
         
@@ -72,9 +74,9 @@ namespace OmgvaPOS.TaxManagement.Controller
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<TaxDto>> GetTaxById(long id)
+        public IActionResult GetTaxById(long id)
         {
-            var tax = await _taxRepository.GetTaxByIdAsync(id);
+            var tax = _taxService.GetTaxById(id);
             if (tax == null)
             {
                 return NotFound(TaxNotFoundMessage);
@@ -89,14 +91,14 @@ namespace OmgvaPOS.TaxManagement.Controller
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> DeleteTaxById(long id)
+        public IActionResult DeleteTaxById(long id)
         {
-            var tax = await _taxRepository.GetTaxByIdAsync(id);
+            var tax = _taxService.GetTaxById(id);
             if (tax == null)
             {
                 return NotFound(TaxNotFoundMessage);
             }
-            await _taxRepository.DeleteTaxAsync(id);
+            _taxService.DeleteTax(id);
             return NoContent();
         }
     }
