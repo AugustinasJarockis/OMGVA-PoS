@@ -6,7 +6,7 @@ namespace OmgvaPOS.ReservationManagement.Mappers
 {
     public static class ReservationMapper
     {
-        public static ReservationDto ToDto(Reservation reservation)
+        public static ReservationDto ToDto(this Reservation reservation)
         {
             return new ReservationDto
             {
@@ -25,7 +25,7 @@ namespace OmgvaPOS.ReservationManagement.Mappers
             };
         }
 
-        public static IEnumerable<ReservationDto> ToDtoList(IEnumerable<Reservation> reservations)
+        public static IEnumerable<ReservationDto> ToDtoList(this IEnumerable<Reservation> reservations)
         {
             if (reservations == null)
                 return new List<ReservationDto>();
@@ -33,7 +33,7 @@ namespace OmgvaPOS.ReservationManagement.Mappers
             return reservations.Select(ToDto).ToList();
         }
 
-        public static Reservation ToEntity(CreateReservationDto dto)
+        public static Reservation ToModel(this CreateReservationDto dto)
         {
             return new Reservation
             {
@@ -46,7 +46,7 @@ namespace OmgvaPOS.ReservationManagement.Mappers
             };
         }
 
-        public static void UpdateEntity(Reservation entity, UpdateReservationDto dto)
+        public static void UpdateEntity(this Reservation entity, UpdateReservationDto dto)
         {
             entity.TimeReserved = dto.TimeReserved;
             entity.Status = dto.Status;

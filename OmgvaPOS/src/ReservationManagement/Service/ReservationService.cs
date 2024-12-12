@@ -18,21 +18,21 @@ namespace OmgvaPOS.ReservationManagement.Service
         public IEnumerable<ReservationDto> GetAll()
         {
             var reservations = _repository.GetAll();
-            return ReservationMapper.ToDtoList(reservations);
+            return reservations.ToDtoList();
         }
 
         public ReservationDto? GetById(long id)
         {
             var reservation = _repository.GetById(id);
-            return reservation == null ? null : ReservationMapper.ToDto(reservation);
+            return reservation?.ToDto();
         }
 
         public ReservationDto Create(CreateReservationDto createDto)
         {
-            var reservation = ReservationMapper.ToEntity(createDto);
+            var reservation = createDto.ToModel();
             
             var createdReservation = _repository.Create(reservation);
-            return ReservationMapper.ToDto(createdReservation);
+            return createdReservation.ToDto();
         }
 
         public ReservationDto Update(long id, UpdateReservationDto updateDto)
@@ -41,10 +41,10 @@ namespace OmgvaPOS.ReservationManagement.Service
             if (existingReservation == null)
                 throw new NotFoundException(ReservationNotFoundMessage(id));
 
-            ReservationMapper.UpdateEntity(existingReservation, updateDto);
+            existingReservation.UpdateEntity(updateDto);
             
             var updatedReservation = _repository.Update(existingReservation);
-            return ReservationMapper.ToDto(updatedReservation);
+            return updatedReservation.ToDto();
         }
 
         public void Delete(long id)
