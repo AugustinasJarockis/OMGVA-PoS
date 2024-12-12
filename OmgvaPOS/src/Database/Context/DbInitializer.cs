@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.TaxManagement.Models;
+﻿using OmgvaPOS.Database.Context.MockDataHelpers;
 
 namespace OmgvaPOS.Database.Context;
 
@@ -14,22 +13,29 @@ public class DbInitializer
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task InitDb(DbInitializerAction dbInitializerAction)
+    public void InitDb(DbInitializerAction dbInitializerAction)
     {
         _logger.LogInformation("Initializing database with action: {Action}", dbInitializerAction);
 
         try
         {
-            Task actionTask = dbInitializerAction switch
+            switch (dbInitializerAction)
             {
-                DbInitializerAction.DO_NOTHING => Task.CompletedTask,
-                DbInitializerAction.RESET_DATABASE => ResetDatabaseAsync(),
-                DbInitializerAction.REMOVE_ALL_DATA => RemoveAllDataAsync(),
-                DbInitializerAction.INITIALIZE_MOCK_DATA => InitializeMockDataAsync(),
-                _ => throw new ArgumentException("Invalid DbInitializerAction", nameof(dbInitializerAction))
-            };
+                case DbInitializerAction.DoNothing:
+                    break;
+                case DbInitializerAction.ResetDatabaseData:
+                    ResetDatabaseData();
+                    break;
+                case DbInitializerAction.RemoveAllData:
+                    RemoveAllData();
+                    break;
+                case DbInitializerAction.SeedMockData:
+                    InitializeMockData();
+                    break;
+                default:
+                    throw new ArgumentException("Invalid DbInitializerAction", nameof(dbInitializerAction));
+            }
 
-            await actionTask;
             _logger.LogInformation("Database initialization completed successfully.");
         }
         catch (Exception ex)
@@ -39,51 +45,30 @@ public class DbInitializer
         }
     }
 
-    private async Task ResetDatabaseAsync()
+    private void ResetDatabaseData()
     {
-        _logger.LogDebug("Resetting database...");
-        await RemoveAllDataAsync();
-        await InitializeMockDataAsync();
+        _logger.LogInformation("Resetting database data...");
+        RemoveAllData();
+        InitializeMockData();
+        _logger.LogInformation("Resetting database data complete...");
     }
 
-    private async Task RemoveAllDataAsync()
+    private void InitializeMockData()
     {
-        _logger.LogDebug("Removing all data from the database...");
-        await RemoveAllTaxAsync();
-        _logger.LogDebug("All data removed");
+        _logger.LogInformation("Initializing mock data...");
+        MockBusinessesDataHelper.InitializeMockBusinesses(_context, _logger);
+        MockUserDataHelper.InitializeMockUsers(_context, _logger);
+        MockTaxesDataHelper.InitializeMockTaxes(_context, _logger);
+        _logger.LogInformation("Mock data initialized");
     }
 
-    private async Task InitializeMockDataAsync()
+    private void RemoveAllData()
     {
-        _logger.LogDebug("Initializing mock data...");
-        await InitializeTaxesAsync();
-        _logger.LogDebug("Mock data initialized");
+        _logger.LogInformation("Removing all data from the database...");
+        MockUserDataHelper.RemoveAllUsers(_context, _logger);
+        MockTaxesDataHelper.RemoveAllTax(_context, _logger);
+        MockBusinessesDataHelper.RemoveAllBusinesses(_context, _logger);
+        _logger.LogInformation("All data removed");
     }
 
-    private async Task RemoveAllTaxAsync()
-    {
-        _logger.LogDebug("Removing all taxes...");
-        var allTaxes = await _context.Taxes.ToListAsync();
-        _context.Taxes.RemoveRange(allTaxes);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("All taxes removed.");
-    }
-
-    private async Task InitializeTaxesAsync()
-    {
-        _logger.LogDebug("Adding mock taxes...");
-        await _context.AddRangeAsync(MockTax());
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Mock taxes added.");
-    }
-    
-    private IEnumerable<Tax> MockTax()
-    {
-        return new List<Tax>
-        {
-            new() { TaxType = "VAT", Percent = 20, IsArchived = false },
-            new() { TaxType = "Service Tax", Percent = 5, IsArchived = false },
-            new() { TaxType = "Sales Tax", Percent = 10, IsArchived = true }
-        };
-    }
 }

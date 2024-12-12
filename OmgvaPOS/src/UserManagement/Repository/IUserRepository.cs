@@ -9,7 +9,8 @@ namespace OmgvaPOS.UserManagement.Repository
     {
         public void CreateUser(User user);
         public List<User> GetUsers();
-        public User GetUser(long id);
+        public User GetUser(long id); 
+        public User? GetUserNoException(long id);
         public void UpdateUser(long id, UpdateUserRequest user);
         public bool DeleteUser(long id);
         public List<User> GetBusinessUsers(long businessId);
