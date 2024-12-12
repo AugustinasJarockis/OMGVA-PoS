@@ -1,32 +1,28 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'
-import { deleteTax, getAllTaxes } from '../../services/taxService';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { deleteUser, getBusinessUsers } from '../../services/userService';
+import { getTokenBusinessId, getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
 import DeletableUpdatableListItem from '../../components/List/DeletableUpdatableListItem';
-import '../../index.css';
-import '../../components/List/ClickableListItem.css';
-import { getTokenRole } from '../../utils/tokenUtils';
 import ClickableListItem from '../../components/List/ClickableListItem';
 
-interface TaxListPageProps {
-    token: string | null
-}
-
-const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
+const UserListPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { authToken } = useAuth();
 
     const onDelete = async (id: string) => {
         try {
-            const error = await deleteTax(authToken, id);
+            const error = await deleteUser(authToken, id);
 
             if (error) {
-                setError("An error occurred while deleting tax: " + error);
+                setError("An error occurred while deleting user: " + error);
                 return;
             }
 
             if (!listItems) {
-                getTaxes();
+                getUsers();
             }
 
             if (listItems) {
@@ -39,24 +35,25 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
         }
     }
 
-    const getTaxes = async () => {
+    const getUsers = async () => {
         setError(null);
 
         try {
-            const { result, error } = await getAllTaxes(authToken);
+            const { result, error } = await getBusinessUsers(authToken, getTokenBusinessId(authToken ?? ''));
 
             if (!result) {
                 setError('Problem acquiring taxes: ' + error);
             }
             else {
-                setListItems(result.map(tax =>
+                setListItems(result.map(user =>
                     <DeletableUpdatableListItem
-                        key={tax.id}
-                        id={tax.id}
-                        text={tax.taxType + ": " + (tax.percent ? (tax.percent + "%") : "NaN")}
-                        updateUrl={"/tax/update/" + tax.id}
+                        key={user.Id}
+                        id={user.Id ?? ''}
+                        text={user.Name ?? '-'}
+                        updateUrl={"/user/update/" + user.Id}
                         deleteFunction={onDelete}
-                        object={ tax }
+                        disableDelete={user.Id === getTokenUserId(authToken ?? '') || user.HasLeft}
+                        object={user}
                     />));
             }
         } catch (err: any) {
@@ -64,34 +61,37 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
         }
     }
 
-    const goToBusinessSelection = async () => {
-        navigate("/business/");
-    }
+    const goToBusiness = async () => {
+        if (authToken) {
+            const businessId = getTokenBusinessId(authToken);
+            navigate('/business/' + businessId);
+        }
+    };
 
     useEffect(() => {
         if (authToken) {
             const role = getTokenRole(authToken);
-            if (role !== "Admin") {
+            if (role === "Employee") {
                 navigate('/');
                 return;
             }
-            getTaxes();
+            getUsers();
         }
         else {
             setError("You have to authenticate first!");
         }
-    }, []);
+    }, [authToken]);
 
     return (
         <div>
             <header>
-                <button onClick={goToBusinessSelection}>Businesses</button>
+                <button onClick={goToBusiness}>Return to business</button>
             </header>
-            <h1>Available taxes</h1>
+            <h1>Business users</h1>
             <div className="tax-list-container">
                 {listItems}
-                <div className="create-button-wrapper">
-                    <ClickableListItem key="create" text="Create a new tax" url={'/tax/create'} />
+                <div className="create-button-wrapper" >
+                    <ClickableListItem key="create" text="Create a new user" url={'/user/create'} />
                 </div>
             </div>
             {error && <p className="error-message">{error}</p>}
@@ -99,5 +99,4 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
     );
 };
 
-export default TaxListPage;
-
+export default UserListPage;
