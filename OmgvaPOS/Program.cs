@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.Middleware;
 using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.UserManagement.Repository;
 
@@ -123,11 +124,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Add exception handler before routing/endpoints
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 app.MapControllers();
 
