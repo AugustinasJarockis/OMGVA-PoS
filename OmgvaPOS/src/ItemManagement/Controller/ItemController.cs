@@ -113,7 +113,9 @@ namespace OmgvaPOS.ItemManagement
             if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
+            item.Id = id;
             item.Currency = item.Currency.ToUpper();
+
             if (!item.Currency.IsValidCurrency())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
 
@@ -123,7 +125,6 @@ namespace OmgvaPOS.ItemManagement
             if (item.Price < 0)
                 return StatusCode((int)HttpStatusCode.BadRequest, "Price can not be negative");
 
-            item.Id = id;
             try {
                 var returnItem = _itemService.UpdateItem(item);
                 if (returnItem != null) //TODO: Handle errors, handle possible null
