@@ -35,19 +35,18 @@ namespace OmgvaPOS.src.ItemManagement.Mappers
             };
         }
 
-        public static Item ToItem(this ItemDTO itemDTO) {
-            return new() {
-                Id = itemDTO.Id,
-                Name = itemDTO.Name,
-                InventoryQuantity = itemDTO.InventoryQuantity,
-                Price = itemDTO.Price,
-                Currency = itemDTO.Currency,
-                ItemGroup = itemDTO.ItemGroup,
-                Duration = itemDTO.Duration,
-                ImgPath = itemDTO.ImgPath,
-                DiscountId = itemDTO.DiscountId,
-                UserId = itemDTO.UserId
-            };
+        public static Item ToItem(this ItemDTO itemDTO, Item baseItem) {
+            baseItem.Id = baseItem.Id;
+            baseItem.Name = itemDTO.Name ?? baseItem.Name;
+            baseItem.InventoryQuantity = itemDTO.InventoryQuantity ?? baseItem.InventoryQuantity;
+            baseItem.Price = itemDTO.Price ?? baseItem.Price;
+            baseItem.Currency = itemDTO.Currency ?? baseItem.Currency;
+            baseItem.ItemGroup = itemDTO.ItemGroup ?? baseItem.ItemGroup;
+            baseItem.Duration = itemDTO.Duration ?? baseItem.Duration;
+            baseItem.ImgPath = itemDTO.ImgPath ?? baseItem.ImgPath;
+            baseItem.DiscountId = itemDTO.DiscountId ?? baseItem.DiscountId;
+            baseItem.UserId = itemDTO.UserId ?? baseItem.UserId;
+            return baseItem;
         }
     }
 }
