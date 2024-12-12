@@ -59,12 +59,14 @@ public class DbInitializer
         MockBusinessesDataHelper.InitializeMockBusinesses(_context, _logger);
         MockUserDataHelper.InitializeMockUsers(_context, _logger);
         MockTaxesDataHelper.InitializeMockTaxes(_context, _logger);
+        MockItemDataHelper.InitializeMockItems(_context, _logger);
         _logger.LogInformation("Mock data initialized");
     }
 
     private void RemoveAllData()
     {
         _logger.LogInformation("Removing all data from the database...");
+        MockItemDataHelper.RemoveAllItems(_context, _logger);
         MockUserDataHelper.RemoveAllUsers(_context, _logger);
         MockTaxesDataHelper.RemoveAllTax(_context, _logger);
         MockBusinessesDataHelper.RemoveAllBusinesses(_context, _logger);

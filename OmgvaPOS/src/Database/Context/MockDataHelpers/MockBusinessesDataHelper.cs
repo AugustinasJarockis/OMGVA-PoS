@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.BusinessManagement.Models;
 
 namespace OmgvaPOS.Database.Context.MockDataHelpers;
