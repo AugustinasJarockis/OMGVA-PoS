@@ -1,6 +1,7 @@
 ﻿using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
+using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Repository;
 
 namespace OmgvaPOS.ItemManagement.Repositories
@@ -46,15 +47,16 @@ namespace OmgvaPOS.ItemManagement.Repositories
             }
         }
 
-        public Item UpdateItem(Item item) //TODO: Check if this is actually correct // TODO: Proper error handling
+        public Item UpdateItem(Item item) // TODO: Proper error handling
         {
             try {
-                var oldItem = _database.Items.Find(item.Id);
-                _database.Add(item);
-                oldItem.IsArchived = true;
-                _database.Items.Update(oldItem);
+                var newItem = (Item)item.Clone();
+                _database.Add(newItem);
+                _database.Entry(item).CurrentValues.SetValues(_database.Entry(item).OriginalValues);
+                item.IsArchived = true;
+                _database.Items.Update(item);
                 _database.SaveChanges();
-                return item;
+                return newItem;
             }
             catch (Exception ex) {
                 _logger.LogError(ex, $"An error occurred while updating item with ID {item.Id}.");

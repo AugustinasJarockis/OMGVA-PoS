@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Models;
+using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.TaxManagement.Repository;
@@ -61,12 +62,13 @@ public class TaxRepository : ITaxRepository
     {
         try
         {
-            var oldTax = _database.Taxes.Find(tax.Id);
-            _database.Add(tax);
-            oldTax.IsArchived = true;
-            _database.Taxes.Update(oldTax);
+            var newTax = (Tax)tax.Clone();
+            _database.Add(newTax);
+            _database.Entry(tax).CurrentValues.SetValues(_database.Entry(tax).OriginalValues);
+            tax.IsArchived = true;
+            _database.Taxes.Update(tax);
             _database.SaveChanges();
-            return tax;
+            return newTax;
         }
         catch (Exception ex)
         {

@@ -3,6 +3,7 @@ using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Models;
+using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.ItemVariationManagement.Repositories
 {
@@ -43,12 +44,13 @@ namespace OmgvaPOS.ItemVariationManagement.Repositories
         }
         public ItemVariation UpdateItemVariation(ItemVariation itemVariation) {
             try {
-                var oldItemVariation = _database.ItemVariations.Find(itemVariation.Id);
-                _database.Add(itemVariation);
-                oldItemVariation.IsArchived = true;
-                _database.ItemVariations.Update(oldItemVariation);
+                var newItemVariation = (ItemVariation)itemVariation.Clone();
+                _database.Add(newItemVariation);
+                _database.Entry(itemVariation).CurrentValues.SetValues(_database.Entry(itemVariation).OriginalValues);
+                itemVariation.IsArchived = true;
+                _database.ItemVariations.Update(itemVariation);
                 _database.SaveChanges();
-                return itemVariation;
+                return newItemVariation;
             }
             catch (Exception ex) {
                 _logger.LogError(ex, $"An error occurred while updating item variation with ID {itemVariation.Id}.");
