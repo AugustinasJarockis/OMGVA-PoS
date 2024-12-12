@@ -22,11 +22,9 @@ namespace OmgvaPOS.BusinessManagement.Repository
 
             return business;
         }
-        public bool UpdateBusiness(BusinessDTO business) {
-            var businessToUpdate = _database.Businesses.SingleOrDefault(b => b.Id == business.Id);
-            if (businessToUpdate != null) {
-                businessToUpdate = business.ToBusiness(businessToUpdate);
-                _database.Update(businessToUpdate);
+        public bool UpdateBusiness(Business business) {
+            if (business != null) {
+                _database.Update(business);
                 _database.SaveChanges();
                 return true;
             }

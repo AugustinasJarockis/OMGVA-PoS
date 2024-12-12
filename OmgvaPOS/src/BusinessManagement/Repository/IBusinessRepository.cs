@@ -1,5 +1,4 @@
-﻿using OmgvaPOS.BusinessManagement.DTOs;
-using OmgvaPOS.BusinessManagement.Models;
+﻿using OmgvaPOS.BusinessManagement.Models;
 
 namespace OmgvaPOS.BusinessManagement.Repository
 {
@@ -8,6 +7,6 @@ namespace OmgvaPOS.BusinessManagement.Repository
         public List<Business> GetBusinesses();
         public Business GetBusiness(long businessId);
         public Business CreateBusiness(Business createBusinessRequest);
-        public bool UpdateBusiness(BusinessDTO business);
+        public bool UpdateBusiness(Business business);
     }
 }
