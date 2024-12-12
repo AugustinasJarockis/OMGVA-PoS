@@ -1,25 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.TaxManagement.Repository;
 
 public class TaxRepository : ITaxRepository
 {
-    private readonly OmgvaDbContext _context;
+    private readonly OmgvaDbContext _database;
     private readonly ILogger<TaxRepository> _logger;
 
     public TaxRepository(OmgvaDbContext context, ILogger<TaxRepository> logger)
     {
-        _context = context;
+        _database = context;
         _logger = logger;
     }
 
-    public async Task<List<Tax>> GetAllTaxesAsync()
+    public List<Tax> GetAllTaxes()
     {
         try
         {
-            return await _context.Taxes.Where(t => t.IsArchived == false).ToListAsync();
+            return _database.Taxes.Where(t => t.IsArchived == false).ToList();
         }
         catch (Exception ex)
         {
@@ -28,11 +29,11 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task<Tax> GetTaxByIdAsync(long id)
+    public Tax GetTaxById(long id)
     {
         try
         {
-            return await _context.Taxes.Where(tax => tax.Id == id).FirstOrDefaultAsync();
+            return _database.Taxes.Where(tax => tax.Id == id).FirstOrDefault();
         }
         catch (Exception ex)
         {
@@ -41,12 +42,12 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task<Tax> SaveTaxAsync(Tax tax)
+    public Tax SaveTax(Tax tax)
     {
         try
         {
-            _context.Taxes.Add(tax);
-            await _context.SaveChangesAsync();
+            _database.Taxes.Add(tax);
+            _database.SaveChanges();
             return tax;
         }
         catch (Exception ex)
@@ -56,12 +57,16 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task UpdateTaxAsync(Tax tax)
+    public Tax UpdateTax(Tax tax)
     {
         try
         {
-            _context.Taxes.Update(tax);
-            await _context.SaveChangesAsync();
+            var oldTax = _database.Taxes.Find(tax.Id);
+            _database.Add(tax);
+            oldTax.IsArchived = true;
+            _database.Taxes.Update(oldTax);
+            _database.SaveChanges();
+            return tax;
         }
         catch (Exception ex)
         {
@@ -70,16 +75,16 @@ public class TaxRepository : ITaxRepository
         }
     }
 
-    public async Task DeleteTaxAsync(long id)
+    public void DeleteTax(long id)
     {
         try
         {
-            var tax = await _context.Taxes.FindAsync(id);
+            var tax = _database.Taxes.Find(id);
             if (tax != null)
             {
                 tax.IsArchived = true;
-                _context.Taxes.Update(tax);
-                await _context.SaveChangesAsync();
+                _database.Taxes.Update(tax);
+                _database.SaveChanges();
             }
         }
         catch (Exception ex)

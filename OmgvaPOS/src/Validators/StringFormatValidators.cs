@@ -51,5 +51,14 @@ namespace OmgvaPOS.Validators
                 return true;
             return false;
         }
+
+        public static bool IsValidCurrency(this string str) {
+            if (str == null || str.Length != 3)
+                return false;
+            Regex validateCurrencyRegex = new Regex("^[A-Z]{3}$");
+            if (validateCurrencyRegex.IsMatch(str))
+                return true;
+            return false;
+        }
     }
 }
