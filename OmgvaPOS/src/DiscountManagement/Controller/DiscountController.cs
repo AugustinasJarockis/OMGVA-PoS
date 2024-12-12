@@ -24,6 +24,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [Authorize(Roles = "Admin,Owner")]
         [ProducesResponseType<DiscountDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -55,6 +56,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<List<DiscountDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<DiscountDTO>> GetAllDiscounts() {
@@ -81,6 +83,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<DiscountDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<DiscountDTO> GetDiscountById(long id) {
@@ -128,6 +131,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [Authorize(Roles = "Admin,Owner")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ArchiveDiscount(long id) {
@@ -149,6 +153,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //TODO: does not work error in ItemRepository UpdateItem(Item item)
