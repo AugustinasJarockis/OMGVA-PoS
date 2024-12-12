@@ -5,7 +5,7 @@ namespace OmgvaPOS.DiscountManagement.Service
 {
     public interface IDiscountService
     {
-        public Discount CreateDiscount(CreateDiscountRequest createDiscountRequest);
+        public DiscountDTO CreateDiscount(CreateDiscountRequest createDiscountRequest);
         public List<DiscountDTO> GetGlobalDiscounts();
         public List<DiscountDTO> GetBusinessDiscounts(long businessId);
         public DiscountDTO GetDiscountById(long id);

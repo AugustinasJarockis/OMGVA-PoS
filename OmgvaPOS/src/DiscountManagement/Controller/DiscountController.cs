@@ -36,8 +36,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
                 createDiscountRequest.BusinessId = businessId;
 
             try {
-                var discount = _discountService.CreateDiscount(createDiscountRequest);
-                DiscountDTO discountDTO = DiscountMapper.ToDTO(discount);
+                var discountDTO = _discountService.CreateDiscount(createDiscountRequest);
                 return CreatedAtAction(nameof(GetDiscountById), new { discountDTO.Id }, discountDTO);
             }
             catch (ValidationException) {

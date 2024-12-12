@@ -27,7 +27,7 @@ public class DiscountService : IDiscountService
         _logger = logger;
     }
 
-    public Discount CreateDiscount(CreateDiscountRequest request) {
+    public DiscountDTO CreateDiscount(CreateDiscountRequest request) {
         try {
             DiscountValidator.ValidateDateCreate(request.TimeValidUntil);
             DiscountValidator.ValidateDiscountAmount(request.Amount);
@@ -49,7 +49,7 @@ public class DiscountService : IDiscountService
             //_orderService.UpdateOrder(order);
         }
 
-        return discount;
+        return DiscountMapper.ToDTO(discount);
     }
 
 
