@@ -2,9 +2,9 @@
 using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.ScheduleManagement.Models;
 using OmgvaPOS.OrderManagement.Models;
-using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.AuthManagement.Repository;
+using OmgvaPOS.UserManagement.Mappers;
 
 namespace OmgvaPOS.UserManagement.Service
 {
@@ -17,34 +17,14 @@ namespace OmgvaPOS.UserManagement.Service
             if (userRequest == null)
                 throw new ArgumentNullException(nameof(userRequest));
 
-            User user = new()
-            {
-                Name = userRequest.Name,
-                Username = userRequest.Username,
-                Email = userRequest.Email,
-                Role = userRequest.Role,
-                Password = BCrypt.Net.BCrypt.EnhancedHashPassword(userRequest.Password, 13),
-                BusinessId = userRequest.BusinessId,
-                HasLeft = false
-            };
+            var user = UserMapper.FromSignUpRequest(userRequest);
 
             var createdUser = _authenticationRepository.SignUpUser(user);
 
             if (createdUser == null)
                 throw new ArgumentNullException(nameof(userRequest));
 
-            UserResponse userResponse = new()
-            {
-                Id = createdUser.Id,
-                BusinessId = createdUser.BusinessId,
-                Name = createdUser.Name,
-                Username = createdUser.Username,
-                Email = createdUser.Email,
-                Role = createdUser.Role,
-                HasLeft = createdUser.HasLeft
-            };
-
-            return userResponse;
+            return UserMapper.FromUser(createdUser);
         }
         public List<UserResponse> GetAllUsers()
         {
@@ -52,34 +32,15 @@ namespace OmgvaPOS.UserManagement.Service
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                UserResponse userResponse = new()
-                {
-                    Id = user.Id,
-                    BusinessId = user.BusinessId,
-                    Name = user.Name,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Role = user.Role,
-                    HasLeft = user.HasLeft
-                };
-                usersResponse.Add(userResponse);
+                usersResponse.Add(UserMapper.FromUser(user));
             }
             return usersResponse;
         }
         public UserResponse GetUser(long id)
         {
             var user = _userRepository.GetUser(id);
-            UserResponse userResponse = new()
-            {
-                Id = user.Id,
-                BusinessId = user.BusinessId,
-                Name = user.Name,
-                Username = user.Username,
-                Email = user.Email,
-                Role = user.Role,
-                HasLeft = user.HasLeft
-            };
-            return userResponse;
+           
+            return UserMapper.FromUser(user);
         }
         public void UpdateUser(long id, UpdateUserRequest user)
         {
@@ -101,17 +62,7 @@ namespace OmgvaPOS.UserManagement.Service
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                UserResponse userResponse = new()
-                {
-                    Id = user.Id,
-                    BusinessId = user.BusinessId,
-                    Name = user.Name,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Role = user.Role,
-                    HasLeft = user.HasLeft
-                };
-                usersResponse.Add(userResponse);
+                usersResponse.Add(UserMapper.FromUser(user));
             }
             return usersResponse;
         }

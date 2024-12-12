@@ -2,6 +2,7 @@
 using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.UserManagement.DTOs;
+using OmgvaPOS.UserManagement.Mappers;
 using OmgvaPOS.UserManagement.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -21,22 +22,13 @@ namespace OmgvaPOS.AuthManagement.Service
                 if (signUpRequest == null)
                     throw new ArgumentNullException(nameof(signUpRequest));
 
-                User user = new()
-                {
-                    Name = signUpRequest.Name,
-                    Username = signUpRequest.Username,
-                    Email = signUpRequest.Email,
-                    Role = signUpRequest.Role,
-                    Password = BCrypt.Net.BCrypt.EnhancedHashPassword(signUpRequest.Password, 13),
-                    BusinessId = signUpRequest.BusinessId,
-                    HasLeft = false
-                };
+                var user = UserMapper.FromSignUpRequest(signUpRequest);
 
                 return _authenticationRepository.SignUpUser(user); 
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Error during sign-in.", ex);
+                throw new ApplicationException("Error during sign-up.", ex);
             }
         }
 
@@ -70,16 +62,7 @@ namespace OmgvaPOS.AuthManagement.Service
 
                 if (checkPassword)
                 {
-                    UserResponse userResponse = new()
-                    {
-                        Id = user.Id,
-                        BusinessId = user.BusinessId,
-                        Name = user.Name,
-                        Username = user.Username,
-                        Email = user.Email,
-                        Role = user.Role,
-                        HasLeft = user.HasLeft
-                    };
+                    var userResponse = UserMapper.FromUser(user);
                     return new LoginDTO(true, "Login Successfully", GenerateJWT(userResponse));
                 }
                 return new LoginDTO(false, "Invalid Password");
