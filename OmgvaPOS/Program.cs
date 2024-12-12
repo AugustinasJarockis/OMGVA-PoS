@@ -8,6 +8,8 @@ using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.UserManagement.Repository;
+using OmgvaPOS.AuthManagement.Service;
+using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.ItemManagement.Services;
@@ -70,6 +72,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();

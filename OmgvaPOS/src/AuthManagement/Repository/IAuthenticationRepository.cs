@@ -1,14 +1,14 @@
-﻿using OmgvaPOS.UserManagement.DTOs;
+﻿using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.UserManagement.Models;
 
 namespace OmgvaPOS.AuthManagement.Repository
 {
     public interface IAuthenticationRepository
     {
-        public User SignIn(SignInRequest signInRequest);
-        public bool IsSignedIn(string email, string password);
-        public bool IsEmailUsed(string email);
-        public bool IsUsernamelUsed(string email);
-        public Task<LoginDTO> Login(LoginRequest loginRequest);
+        public User SignUpUser(User user);
+        public User GetUserByUsername(string username);
+        public bool AnyUserDuplicate(string username, string password);
+        public bool AnyUserEmailDuplicate(string email);
+        public bool AnyUserUsernameDuplicate(string username);
     }
 }

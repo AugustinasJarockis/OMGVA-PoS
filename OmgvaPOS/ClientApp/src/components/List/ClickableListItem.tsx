@@ -10,7 +10,7 @@ interface ClickableListItemProps {
 const ClickableListItem: React.FC<ClickableListItemProps> = (props: ClickableListItemProps) => {
     const navigate = useNavigate();
 
-    const handleClick = () => {
+    const handleClick = async () => {
         navigate(props.url);
     };
 
