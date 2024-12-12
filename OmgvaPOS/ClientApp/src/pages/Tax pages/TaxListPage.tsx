@@ -19,9 +19,7 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
     const onDelete = async (id: string) => {
         try {
             const error = await deleteTax(authToken, id);
-            console.log("Proccess");
-            console.log(error);
-            console.log(listItems);
+
             if (error) {
                 setError("An error occurred while deleting tax: " + error);
                 return;
@@ -33,11 +31,7 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
 
             if (listItems) {
                 const newList = listItems.filter((item) => item.key != id);
-                console.log(newList);
-                console.log("Mid: " + id);
-                console.log(listItems);
                 setListItems(newList);
-                console.log(listItems);
             }
         }
         catch (err: any) {

@@ -10,6 +10,6 @@ namespace OmgvaPOS.AuthManagement.Service
         public bool IsEmailUsed(string email);
         public bool IsUsernameUsed(string username);
         public LoginDTO Login(LoginRequest loginRequest);
-
+        public LoginDTO GenerateAdminJwtToken(long businessId, TokenDetailsDTO tokenDetails);
     }
 }

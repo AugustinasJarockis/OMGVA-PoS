@@ -1,46 +1,44 @@
-﻿import React, { useState } from 'react';
-import axios from 'axios';
+﻿import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { CreateUserFrom } from '../../components/Forms/UserDataForm';
+import { CreateUser, createUser } from '../../services/userService';
+import { getTokenBusinessId } from '../../utils/tokenUtils';
+import { useNavigate } from 'react-router-dom';
 
-const CreateUserPage: React.FC<{ token: string | null }> = ({ token }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        username: '',
-        email: '',
-        password: '',
-        role: 'Employee',
-    });
+const CreateUserPage: React.FC = () => {
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const { authToken } = useAuth();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmission = async (user: CreateUser) => {
         try {
-            const response = await axios.post('/user', formData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            console.log('User created:', response.data);
-        } catch (error) {
-            console.error('Error creating user:', error);
-        }
-    };
+            const error = await createUser(authToken, user);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+            if (error) {
+                setError("An error occurred while creating the user: " + error);
+                return;
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
+    }
+
+    const goToBusiness = async () => {
+        if (authToken) {
+            const businessId = getTokenBusinessId(authToken);
+            navigate('/business/' + businessId);
+        }
     };
 
     return (
         <div>
+            <header>
+                <button onClick={goToBusiness}>Return to business</button>
+            </header>
             <h1>Create User</h1>
-            <form onSubmit={handleSubmit}>
-                <input name="name" placeholder="Name" onChange={handleChange} />
-                <input name="username" placeholder="Username" onChange={handleChange} />
-                <input name="email" type="email" placeholder="Email" onChange={handleChange} />
-                <input name="password" type="password" placeholder="Password" onChange={handleChange} />
-                <select name="role" onChange={handleChange}>
-                    <option value="Admin">Admin</option>
-                    <option value="Owner">Owner</option>
-                    <option value="Employee">Employee</option>
-                </select>
-                <button type="submit">Create</button>
-            </form>
+            {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+            <CreateUserFrom onSubmitCreate={handleSubmission} token={authToken ?? ''} submitText="Create user" />
         </div>
     );
 };

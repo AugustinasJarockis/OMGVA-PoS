@@ -1,11 +1,13 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Business, getBusiness } from '../../services/businessService';
 import { getTokenBusinessId, getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
+import { loginWithNewToken } from '../../services/authService';
 import '../../index.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface BusinessPageProps {
-    token: string | null
+    token: string | null;
 }
 
 const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
@@ -15,48 +17,63 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
     const { state } = useLocation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { setAuthToken } = useAuth();
 
     const loadBusiness = async () => {
         setError(null);
 
         try {
+            let newToken;
             if (!id) {
                 setError('Could not identify the business');
                 return;
             }
-            const { result, error } = await getBusiness(authToken, id);
+
+            if (authToken) {
+                const { token } = await loginWithNewToken(authToken, id);
+                newToken = token;
+                if (token) {
+                    setAuthToken(token);
+                }
+            }
+
+            const { result, error } = await getBusiness(newToken ?? authToken, id);
 
             if (!result) {
                 setError('Problem acquiring businesses: ' + error);
-            }
-            else {
+            } else {
                 setBusiness(result);
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
         }
-    }
+    };
 
     const handleUpdateBusinessOnclick = async () => {
         navigate("/business/update/" + id, { state: { business: business } });
-    }
+    };
 
     const goToBusinessSelection = async () => {
         navigate("/business/");
-    }
+    };
 
     const goToUser = async () => {
         if (authToken) {
-            const userId = getTokenUserId(authToken);
-            navigate(`/user/${userId}/`)
+            const userId = getTokenUserId(localStorage.getItem('authToken') ?? authToken);
+            navigate(`/user/${userId}/`);
         }
-    }
+    };
+
+    const goToBusinessUsersList = async () => {
+        if (authToken && getTokenRole(authToken) !== "Employee") {
+            navigate('/user/business');
+        }
+    };
 
     useEffect(() => {
         if (state && state.business) {
             setBusiness(state.business);
-        }
-        else {
+        } else {
             loadBusiness();
         }
 
@@ -67,35 +84,35 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
                 navigate('/');
             }
             setRole(role);
-        }
-        else {
+        } else {
             setError("You have to authenticate first!");
         }
-    }, []);
+    }, [authToken, id, navigate, state, setAuthToken]);
 
     return (
         <div>
-            {   role==='Admin' &&
-                (<header>
+            {role === 'Admin' && (
+                <header>
                     <button onClick={goToBusinessSelection}>Select another business</button>
-                </header>)}
+                    <button onClick={goToBusinessUsersList}>See all business users</button>
+                    <button onClick={goToUser}>Me</button>
+                </header>
+            )}
             {business ? (
                 <>
-                    <button onClick={goToUser}>Me</button>
                     <h1>{business.Name}</h1>
                     <section>
-                        <p>Address: { business.Address }</p>
-                        <p>Phone: { business.Phone }</p>
-                        <p>Email: { business.Email }</p>
+                        <p>Address: {business.Address}</p>
+                        <p>Phone: {business.Phone}</p>
+                        <p>Email: {business.Email}</p>
                     </section>
                     {(role === 'Owner' || role === 'Admin') && <button onClick={handleUpdateBusinessOnclick}>Update information</button>}
                 </>
-                )
-                : <p className="error-message">{error}</p>
-            }
+            ) : (
+                <p className="error-message">{error}</p>
+            )}
         </div>
     );
 };
 
 export default BusinessPage;
-

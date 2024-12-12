@@ -89,17 +89,39 @@ namespace OmgvaPOS.AuthManagement.Service
                 throw new ApplicationException("Error during login.", ex);
             }
         }
+        public LoginDTO GenerateAdminJwtToken(long businessId, TokenDetailsDTO tokenDetails)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]!));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var userClaims = new[]
+            {
+                 new Claim(ClaimTypes.NameIdentifier, tokenDetails.NameIdentifier),
+                 new Claim(ClaimTypes.Role, tokenDetails.Role),
+                 new Claim(ClaimTypes.Name, tokenDetails.Name),
+                 new Claim(ClaimTypes.Sid, businessId.ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: userClaims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: credentials
+                );
+
+            return new LoginDTO(true, "Login Successfully", new JwtSecurityTokenHandler().WriteToken(token));
+        }
         private string GenerateJWT(UserResponse user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var userClaims = new[]
-        {
-             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-             new Claim(ClaimTypes.Role, user.Role.ToString()!),
-             new Claim(ClaimTypes.Name, user.Name!),
-             new Claim(ClaimTypes.Sid, user.BusinessId.ToString()!)
-         };
+            {
+                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                 new Claim(ClaimTypes.Role, user.Role.ToString()!),
+                 new Claim(ClaimTypes.Name, user.Name!),
+                 new Claim(ClaimTypes.Sid, user.BusinessId.ToString()!)
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],

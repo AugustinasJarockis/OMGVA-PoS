@@ -1,26 +1,22 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { UpdateUser, UserResponse, getUser, updateUser } from '../../services/userService';
 import '../../index.css';
-import { getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
-import UserDataForm from '../../components/Forms/UserDataForm';
+import { useAuth } from '../../contexts/AuthContext';
+import { UserDataForm } from '../../components/Forms/UserDataForm';
+import { getTokenUserId } from '../../utils/tokenUtils';
 
-interface UpdateUserPageProps {
-    token: string | null;
-}
-
-const UpdateUserPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => {
+const UpdateUserPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<UserResponse>();
-    const { state } = useLocation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { authToken } = useAuth();
 
     const handleSubmission = async (user: UpdateUser) => {
         try {
             if (id) {
                 const error = await updateUser(authToken, id, user);
-
                 if (error) {
                     setError("An error occurred while updating the user: " + error);
                     return;
@@ -46,45 +42,32 @@ const UpdateUserPage: React.FC<UpdateUserPageProps> = ({ token: authToken }) => 
         }
     }
 
-    const returnToUserDetails = async () => {
-        navigate(`/user/${id}`);
-    }
-
-    const userRole = (): string | undefined => {
+    const returnToUserDetailsOrBusiness = async () => {
         if (authToken) {
-            const role = getTokenRole(authToken);
-            return role;
-        }
-    }
-
-    const userId = (): string | undefined => {
-        if (authToken) {
-            const userId = getTokenUserId(authToken);
-            return userId.toString();
+            if (getTokenUserId(authToken) === user?.Id) {
+                navigate(`user/${id}`);
+            } else {
+                navigate(`/user/business`);
+            }
         }
     }
 
     useEffect(() => {
-        if (state) {
-            setUser(state.user);
-        }
-        else {
+        if (authToken && id) {
             acquireUser();
-            if (!user) {
-                return;
-            }
         }
-    }, []);
+    }, [authToken, id, error]);
+
 
     return (
         <div>
             <header>
-                <button onClick={returnToUserDetails}>Return</button>
+                <button onClick={returnToUserDetailsOrBusiness}>Return</button>
             </header>
             {!error && user ? (
                 <>
                     <h1>Update user</h1>
-                    <UserDataForm onSubmit={handleSubmission} user={user} roleFromToken={userRole()} idFromToken={userId()} submitText="Update user" />
+                    <UserDataForm onSubmitUpdate={handleSubmission} user={user} token={authToken ?? ''} submitText="Update user" />
                 </>
             )
                 : <p className="error-message">{error}</p>

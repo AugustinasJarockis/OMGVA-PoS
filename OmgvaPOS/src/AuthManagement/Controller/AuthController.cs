@@ -4,7 +4,9 @@ using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.Validators;
 using OmgvaPOS.AuthManagement.Service;
-using Microsoft.AspNetCore.Authorization;
+using OmgvaPOS.HelperUtils;
+using System.IdentityModel.Tokens.Jwt;
+using OmgvaPOS.UserManagement.Enums;
 
 namespace src.AuthManagement.Controller
 {
@@ -27,13 +29,13 @@ namespace src.AuthManagement.Controller
             if (!signUpRequest.Email.IsValidEmail())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
 
-            if (!signUpRequest.Username.IsValidName())
+            if (!signUpRequest.Name.IsValidName())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Name is not valid.");
 
             if (!signUpRequest.Username.IsValidUsername())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Username is not valid.");
 
-            if (!signUpRequest.Username.IsValidPassword())
+            if (!signUpRequest.Password.IsValidPassword())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Password is not valid.");
 
             if (_authService.IsSignedUp(signUpRequest.Username, signUpRequest.Password))
@@ -59,7 +61,7 @@ namespace src.AuthManagement.Controller
         [HttpPost("login")]
         [ProducesResponseType<LoginDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<LoginDTO>> Login([FromBody] LoginRequest loginRequest)
+        public IActionResult Login([FromBody] LoginRequest loginRequest)
         {
 
             var result = _authService.Login(loginRequest);
@@ -72,14 +74,18 @@ namespace src.AuthManagement.Controller
             return Ok(result);
         }
 
-        [HttpPost("login/{businessId}")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("login/{businessId}")]
         [ProducesResponseType<LoginDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<LoginDTO>> Login([FromBody] long businessId)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult Login(long businessId)
         {
+            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
+            if (token == null)
+                return Forbid();
 
-            var result = _authService.Login(loginRequest, businessId);
+            TokenDetailsDTO tokenDetails = token.GetTokenDetails();
+            var result = _authService.GenerateAdminJwtToken(businessId, tokenDetails);
 
             if (!result.IsSuccess)
                 return StatusCode((int)HttpStatusCode.Unauthorized, result.Message);

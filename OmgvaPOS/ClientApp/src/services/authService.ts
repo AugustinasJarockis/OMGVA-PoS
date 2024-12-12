@@ -24,4 +24,20 @@ const login = async (loginRequest: LoginRequest): Promise<LoginResponse> => {
     }
 };
 
-export { login };
+
+const loginWithNewToken = async (token: string | null, businessId: string): Promise<LoginResponse> => {
+    try {
+        const response = await axios.get(`/api/auth/login/${businessId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 200) {
+            return { isSuccess: true, message: response.data.message, token: response.data.token };
+        } else {
+            return { isSuccess: false, message: response.data.message };
+        }
+    } catch (error: any) {
+        return { isSuccess: false, message: error.message || 'An unexpected error occurred.' };
+    }
+};
+
+export { login, loginWithNewToken };

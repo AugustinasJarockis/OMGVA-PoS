@@ -11,9 +11,10 @@ namespace OmgvaPOS.AuthManagement.Repository
         {
             try
             {
-                _database.Users.Add(user);
+                var createdUser = _database.Users.Add(user).Entity;
                 _database.SaveChanges();
-                return _database.Users.Last();
+                return createdUser;
+
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.UserManagement.Enums;
 
 namespace OmgvaPOS.HelperUtils
@@ -37,6 +38,17 @@ namespace OmgvaPOS.HelperUtils
         //NOTE: Checks if name equals to the one in the token. Not if username is equal.
         public static bool UserNameEquals(this JwtSecurityToken token, string userName) {
             return token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")).Value == userName;
+        }
+
+        public static TokenDetailsDTO GetTokenDetails(this JwtSecurityToken token)
+        {
+            TokenDetailsDTO tokenDetails = new()
+            {
+                Name = token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")).Value,
+                NameIdentifier = token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")).Value,
+                Role = token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")).Value
+            };
+            return tokenDetails;
         }
     }
 }

@@ -2,17 +2,15 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserResponse, getUser } from "../../services/userService";
 import { getTokenBusinessId, getTokenRole, getTokenUserId } from "../../utils/tokenUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
-interface UserPageProps {
-    token: string | null
-}
-
-const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
+const UserPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<UserResponse>();
     const { state } = useLocation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { authToken } = useAuth();
 
     const loadUser = async () => {
         setError(null);
@@ -26,14 +24,13 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
 
             if (!result) {
                 setError('Problem acquiring user: ' + error);
-            }
-            else {
+            } else {
                 setUser(result);
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
         }
-    }
+    };
 
     const roleMap: { [key: string]: string } = {
         2: 'Admin',
@@ -43,20 +40,19 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
 
     const handleUpdateUserOnclick = async () => {
         navigate("/user/update/" + id, { state: { user: user } });
-    }
+    };
 
     const goToBusiness = async () => {
         if (authToken) {
-            const businessId = getTokenBusinessId(authToken)
+            const businessId = getTokenBusinessId(authToken);
             navigate('/business/' + businessId);
         }
-    }
+    };
 
     useEffect(() => {
         if (state && state.user) {
             setUser(state.user);
-        }
-        else {
+        } else {
             loadUser();
         }
 
@@ -66,11 +62,10 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
             if (!(userId === id || role === "Admin" || role === "Owner")) {
                 navigate('/');
             }
-        }
-        else {
+        } else {
             setError("You have to authenticate first!");
         }
-    }, []);
+    }, [authToken]);
 
     return (
         <div>
@@ -85,12 +80,9 @@ const UserPage: React.FC<UserPageProps> = ({ token: authToken }) => {
                     </section>
                     <button onClick={handleUpdateUserOnclick}>Update information</button>
                 </>
-            )
-                : <p className="error-message">{error}</p>
-            }
+            ) : <p className="error-message">{error}</p>}
         </div>
     );
 };
 
 export default UserPage;
-
