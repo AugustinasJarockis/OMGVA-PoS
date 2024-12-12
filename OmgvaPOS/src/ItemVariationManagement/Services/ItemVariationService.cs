@@ -1,8 +1,4 @@
-﻿using OmgvaPOS.BusinessManagement.Models;
-using OmgvaPOS.ItemManagement.DTOs;
-using OmgvaPOS.ItemManagement.Models;
-using OmgvaPOS.ItemManagement.Repositories;
-using OmgvaPOS.ItemManagement.Services;
+﻿using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemVariationManagement.Mappers;
 using OmgvaPOS.ItemVariationManagement.Models;
@@ -45,7 +41,8 @@ namespace OmgvaPOS.ItemVariationManagement.Services
             return newItemVariation.ToItemVariationDTO();
         }
         public ItemVariationDTO UpdateItemVariation(ItemVariationDTO itemVariationDTO) {
-            var itemVariation = itemVariationDTO.ToItemVariation();
+            var itemVariation = _itemVariationRepository.GetItemVariation((long)itemVariationDTO.Id); //TODO: potential error here because id is null ir invalid
+            itemVariation = itemVariationDTO.ToItemVariation(itemVariation);
             return _itemVariationRepository.UpdateItemVariation(itemVariation).ToItemVariationDTO();
         }
         public void DeleteItemVariation(long id) {
