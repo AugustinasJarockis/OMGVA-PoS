@@ -27,15 +27,14 @@ namespace OmgvaPOS.ItemVariationManagement.Mappers
         }
 
         public static ItemVariation ToItemVariation(this ItemVariationDTO variation, ItemVariation baseVariation) {
-            return new ItemVariation {
-                Id = baseVariation.Id,
-                ItemId = variation.ItemId ?? baseVariation.ItemId,
-                Name = variation.Name ?? baseVariation.Name,
-                InventoryQuantity = variation.InventoryQuantity ?? baseVariation.InventoryQuantity,
-                PriceChange = variation.PriceChange ?? baseVariation.PriceChange,
-                ItemVariationGroup = variation.ItemVariationGroup ?? baseVariation.ItemVariationGroup,
-                IsArchived = false
-            };
+            baseVariation.Id = baseVariation.Id;
+            baseVariation.ItemId = variation.ItemId ?? baseVariation.ItemId;
+            baseVariation.Name = variation.Name ?? baseVariation.Name;
+            baseVariation.InventoryQuantity = variation.InventoryQuantity ?? baseVariation.InventoryQuantity;
+            baseVariation.PriceChange = variation.PriceChange ?? baseVariation.PriceChange;
+            baseVariation.ItemVariationGroup = variation.ItemVariationGroup ?? baseVariation.ItemVariationGroup;
+            baseVariation.IsArchived = false;
+            return baseVariation;
         }
     }
 }
