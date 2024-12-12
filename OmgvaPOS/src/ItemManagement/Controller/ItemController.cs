@@ -71,11 +71,12 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) {
+        public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) { //TODO: Validate here and in update method, that the employee, if exists, belongs to the correct business
             long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
             if (businessId == null)
                 return Forbid();
 
+            createItemRequest.Currency = createItemRequest.Currency.ToUpper();
             if (!createItemRequest.Currency.IsValidCurrency())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
 
@@ -112,6 +113,7 @@ namespace OmgvaPOS.ItemManagement
             if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
+            item.Currency = item.Currency.ToUpper();
             if (!item.Currency.IsValidCurrency())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
 

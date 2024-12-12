@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.UserManagement.Enums;
 using OmgvaPOS.UserManagement.Models;
 
@@ -6,7 +5,7 @@ namespace OmgvaPOS.Database.Context.MockDataHelpers;
 
 public static class MockUserDataHelper
 {
-
+    public static long OmgvaBusinessEmployee = 2;
     public static void InitializeMockUsers(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Adding mock users...");
@@ -35,6 +34,8 @@ public static class MockUserDataHelper
                      UserRole.Admin, "adminPass", MockBusinessesDataHelper.OmgvaBusinessId),
             MockUser("Employee Omgva", "employeeOmgva", "employee@omgva.com",
                      UserRole.Employee, "employeePass", MockBusinessesDataHelper.OmgvaBusinessId),
+            MockUser("Testing account", "a", "a@b.com",
+                    UserRole.Admin, "b", MockBusinessesDataHelper.OmgvaBusinessId),
 
             // Users for Different business
             MockUser("Owner DiffBusiness", "ownerDiffBusiness", "owner@diffbusiness.com",
