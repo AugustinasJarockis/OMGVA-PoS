@@ -15,6 +15,8 @@ using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Services;
+using OmgvaPOS.src.DiscountManagement.Service;
+using OmgvaPOS.src.DiscountManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -82,6 +84,8 @@ builder.Services.AddScoped<IItemVariationRepository, ItemVariationRepository>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<ITaxItemRepository, TaxItemRepository>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
