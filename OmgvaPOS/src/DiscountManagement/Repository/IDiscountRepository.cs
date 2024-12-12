@@ -1,6 +1,6 @@
 ﻿using OmgvaPOS.DiscountManagement.Models;
 
-namespace OmgvaPOS.src.DiscountManagement.Repository;
+namespace OmgvaPOS.DiscountManagement.Repository;
 
 public interface IDiscountRepository
 {

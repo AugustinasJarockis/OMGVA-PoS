@@ -1,7 +1,7 @@
 ﻿using OmgvaPOS.DiscountManagement.Models;
-using OmgvaPOS.src.DiscountManagement.DTOs;
+using OmgvaPOS.DiscountManagement.DTOs;
 
-namespace OmgvaPOS.src.DiscountManagement.Mappers
+namespace OmgvaPOS.DiscountManagement.Mappers
 {
     public class DiscountMapper
     {

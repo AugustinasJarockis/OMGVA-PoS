@@ -1,8 +1,8 @@
 ﻿using OmgvaPOS.DiscountManagement.Models;
-using OmgvaPOS.ItemManagement.Models;
-using OmgvaPOS.src.DiscountManagement.DTOs;
+using OmgvaPOS.DiscountManagement.DTOs;
 
-namespace OmgvaPOS.src.DiscountManagement.Service {
+namespace OmgvaPOS.DiscountManagement.Service
+{
     public interface IDiscountService
     {
         public Discount CreateDiscount(CreateDiscountRequest createDiscountRequest);

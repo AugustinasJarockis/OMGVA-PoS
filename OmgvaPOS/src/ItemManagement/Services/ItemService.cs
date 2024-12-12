@@ -3,7 +3,7 @@ using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.DTOs;
-using OmgvaPOS.src.ItemManagement.Mappers;
+using OmgvaPOS.ItemManagement.Mappers;
 
 namespace OmgvaPOS.ItemManagement.Services
 {

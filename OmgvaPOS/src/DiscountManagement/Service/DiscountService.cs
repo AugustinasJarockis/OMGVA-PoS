@@ -1,19 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.Database.Context;
-using OmgvaPOS.DiscountManagement.Enums;
+﻿using OmgvaPOS.DiscountManagement.Enums;
 using OmgvaPOS.DiscountManagement.Models;
-using OmgvaPOS.src.DiscountManagement.DTOs;
-using OmgvaPOS.src.DiscountManagement.Mappers;
-using OmgvaPOS.src.DiscountManagement.Repository;
-using OmgvaPOS.TaxManagement.Repository;
-using OmgvaPOS.HelperUtils;
-using OmgvaPOS.BusinessManagement.Models;
+using OmgvaPOS.DiscountManagement.DTOs;
+using OmgvaPOS.DiscountManagement.Mappers;
+using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.ItemManagement.Repositories;
-using OmgvaPOS.src.ItemManagement.Mappers;
+using OmgvaPOS.ItemManagement.Mappers;
 using OmgvaPOS.ItemManagement.Services;
-using OmgvaPOS.ItemManagement.Models;
 
-namespace OmgvaPOS.src.DiscountManagement.Service;
+namespace OmgvaPOS.DiscountManagement.Service;
 
 public class DiscountService : IDiscountService
 {

@@ -1,6 +1,6 @@
 ﻿using OmgvaPOS.DiscountManagement.Enums;
 
-namespace OmgvaPOS.src.DiscountManagement.DTOs;
+namespace OmgvaPOS.DiscountManagement.DTOs;
 public class DiscountDTO {
 
     public long Id { get; set; }

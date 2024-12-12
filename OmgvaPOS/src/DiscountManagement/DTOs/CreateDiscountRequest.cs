@@ -1,7 +1,5 @@
 ﻿using OmgvaPOS.DiscountManagement.Enums;
-using System.ComponentModel.DataAnnotations;
-
-namespace OmgvaPOS.src.DiscountManagement.DTOs
+namespace OmgvaPOS.DiscountManagement.DTOs
 {
     public class CreateDiscountRequest
     {

@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.Database.Context;
+﻿using OmgvaPOS.Database.Context;
 using OmgvaPOS.DiscountManagement.Enums;
 using OmgvaPOS.DiscountManagement.Models;
-using OmgvaPOS.TaxManagement.Models;
-using OmgvaPOS.TaxManagement.Repository;
 
-namespace OmgvaPOS.src.DiscountManagement.Repository;
+namespace OmgvaPOS.DiscountManagement.Repository;
 
 public class DiscountRepository : IDiscountRepository
 {

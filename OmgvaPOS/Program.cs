@@ -15,8 +15,8 @@ using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Services;
-using OmgvaPOS.src.DiscountManagement.Service;
-using OmgvaPOS.src.DiscountManagement.Repository;
+using OmgvaPOS.DiscountManagement.Service;
+using OmgvaPOS.DiscountManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;

@@ -1,7 +1,6 @@
 ﻿using OmgvaPOS.DiscountManagement.Enums;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Models;
-using OmgvaPOS.OrderManagement.Models;
 
 namespace OmgvaPOS.DiscountManagement.Models
 {

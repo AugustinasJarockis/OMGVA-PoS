@@ -1,10 +1,8 @@
-﻿using Azure.Core;
-using OmgvaPOS.DiscountManagement.Enums;
-using OmgvaPOS.src.DiscountManagement.DTOs;
+﻿using OmgvaPOS.DiscountManagement.Enums;
+using OmgvaPOS.DiscountManagement.DTOs;
 using System.ComponentModel.DataAnnotations;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace OmgvaPOS.src.DiscountManagement.Service;
+namespace OmgvaPOS.DiscountManagement.Service;
 
 public static class DiscountValidator
 {

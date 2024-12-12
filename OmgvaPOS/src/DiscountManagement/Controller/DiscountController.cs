@@ -1,21 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using OmgvaPOS.BusinessManagement.DTOs;
-using OmgvaPOS.DiscountManagement.Models;
 using OmgvaPOS.HelperUtils;
-using OmgvaPOS.src.DiscountManagement.DTOs;
-using OmgvaPOS.src.DiscountManagement.Mappers;
-using OmgvaPOS.src.DiscountManagement.Service;
-using OmgvaPOS.TaxManagement.DTOs;
-using OmgvaPOS.TaxManagement.Mappers;
-using OmgvaPOS.TaxManagement.Models;
-using OmgvaPOS.UserManagement.Enums;
+using OmgvaPOS.DiscountManagement.DTOs;
+using OmgvaPOS.DiscountManagement.Mappers;
+using OmgvaPOS.DiscountManagement.Service;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 
-namespace OmgvaPOS.src.DiscountManagement.Controller
+namespace OmgvaPOS.DiscountManagement.Controller
 {
 
     [ApiController]

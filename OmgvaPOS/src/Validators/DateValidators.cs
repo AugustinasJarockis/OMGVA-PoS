@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace OmgvaPOS.src.Validators
+namespace OmgvaPOS.Validators
 {
     public static class DateValidators
     {

@@ -1,7 +1,7 @@
 ﻿using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Models;
 
-namespace OmgvaPOS.src.ItemManagement.Mappers
+namespace OmgvaPOS.ItemManagement.Mappers
 {
     public static class ItemMappers
     {
