@@ -46,7 +46,11 @@ namespace OmgvaPOS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StripeAccId")
+                    b.Property<string>("StripePublishKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StripeSecretKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
