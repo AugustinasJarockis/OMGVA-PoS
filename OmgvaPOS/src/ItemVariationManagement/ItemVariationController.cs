@@ -79,9 +79,6 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(itemId).BusinessId))
                 return Forbid();
 
-            //TODO: Evaluate ItemVariationGroup
-            //TODO: Evaluate PriceChange //TODO: In item controller evaluate price change
-
             try {
                 ItemVariationDTO itemVariationDTO = _itemVariationService.CreateItemVariation(itemVariationCreationRequest, itemId);
                 if (itemVariationDTO == null) {
@@ -107,9 +104,6 @@ namespace OmgvaPOS.ItemVariationManagement
         public IActionResult UpdateItemVariation([FromBody] ItemVariationDTO itemVariation, long id) {
             if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
                 return Forbid();
-
-            //TODO: Evaluate ItemVariationGroup
-            //TODO: Evaluate PriceChange //TODO: In item controller evaluate price change
 
             itemVariation.Id = id;
             try {

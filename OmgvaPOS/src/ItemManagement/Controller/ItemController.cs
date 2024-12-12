@@ -5,6 +5,7 @@ using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
+using OmgvaPOS.src.ItemManagement.Mappers;
 using OmgvaPOS.Validators;
 using System.Net;
 
@@ -85,20 +86,7 @@ namespace OmgvaPOS.ItemManagement
                 return StatusCode((int)HttpStatusCode.BadRequest, "Price can not be negative");
 
             try {
-                Item newitem = new() { //TODO create a to Item
-                    Name = createItemRequest.Name,
-                    InventoryQuantity = createItemRequest.InventoryQuantity,
-                    Price = createItemRequest.Price,
-                    Currency = createItemRequest.Currency,
-                    ItemGroup = createItemRequest.ItemGroup,
-                    Duration = createItemRequest.Duration,
-                    ImgPath = createItemRequest.ImgPath,
-                    IsArchived = false,
-                    BusinessId = (long)businessId,
-                    DiscountId = createItemRequest.DiscountId,
-                    UserId = createItemRequest.UserId
-                };
-
+                Item newitem = createItemRequest.ToItem((long)businessId);
                 ItemDTO item = _itemService.CreateItem(newitem);
                 if (item == null) {
                     _logger.LogError("An unexpected internal server error occured while creating the item.");
