@@ -80,12 +80,8 @@ namespace src.AuthManagement.Controller
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Login(long businessId)
         {
-            JwtSecurityToken token = JwtTokenHelper.GetJwtToken(HttpContext.Request.Headers.Authorization);
-            if (token == null)
-                return Forbid();
 
-            TokenDetailsDTO tokenDetails = token.GetTokenDetails();
-            var result = _authService.GenerateAdminJwtToken(businessId, tokenDetails);
+            var result = _authService.GenerateAdminJwtToken(businessId, JwtTokenHandler.GetTokenDetails(HttpContext.Request.Headers.Authorization));
 
             if (!result.IsSuccess)
                 return StatusCode((int)HttpStatusCode.Unauthorized, result.Message);

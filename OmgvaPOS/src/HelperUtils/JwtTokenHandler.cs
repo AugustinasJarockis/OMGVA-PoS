@@ -80,8 +80,9 @@ namespace OmgvaPOS.HelperUtils
                 return null;
             }
         }
-        public static TokenDetailsDTO GetTokenDetails(this JwtSecurityToken token)
+        public static TokenDetailsDTO GetTokenDetails(string tokenString)
         {
+            var token = GetJwtToken(tokenString);
             TokenDetailsDTO tokenDetails = new()
             {
                 Name = token.Claims.FirstOrDefault(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")).Value,

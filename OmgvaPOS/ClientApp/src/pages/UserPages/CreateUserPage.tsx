@@ -37,7 +37,6 @@ const CreateUserPage: React.FC = () => {
                 <button onClick={goToBusiness}>Return to business</button>
             </header>
             <h1>Create User</h1>
-            {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
             <CreateUserFrom onSubmitCreate={handleSubmission} token={authToken ?? ''} submitText="Create user" />
         </div>
     );

@@ -11,15 +11,17 @@ using OmgvaPOS.Validators;
 using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.AuthManagement.Service;
+using OmgvaPOS.UserManagement.Repository;
 
 namespace OmgvaPOS.UserManagement.Controller
 {
     [ApiController]
     [Route("user")]
-    public class UserController(IUserService userService, IAuthService authService, ILogger<UserController> logger) : Microsoft.AspNetCore.Mvc.Controller
+    public class UserController(IUserService userService, IAuthService authService, IUserRepository userRepository, ILogger<UserController> logger) : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly IUserService _userService = userService;
         private readonly IAuthService _authService = authService;
+        private readonly IUserRepository _userRepository = userRepository;
         private readonly ILogger<UserController> _logger = logger;
 
         [HttpPost]
