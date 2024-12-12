@@ -7,6 +7,8 @@ using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.Middleware;
+using OmgvaPOS.ReservationManagement.Repository;
+using OmgvaPOS.ReservationManagement.Service;
 using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.UserManagement.Repository;
 
@@ -68,6 +70,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
