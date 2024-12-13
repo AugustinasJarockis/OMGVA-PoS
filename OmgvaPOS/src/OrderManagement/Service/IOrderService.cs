@@ -15,4 +15,5 @@ public interface IOrderService
     public void AddOrderItem(long orderId, CreateOrderItemRequest request);
     public void UpdateOrderItem(long itemId, UpdateOrderItemRequest request);
     public void DeleteOrderItem(long orderId, long itemId);
+    public void UpdateOrderTip(short tip, long orderId);
 }

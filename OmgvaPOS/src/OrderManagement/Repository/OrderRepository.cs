@@ -124,4 +124,15 @@ public class OrderRepository : IOrderRepository
             throw new ApplicationException("Error deleting orderItem.");
         }
     }
+
+    public void UpdateOrderTip(Order order) {
+        try {
+            _context.Orders.Update(order);
+            _context.SaveChanges();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while updating Order tip.");
+            throw new ApplicationException("Error updating Order tip.");
+        }
+    }
 }

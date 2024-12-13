@@ -183,4 +183,15 @@ public class OrderService : IOrderService
         _itemRepository.UpdateItemQuantity(item);
         _orderRepository.UpdateOrderItemQuantity(orderItem);
     }
+
+    public void UpdateOrderTip(short tip, long orderId) {
+        var order = _orderRepository.GetOrder(orderId);
+        if (order == null)
+            throw new Exception($"Cannot find order by id: {orderId}");
+        if (order.Status != OrderStatus.Open)
+            throw new Exception($"Order with ID {orderId} is {order.Status} (not open for editing)");
+
+        order.Tip = tip;
+        _orderRepository.UpdateOrderTip(order);
+    }
 }

@@ -13,4 +13,5 @@ public interface IOrderRepository
     public void DeleteOrderItem(OrderItem orderItem);
     public void AddOrderItem(OrderItem orderItem);
     public void UpdateOrderItemQuantity(OrderItem orderItem);
+    public void UpdateOrderTip(Order order);
 }
