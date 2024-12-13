@@ -65,17 +65,6 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    public void UpdateOrder(Order order) {
-        try {
-            _context.Orders.Update(order);
-            _context.SaveChanges();
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An error occured while updating the order.");
-            throw new ApplicationException("Error updating the order.");
-        }
-    }
-
     public void RemoveOrderItem(OrderItem orderItem) {
         try {
             _context.OrderItems.Remove(orderItem);

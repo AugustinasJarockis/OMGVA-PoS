@@ -11,6 +11,5 @@ public interface IOrderService
     public IEnumerable<OrderDTO> GetAllActiveOrders(long businessId);
     public OrderDTO GetOrder(long id);
     public long GetOrderBusinessId(long id);
-    public OrderDTO UpdateOrder(OrderDTO orderDTO, long id);
     public void DeleteOrder(long id);
 }
