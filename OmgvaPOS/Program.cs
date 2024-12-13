@@ -20,6 +20,8 @@ using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Services;
+using OmgvaPOS.DiscountManagement.Service;
+using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.BusinessManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +91,8 @@ builder.Services.AddScoped<IItemVariationRepository, ItemVariationRepository>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<ITaxItemRepository, TaxItemRepository>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
