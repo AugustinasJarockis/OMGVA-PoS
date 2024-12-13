@@ -53,11 +53,6 @@ public class DiscountService : IDiscountService
     }
 
 
-
-    public List<DiscountDTO> GetGlobalDiscounts() {
-        List<Discount> discounts = _discountRepository.GetGlobalDiscounts();
-        return discounts.Select(DiscountMapper.ToDTO).ToList();
-    }
     public List<DiscountDTO> GetBusinessDiscounts(long businessId) {
         List<Discount> discounts = _discountRepository.GetBusinessDiscounts(businessId);
         return discounts.Select(DiscountMapper.ToDTO).ToList();

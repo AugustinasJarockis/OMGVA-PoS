@@ -63,12 +63,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
             if (businessId == null) return Forbid();
 
             try {
-                List<DiscountDTO> discountDTOs;
-
-                if (HttpContext.User.IsInRole("Admin"))
-                    discountDTOs = _discountService.GetGlobalDiscounts();
-                else
-                    discountDTOs = _discountService.GetBusinessDiscounts((long)businessId);
+                var discountDTOs = _discountService.GetBusinessDiscounts((long)businessId);
 
                 return Ok(discountDTOs);
             }
