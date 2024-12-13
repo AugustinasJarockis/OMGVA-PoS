@@ -52,7 +52,6 @@ public class DiscountRepository : IDiscountRepository
         var existingDiscount = _context.Discounts.FirstOrDefault(d => d.Id == discount.Id);
         // thats all we can update
         existingDiscount.TimeValidUntil = discount.TimeValidUntil;
-        existingDiscount.IsArchived = discount.IsArchived;
         _context.SaveChanges();
     }
 }
