@@ -29,7 +29,8 @@ public class DiscountRepository : IDiscountRepository
         try {
             return [.. _context.Discounts
                 .Where(d => d.BusinessId == businessId)
-                .Where(d => d.Type == DiscountType.Item)];
+                .Where(d => d.Type == DiscountType.Item)
+                .Where(d => d.IsArchived == false)];
         }
         catch (Exception ex) {
             _logger.LogError(ex, "An error occurred while fetching all discounts.");
