@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Models;
+using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.ItemManagement.Services
 {
@@ -12,5 +13,8 @@ namespace OmgvaPOS.ItemManagement.Services
         public void DuplicateItems(IEnumerable<Item> items);
         public ItemDTO UpdateItem(ItemDTO item);
         public void DeleteItem(long id);
+
+        public List<TaxDto> GetItemTaxes(long id);
+        public ItemDTO ChangeItemTaxes(ChangeItemTaxesRequest changeItemTaxesRequest, long itemId);
     }
 }

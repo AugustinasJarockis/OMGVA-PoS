@@ -5,12 +5,14 @@ namespace OmgvaPOS.Database.Context.MockDataHelpers;
 
 public static class MockUserDataHelper
 {
-    public static long OmgvaBusinessEmployee = 2;
+    public static long OmgvaBusinessEmployee = 0;
     public static void InitializeMockUsers(OmgvaDbContext dbContext, ILogger logger)
     {
         logger.LogDebug("Adding mock users...");
-        dbContext.Users.AddRange(MockUsers());
+        var users = MockUsers();
+        dbContext.Users.AddRange(users);
         dbContext.SaveChanges();
+        OmgvaBusinessEmployee = users[2].Id;
         logger.LogDebug("Mock users added.");
     }
     
@@ -23,7 +25,7 @@ public static class MockUserDataHelper
         logger.LogDebug("All users removed.");
     }
 
-    private static IEnumerable<User> MockUsers()
+    private static List<User> MockUsers()
     {
         return new List<User>
         {
