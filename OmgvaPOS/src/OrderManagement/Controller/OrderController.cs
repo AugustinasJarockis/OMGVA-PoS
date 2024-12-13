@@ -128,7 +128,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
             return NoContent();
         }
         catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while updating the order.");
+            _logger.LogError(ex, "An unexpected internal server error occured while deleting the order.");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

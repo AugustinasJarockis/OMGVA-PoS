@@ -12,4 +12,7 @@ public interface IOrderService
     public OrderDTO GetOrder(long id);
     public long GetOrderBusinessId(long id);
     public void DeleteOrder(long id);
+    public void AddOrderItem(long orderId, CreateOrderItemRequest request);
+    public void UpdateOrderItem(long itemId, UpdateOrderItemRequest request);
+    public void DeleteOrderItem(long orderId, long itemId);
 }

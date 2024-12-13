@@ -41,8 +41,8 @@ public class OrderRepository : IOrderRepository
             return order;
         }
         catch (Exception ex) {
-            _logger.LogError(ex, "An error occured while getting an order by Id.");
-            throw new ApplicationException("Error getting an order by Id.");
+            _logger.LogError(ex, "An error occured while getting an order.");
+            throw new ApplicationException("Error getting an order.");
         }
     }
 
@@ -65,7 +65,7 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    public void RemoveOrderItem(OrderItem orderItem) {
+    public void DeleteOrderItem(OrderItem orderItem) {
         try {
             _context.OrderItems.Remove(orderItem);
             _context.SaveChanges();
@@ -77,14 +77,51 @@ public class OrderRepository : IOrderRepository
     }
 
     public void DeleteOrder(Order order) {
-        //cascade delete is purposefully turned off so this is needed
-        foreach (var orderItem in order.OrderItems.ToList()) {
-            if (orderItem.OrderItemVariation != null) {
-                _context.OrderItemVariations.Remove(orderItem.OrderItemVariation);
+        try {
+            foreach (var orderItem in order.OrderItems.ToList()) {
+                if (orderItem.OrderItemVariation != null) {
+                    _context.OrderItemVariations.Remove(orderItem.OrderItemVariation);
+                }
+                _context.OrderItems.Remove(orderItem);
             }
-            _context.OrderItems.Remove(orderItem);
+            _context.Orders.Remove(order);
+            _context.SaveChanges();
         }
-        _context.Orders.Remove(order);
-        _context.SaveChanges();
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while removing order item.");
+            throw new ApplicationException("Error updating the order.");
+        }
+    }
+
+    public void AddOrderItem(OrderItem orderItem) {
+        try {
+            _context.OrderItems.Add(orderItem);
+            _context.SaveChanges();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while adding order item.");
+            throw new ApplicationException("Error adding the order.");
+        }
+    }
+    public OrderItem GetOrderItem(long orderItemId) {
+        try {
+            var orderItem = _context.OrderItems.FirstOrDefault(oi => oi.Id == orderItemId);
+            return orderItem;
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while Deleting orderItem.");
+            throw new ApplicationException("Error deleting orderItem.");
+        }
+    }
+
+    public void UpdateOrderItemQuantity(OrderItem orderItem) {
+        try {
+            _context.OrderItems.Update(orderItem);
+            _context.SaveChanges();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while Deleting orderItem.");
+            throw new ApplicationException("Error deleting orderItem.");
+        }
     }
 }

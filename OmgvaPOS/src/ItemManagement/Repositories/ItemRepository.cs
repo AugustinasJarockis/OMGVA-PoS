@@ -78,5 +78,19 @@ namespace OmgvaPOS.ItemManagement.Repositories
                 throw new ApplicationException("Error deleting item.");
             }
         }
+
+        public void UpdateItemQuantity(Item item) {
+            try {
+                if (item.IsArchived)
+                    throw new Exception("Cannot update item quantity - archived.");
+
+                _database.Items.Update(item);
+                _database.SaveChanges();
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, $"An error occurred while updating item with ID {item.Id}.");
+                throw new ApplicationException("Error updating item.");
+            }
+        }
     }
 }
