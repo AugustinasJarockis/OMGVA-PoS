@@ -19,9 +19,20 @@ namespace OmgvaPOS.TaxManagement.Repository
             return _context.TaxItems;
         }
 
+        public void AddConnectionsBetweenItemAndTaxes(IEnumerable<long> taxIds, long itemId) {
+            try {
+                var newTaxItems = taxIds.Select(taxId => new TaxItem() { ItemId = itemId, TaxId = taxId });
+                _context.TaxItems.AddRange(newTaxItems);
+                _context.SaveChanges();
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, $"An error occurred while creating connections between taxes and an item.");
+                throw new ApplicationException("Error creating connections between taxes and an item.");
+            }
+        }
         public void CreateConnectionsForNewItem(IEnumerable<TaxItem> taxItems, long itemId) {
             try {
-                var copyTaxItems = taxItems.Select(t => new TaxItem() { ItemId = itemId, TaxId = t.Id });
+                var copyTaxItems = taxItems.Select(t => new TaxItem() { ItemId = itemId, TaxId = t.TaxId });
                 _context.TaxItems.AddRange(copyTaxItems);
                 _context.SaveChanges();
             }
@@ -48,7 +59,7 @@ namespace OmgvaPOS.TaxManagement.Repository
             try {
                 _context.TaxItems
                     .Where(t => ids.Contains(t.Id))
-                    .ExecuteDelete(); ;
+                    .ExecuteDelete();
                 _context.SaveChanges();
             }
             catch (Exception ex) {

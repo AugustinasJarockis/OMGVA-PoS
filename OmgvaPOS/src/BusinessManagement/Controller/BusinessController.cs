@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OmgvaPOS.BusinessManagement.DTOs;
 using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.HelperUtils;
@@ -24,7 +23,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllBusinesses() {
             try {
-                return Ok(JsonConvert.SerializeObject(_businessService.GetBusinesses()));
+                return Ok(_businessService.GetBusinesses());
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving all businesses.");
@@ -50,7 +49,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
                 if (business == null)
                     return NotFound();
                 else
-                    return Ok(JsonConvert.SerializeObject(business));
+                    return Ok(business);
             }
             catch (Exception ex){
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving a business.");

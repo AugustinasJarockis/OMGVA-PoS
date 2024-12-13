@@ -8,7 +8,7 @@ namespace OmgvaPOS.ItemVariationManagement.Services
         public ItemVariationDTO GetItemVariation(long id);
         public long GetItemVariationBusinessNoException(long id);
         public ItemVariationDTO CreateItemVariation(ItemVariationCreationRequest itemVariationCreationRequest, long itemId);
-        public ItemVariationDTO UpdateItemVariation(ItemVariationDTO itemVariation);
+        public ItemVariationDTO UpdateItemVariation(ItemVariationUpdateRequest itemVariationUpdateRequest, long id);
         public void DeleteItemVariation(long id);
     }
 }
