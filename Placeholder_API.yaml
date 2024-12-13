@@ -1,0 +1,2079 @@
+openapi: 3.0.3
+info:
+  title: Placeholder API
+  version: 1.0.11
+externalDocs:
+  description: Stripe API Documentation
+  url: https://stripe.com/docs/api
+tags:
+  - name: user
+  - name: schedule
+  - name: business
+  - name: reservation
+  - name: customer
+  - name: giftCard
+  - name: order
+  - name: order-item
+  - name: order-item-variation
+  - name: item
+  - name: itemVariation
+  - name: discount
+  - name: tax
+paths:
+  /user:
+    get:
+      tags: 
+        - user
+      summary: Get a list of users
+      description: Retrieve a list of all users from the database.
+      responses:
+        '200':
+          description: A JSON array of user objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Server error
+    post:
+      tags: 
+        - user
+      summary: Create a new user
+      description: Add a new user to the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input provided.
+        '500':
+          description: Server error occurred.
+
+  /user/{id}:
+    get:
+      tags: 
+        - user
+      summary: Get a user by ID
+      description: Retrieve details for a specific user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+    put:
+      tags: 
+        - user
+      summary: Update a user
+      description: Modify an existing user by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '500':
+          description: Server error
+    delete:
+      tags: 
+        - user
+      summary: Delete a user
+      description: Remove a user from the system by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  /user/business/{businessId}:
+    get:
+      tags: 
+        - user
+      summary: Get all users for a specific business
+      description: Returns all users that belong to a specific business.
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          description: ID of the business to fetch users for
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: A list of users for the specified business
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: Business not found
+        '500':
+          description: Server error
+  /schedules:
+    get:
+      tags:
+        - schedule
+      summary: Get all the schedules.
+      description: Retrieve a list of all schedules in the database
+      responses:
+        '200':
+          description: Successfully retrieved all schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeSchedule'
+        '500':
+          description: Server error
+    post:
+      tags:
+        - schedule
+      summary: Create a new schedule
+      description: Add a new schedule to the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeSchedule'
+      responses:
+        '201':
+          description: Schedule created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeSchedule'
+        '400':
+          description: Invalid input provided.
+        '500':
+          description: Server error occurred.
+  /schedules/{id}:
+    get:
+      tags: 
+        - schedule
+      summary: Get a schedule by ID
+      description: Retrieve details for a specific schedule by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the schedule to retrieve.
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: A schedule object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '500':
+          description: Server error
+    delete:
+      tags:
+        - schedule
+      summary: Delete a schedule by ID
+      description: Delete a specific schedule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the schedule
+      responses:
+        '200':
+          description: Successfully deleted the schedule
+        '404':
+          description: Schedule not found
+        '500':
+          description: Server error
+    put:
+      summary: Update a schedule by ID
+      description: Modify an existing schedule by its ID
+      tags:
+        - schedule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeSchedule'
+      responses:
+        '200':
+          description: Successfully updated the schedule
+        '404':
+          description: Schedule not found
+        '500':
+          description: Server error
+
+  /business/{businessId}:
+    put:
+      tags:
+        - business
+      parameters:
+        - in: path
+          name: businessId
+          schema:
+            $ref: '#/components/schemas/Business'
+          required: true
+      responses:
+        '200':
+          description: Successfully updated business information
+        '401':
+          description: Changes weren't authorized
+        '500':
+          description: Internal server error
+  
+  /reservation:
+    post:
+      tags:
+        - reservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '201':
+          description: Successfully created reservation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+        '409':
+          description: Reservation time is already taken
+        '500':
+          description: Internal server error
+  /reservation/{reservationId}:
+    get:
+      tags:
+        - reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+                  reservationObject:
+                    $ref: '#/components/schemas/Reservation'
+          description: Successfully retrieved reservation'
+        '404':
+          description: No such reservation found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '200':
+          description: Successfully updated reservation
+        '401':
+          description: Not authorized to alter reservation
+        '404':
+          description: No such reservation
+        '409':
+          description: Reservation time is already taken
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Successfully deleted reservation
+        '401':
+          description: Not authorized to delete reservation
+        '404':
+          description: No such reservation found
+        '500':
+          description: Internal server error
+  /reservation/business/{businessId}:
+    get:
+      tags:
+        - reservation
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: serial
+          description: 'Successfully retrieved list of all reservations by business id'
+        '404':
+          description: 'No such business'
+        '500':
+          description: 'Internal server error'
+  /giftCard:
+    post:
+      tags:
+        - giftCard
+      responses:
+        '201':
+          description: Successfully created gift card
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+        '401':
+          description: Not authorized to create gift cards
+        '500':
+          description: Internal server error
+  /giftCard/{giftCardId}:
+    get:
+      tags:
+        - giftCard
+      parameters:
+        - name: giftCardId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+                  reservationObject:
+                    $ref: '#/components/schemas/Reservation'
+          description: Successfully retrieved gift card'
+        '404':
+          description: No such gift card found
+        '500':
+          description: Internal server error.
+  /giftCardPayment/{giftCardPaymentId}:
+    post:
+      tags:
+        - giftCardPayment
+      parameters:
+        - name: giftCardPaymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GiftCard'
+      responses:
+        '201':
+          description: Successfully created gift card payment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+        '401':
+          description: Not authorized to create gift card payments
+        '500':
+          description: Internal server error
+
+  /user/{userId}/schedules:
+    get:
+      tags:
+        - user
+      summary: Get user's schedules by their user ID
+      description: Retrieve schedules for a specific user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: Successfully retrieved schedules for the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeSchedule'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  
+  /schedules/date/{date}:
+    get:
+      tags:
+        - schedule
+      summary: Get schedules by date
+      description: Retrieve schedules for a specific date
+      parameters:
+        - in: path
+          name: date
+          schema:
+            type: string
+            format: date
+          required: true
+          description: Date of the schedules (YYYY-MM-DD)
+      responses:
+        '200':
+          description: Successfully retrieved schedules for the date
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeSchedule'
+        '400':
+          description: Invalid date format
+        '500':
+          description: Server error
+
+  /item:
+    get:
+      summary: Get all items from the database
+      description: Retrieve all items from the database
+      tags:
+        - item
+      responses:
+        '200':
+          description: List of items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '404':
+          description: Items not found.
+        '500':
+          description: Server error.
+    post:
+      summary: Create a new item
+      description: Create a new item in the system.
+      tags:
+        - item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '201':
+          description: Item created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Invalid input.
+        '500':
+          description: Server error.
+          
+  /item/{itemId}:
+    get:
+      summary: Get an item by their item ID
+      description: Retrieve a single item by its ID.
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: integer
+          description: ID of the item to retrieve
+      responses:
+        '200':
+          description: Item details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Item not found.
+        '500':
+          description: Server error.
+    put:
+      summary: Update an item by ID
+      description: Update the details of an item.
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: integer
+          description: ID of the item to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: Item updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Item not found.
+        '400':
+          description: Invalid input.
+        '500':
+          description: Server error.
+    delete:
+      summary: Delete an item by ID
+      description: Delete a specific item by its ID.
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: integer
+          description: ID of the item to delete
+      responses:
+        '204':
+          description: Item deleted successfully.
+        '404':
+          description: Item not found.
+        '500':
+          description: Server error
+      
+  /item/businesses/{businessId}:
+    get:
+      summary: Get items by business ID
+      description: Retrieve a list of items associated with a specific business.
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: businessId
+          required: true
+          schema:
+            type: integer
+            format: serial
+          description: ID of the business to retrieve items for
+      responses:
+        '200':
+          description: List of items for the specified business.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '404':
+          description: Items or business not found.
+        '500':
+          description: Server error.
+
+  /variations:
+    get:
+      summary: Get all item variations in the database
+      description: Retrieve a list of all item variations in the database.
+      tags:
+        - itemVariation
+      responses:
+        '200':
+          description: List of item variations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemVariation'
+        '404':
+          description: Item variations not found.
+        '500':
+          description: Server error.
+    post:
+      summary: Create a new item variation
+      description: Add a new variation.
+      tags:
+        - itemVariation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemVariation'
+      responses:
+        '201':
+          description: Item variation created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemVariation'
+        '400':
+          description: Invalid input.
+        '500':
+          description: Server error.
+  /variations/{variationId}:
+    get:
+      summary: Get an item variation by its ID
+      description: Retrieve a specific item variation by its ID.
+      tags:
+        - itemVariation
+      parameters:
+        - in: path
+          name: variationId
+          required: true
+          schema:
+            type: integer
+          description: ID of the item variation to retrieve
+      responses:
+        '200':
+          description: Item variation details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemVariation'
+        '404':
+          description: Item variation not found.
+        '500':
+          description: Server error.
+    put:
+      summary: Update an item variation by ID
+      description: Update the details of an item variation.
+      tags:
+        - itemVariation
+      parameters:
+        - in: path
+          name: variationId
+          required: true
+          schema:
+            type: integer
+            format: serial
+          description: ID of the item variation to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemVariation'
+      responses:
+        '200':
+          description: Item variation updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemVariation'
+        '404':
+          description: Item variation not found.
+        '400':
+          description: Invalid input.
+        '500':
+          description: Server error.
+    delete:
+      summary: Delete an item variation by its ID
+      description: Delete a specific item variation by its variation ID.
+      tags:
+        - itemVariation
+      parameters:
+        - in: path
+          name: variationId
+          required: true
+          schema:
+            type: integer
+            format: serial 
+          description: ID of the variation to delete
+      responses:
+        '204':
+          description: Item variation deleted successfully.
+        '404':
+          description: Item variation not found.
+        '500':
+          description: Server error.
+  /item/{itemId}/variations:
+    get:
+      summary: Get all specific item's variations by the item ID
+      description: Retrieve a specific item variations by the item ID.
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: integer
+            format: serial
+          description: "ID of the item variation to retrieve"
+      responses:
+        '200':
+          description: Item variation details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemVariation'
+        '404':
+          description: Item variation not found.
+        '500':
+          description: Server error.
+  /item/discount/{discountId}:
+    get:
+      tags:
+        - item
+        - discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+          description: Successfully retrieved items
+        '401':
+          description: Not authorized to change items
+        '404':
+          description: No such discount found
+        '500':
+          description: Internal server error
+        
+  /item/tax/{taxId}:
+    get:
+      tags:
+        - item
+        - tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+          description: Successfully retrieved items
+        '401':
+          description: Not authorized to change items
+        '404':
+          description: No such discount found
+        '500':
+          description: Internal server error
+
+  /order:
+    get:
+      summary: Get all orders in the database
+      description: Get a list of all orders in the database.
+      tags:
+        - order
+      responses:
+        '200':
+          description: Returns a list of all orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '500':
+          description: Server error.
+    post:
+      summary: Create a new order
+      description: Create a new order in the system
+      tags:
+        - order
+      requestBody:
+        description: Order object to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '500':
+          description: Server error.
+
+  /order/{id}:
+    get:
+      summary: Get order by its ID
+      description: Get a specific order by its unique ID
+      tags:
+        - order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order with the specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+        '500':
+          description: Server error.
+    put:
+      summary: Update an order by its ID
+      description: Update a specific order by its unique ID
+      tags:
+        - order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      requestBody:
+        description: Order object to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+        '500':
+          description: Server error.
+    delete:
+      summary: Delete an order by its ID
+      description: Delete a specific order by its ID
+      tags:
+        - order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Order deleted successfully
+        '404':
+          description: Order not found
+        '500':
+          description: Server error.
+  /order/status/{status}:
+    get:
+      summary: Get orders by status
+      description: Retrieves a list of orders by its status
+      tags:
+        - order
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 16
+            description: Status of the order (e.g., "open", "closed").
+      responses:
+        '200':
+          description: Returns a list of orders with the specified status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '404':
+          description: No orders found with the specified status
+
+  /user/{userId}/order:
+    get:
+      summary: Get orders by user ID
+      tags:
+        - user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            description: Reference to the user who placed the order
+      responses:
+        '200':
+          description: Returns a list of orders placed by the specified user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '404':
+          description: No orders found for the specified user
+        '500':
+          description: Server error.
+  /order-item:
+    get:
+      summary: Get all order items
+      description: Get a list of all order items in the database
+      tags:
+        - order-item
+      responses:
+        '200':
+          description: Returns a list of order items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderItem'
+        '404':
+          description: No order items found for the specified order
+        '500':
+          description: Server error.
+    post:
+      summary: Create a new order item
+      description: Creates a new order item in the system
+      tags:
+        - order-item
+      requestBody:
+        description: Order item object to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItem'
+      responses:
+        '201':
+          description: Order item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        '500':
+          description: Server error.
+  /order-item/{id}:
+    get:
+      summary: Get order item by its ID
+      description: Get a specific order item by its ID
+      tags:
+        - order-item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order item with the specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        '404':
+          description: Order item not found
+        '500':
+          description: Server error.
+    put:
+      summary: Update an order item by ID
+      description: Update a specific order item by its ID
+      tags:
+        - order-item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      requestBody:
+        description: Order item object to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItem'
+      responses:
+        '200':
+          description: Order item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        '404':
+          description: Order item not found
+        '500':
+          description: Server error.
+    delete:
+      summary: Delete an order item by ID
+      description: Deletes specific order item by its ID
+      tags:
+        - order-item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Order item deleted successfully
+        '404':
+          description: Order item not found
+        '500':
+          description: Server error.
+  /order-item/item/{itemId}:
+     get:
+      summary: Get order's item by item's ID
+      description: Retrieve order-item item with the specified item ID
+      tags:
+        - order-item
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order-item's item with the specified item ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        '404':
+          description: Order-item's item or order-item not found 
+        '500':
+          description: Server error.
+  /order/{orderId}/order-item:
+     get:
+      summary: Get all order-items by order ID
+      description: Retrieve a lsit of all order items associated with the specified order ID
+      tags:
+        - order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order-items with the specified order ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        '404':
+          description: Order not found
+        '500':
+          description: Server error.
+  /order-item-variation:
+    get:
+      summary: Get all order items variations in the database
+      description: Get a list of all order item variations in the database
+      tags:
+        - order-item-variation
+      responses:
+        '200':
+          description: Returns a list of order item variations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderItemVariation'
+        '404':
+          description: No order item variations
+        '500':
+          description: Server error.
+    post:
+      summary: Create a new order item variation
+      description: Creates a new order item variation in the system
+      tags:
+        - order-item-variation
+      requestBody:
+        description: Order item object to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemVariation'
+      responses:
+        '201':
+          description: Order item variation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemVariation'
+        '500':
+          description: Server error.
+  /order-item-variation/{id}:
+    get:
+      summary: Get order item variation by its ID
+      description: Retrieves an order item variation with its specific ID
+      tags:
+        - order-item-variation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order item variation with the specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemVariation'
+        '404':
+          description: Order item not found
+        '500':
+          description: Server error.
+    put:
+      summary: Update an order item variation by its ID
+      description: Update an order item variation by its specified ID
+      tags:
+        - order-item-variation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      requestBody:
+        description: Order item variation object to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemVariation'
+      responses:
+        '200':
+          description: Order item variation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemVariation'
+        '404':
+          description: Order item not found
+        '500':
+          description: Server error.
+    delete:
+      summary: Delete an order item variation by its ID
+      description: Delete a specified order item vaiation with specified ID
+      tags:
+        - order-item-variation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '204':
+          description: Order item variation deleted successfully
+        '404':
+          description: Order item variation not found
+        '500':
+          description: Server error.
+          
+  /item-variation/{itemVariationId}/order-item-variation:
+    get:
+      summary: Get order item variation by the item variation ID
+      description: Get an order item variation that are connected with the item variation with the item variation ID
+      tags:
+        - item-variation
+      parameters:
+        - name: itemVariationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order item variation with the specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemVariation'
+        '404':
+          description: item variation not found
+        '500':
+          description: Server error.
+          
+  /order-item/{orderItemId}/order-item-variation:
+    get:
+      summary: Get a list of all order item variations by order item ID
+      description: Retrieve a list of all order item variations that are connected to orde item with an order item ID
+      tags:
+        - order-item
+      parameters:
+        - name: orderItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Returns the order item variations with the specified order item ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemVariation'
+        '404':
+          description: Order item not found
+        '500':
+          description: Server error.
+  /discount:
+    post:
+      tags:
+        - discount
+      responses:
+        '201':
+          description: Successfully created discount
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+        '401':
+          description: Not authorized to create gift cards
+        '500':
+          description: Internal server error
+  /discount/{discountId}:
+    get:
+      tags:
+        - discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+                  discountObject:
+                    $ref: '#/components/schemas/Discount'
+          description: Successfully retrieved discount'
+        '404':
+          description: No such reservation found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Successfully retrieved discount
+        '401':
+          description: Not authorized to change discounts
+        '404':
+          description: No such discount found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Successfully deleted discount
+        '401':
+          description: Not authorized to delete discounts
+        '404':
+          description: No such discount found
+        '500':
+          description: Internal server error
+  /discount/business/{businessId}:
+    get:
+      tags:
+        - discount
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Discount"
+          description: Successfully retrieved tax lists by business
+        '404':
+          description: No such tax found
+        '500':
+          description: Internal server error
+  /discount/item/{itemId}:
+    get:
+      tags:
+        - discount
+        - item
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Discount"
+          description: Successfully retrieved tax lists by business
+        '404':
+          description: No such taxes found
+        '500':
+          description: Internal server error
+  /payment:
+    post:
+      tags:
+        - payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '200':
+          description: Successfully sent payment
+        '500':
+          description: Internal server error
+  /payment/business/{businessId}:
+    get:
+      tags:
+        - payment
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:  
+                    systemId:
+                      type: integer
+                      format: serial
+                    stripeReaderIds:
+                      type: integer
+                      format: serial
+          description: Successfully retrieved stripeReaderIds
+        '404':
+          description: No such business
+        '500':
+          description: Internal server error
+  /tax:
+    post:
+      tags:
+        - tax
+      responses:
+        '201':
+          description: Successfully created tax
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: serial
+        '401':
+          description: Not authorized to create gift cards
+        '500':
+          description: Internal server error
+  /tax/{taxId}:
+    get:
+      tags:
+        - tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: serial
+                  taxObject:
+                    $ref: '#/components/schemas/Tax'
+          description: Successfully retrieved tax'
+        '404':
+          description: No such tax found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Successfully updated tax
+        '401':
+          description: Not authorized to change taxes
+        '404':
+          description: No such tax found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: Successfully deleted tax
+        '401':
+          description: Not authorized to delete taxes
+        '404':
+          description: No such tax found
+        '500':
+          description: Internal server error
+  /tax/business/{businessId}:
+    get:
+      tags:
+        - tax
+        - business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: serial
+                    taxObject:
+                      $ref: "#/components/schemas/Tax"
+          description: Successfully retrieved tax lists by business
+        '404':
+          description: No such taxes found
+        '500':
+          description: Internal server error
+  /tax/item/{itemId}:
+    get:
+      tags:
+        - tax
+        - item
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: serial
+                    taxObject:
+                      $ref: "#/components/schemas/Tax"
+          description: Successfully retrieved tax lists by items
+        '404':
+          description: No such taxes found
+        '500':
+          description: Internal server error
+        
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: Unique identifier for the user
+        name:
+          type: string
+          maxLength: 64
+          description: Name of the user
+        email:
+          type: string
+          maxLength: 128
+          description: Email of the user
+        role:
+          type: string
+          maxLength: 16
+          description: Role of the user [owner, super_admin, employee] within the business
+        password:
+          type: string
+          maxLength: 255
+          format: password
+          description: Password to the user's account
+        businessId:
+          type: integer
+          format: serial
+          description: Foreign key representing the business the user belongs to
+      required:
+        - name
+        - email
+        - role
+        - spassword
+        - businessId
+    EmployeeSchedule:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: Unique identifier for the schedule
+        date:
+          type: string
+          format: date
+          description: The date of the schedule
+        startTime:
+          type: string
+          format: time
+          description: Start time of the scheduled shift
+        endTime:
+          type: string
+          format: time
+          description: End time of the scheduled shift
+        isCancelled:
+          type: boolean
+          description: Indicates if the schedule has been canceled
+        userId:
+          type: integer
+          format: serial
+          description: Foreign key representing the use the schedule belongs to
+      required:
+        - date
+        - startTime
+        - endTime
+        - isCancelled
+    Business:
+      type: object
+      properties:
+        stripeAccId:
+          type: string
+          maxLength: 255
+          format: uuid
+          description: Unique identifier of the business for the stripe payment integration
+        name: 
+          type: string
+          maxLength: 64
+          description: Name of the business
+        address:
+          type: string
+          maxLength: 128
+          description: Physical address of the business
+        phone:
+          type: string
+          maxLength: 16
+          description: Phone number of the business
+        email:
+          type: string
+          maxLength: 128
+          format: email
+          description: E-mail of the business
+        stripeReaderIds:
+          type: array
+          items:
+            type: string
+            maxLength: 255
+            format: uuid
+            description: Unique identifiers of the stripe readers that belong to the business
+    Reservation:
+      type: object
+      properties:
+        timeCreated:
+          type: string
+          format: date-time
+          description: The time, at which the reservation was created
+        timeReserved:
+          type: string
+          format: date-time
+          description: The time, which was reserved
+        status:
+          type: string
+          maxLength: 16
+          description: Status of the reservation
+        customer:
+          type: integer
+          format: serial
+          description: Unique identifier of the client, who made the reservation
+        item:
+          type: integer
+          format: serial
+          description: Unique identifier of the reserved item
+        user:
+          type: integer
+          format: serial
+          description: Unique identifier of the employee, who will complete the assigned item
+      required:
+        - timeCreated
+        - timeReserved
+        - status
+        - customer
+        - item
+        - user
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: Unique identifier of the customer
+        name: 
+          type: string
+          maxLength: 128
+          description: Name of the customer
+    GiftCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        value:
+          type: integer
+          format: decimal
+        balance:
+          type: integer
+          format: decimal
+      required:
+        - value
+        - balance
+    GiftCardPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        amountUsed:
+          type: integer
+          format: decimal
+        payment:
+          $ref: '#/components/schemas/Payment'
+        giftCard:
+          $ref: '#/components/schemas/GiftCard'
+      required:
+        - amountUsed
+        - payment
+        - giftCard
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        status:
+          type: string
+          maxLength: 16
+          description: Status of the order (e.g., "open", "closed").
+        tip:
+          type: number
+          format: decimal
+          minimum: 0.00
+          multipleOf: 0.01
+          description: Optional tip amount.
+          example: 5.00
+        refundReason:
+          type: string
+          maxLength: 255
+          description: Reason for refund, if applicable.
+        userId:
+          type: integer
+          format: serial
+          description: Reference to the user who placed the order.
+      required:
+        - status
+        - orderItems
+        - userId
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        quantity:
+          type: integer
+          format: int16
+          description: Quantity of the item ordered.
+        itemId:
+          type: integer
+          format: serial
+          description: Reference to the ordered item.
+        orderId:
+          type: integer
+          format: serial
+      required:
+        - quantity
+        - itemId
+    OrderItemVariation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        itemVariationId:
+          type: integer
+          format: serial
+          description: Reference to the item variation.
+        orderItemId:
+          type: integer
+          format: serial
+      required:
+        - itemVariationId
+        - orderItemId
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: The unique identifier for the item.
+        name:
+          type: string
+          maxLength: 128
+          description: The name of the item.
+        inventoryQuantity:
+          type: integer
+          description: The current inventory quantity of the item.
+        price:
+          type: number
+          format: decimal
+          minimum: 0.00
+          multipleOf: 0.01
+          description: The price of the item.
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discount'
+        itemGroup:
+          type: string
+          maxLength: 128
+          description: Group or category to which the item belongs.
+        businessId:
+          type: integer
+          format: serial
+          description: The ID of the business this item is associated with (foreign key).
+        serviceEmployeeID:
+          type: integer
+          description: The ID of the employee providing the service (if the item is a service).
+      required:
+        - name
+        - price
+        - businessId
+    ItemVariation: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        name:
+          type: string
+          maxLength: 128
+        inventoryQuantity:
+          type: integer
+        price:
+          type: number
+          format: decimal
+          minimum: 0.00
+          multipleOf: 0.01
+        itemVariationGroup:
+          type: string
+          maxLength: 64
+        isArchived:
+          type: boolean
+        itemId:
+          type: integer
+          format: serial
+      required:
+        - name
+        - inventoryQuantity
+        - price
+        - itemVariationGroup
+        - isArchived
+        - itemId
+    Discount:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: Unique identifier of the tax
+        amount:
+          type: integer
+          description: The amount discounted from the starting price
+        timeValidUntil:
+          type: string
+          format: date-tiime
+        type:
+          type: string
+          maxLength: 16
+        isArchived:
+          type: boolean
+          description: Shows whether the discount is still applicable, or if it is archived.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        order:
+          $ref: '#/components/schemas/Order'
+      required:
+        - amount
+        - type
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: Unique identifier of the payment
+        method:
+          type: string
+          maxLength: 16
+        order:
+          $ref: '#/components/schemas/Order'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        giftCardPayment:
+          $ref: '#/components/schemas/GiftCardPayment'
+      required:
+        - method
+        - order
+        - customer
+    Tax:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+          description: Unique identifier of the tax
+        taxType:
+          type: string
+          maxLength: 64
+          description: Type of the tax
+        percent:
+          type: integer
+          description: Percentage of an item's base cost, that goes into the taxType
+        isArchived:
+          type: boolean
+          description: Shows whether the tax is still applicable, or if it is archived.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+      required:
+        - taxType
+        - percent
+        - isArchived
