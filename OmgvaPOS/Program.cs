@@ -25,6 +25,7 @@ using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.OrderManagement.Repository;
+using OmgvaPOS.OrderManagement.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -101,6 +102,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<OrderItemUpdater>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true

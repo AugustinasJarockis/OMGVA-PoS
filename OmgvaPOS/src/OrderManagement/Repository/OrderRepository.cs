@@ -2,6 +2,7 @@
 using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.DiscountManagement.Repository;
+using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderManagement.Models;
 
 namespace OmgvaPOS.OrderManagement.Repository;
@@ -61,6 +62,28 @@ public class OrderRepository : IOrderRepository
         catch (Exception ex) {
             _logger.LogError(ex, "An error occured while getting all orders.");
             throw new ApplicationException("Error getting all orders.");
+        }
+    }
+
+    public void UpdateOrder(Order order) {
+        try {
+            _context.Orders.Update(order);
+            _context.SaveChanges();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while updating the order.");
+            throw new ApplicationException("Error updating the order.");
+        }
+    }
+
+    public void RemoveOrderItem(OrderItem orderItem) {
+        try {
+            _context.OrderItems.Remove(orderItem);
+            _context.SaveChanges();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while removing order item.");
+            throw new ApplicationException("Error updating the order.");
         }
     }
 }

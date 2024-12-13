@@ -3,8 +3,6 @@ using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderItemVariationManagement.Models;
-using OmgvaPOS.OrderItemManagement.DTOs;
-using OmgvaPOS.OrderItemVariationManagement.DTOs;
 
 namespace OmgvaPOS.OrderManagement.Mappers
 {

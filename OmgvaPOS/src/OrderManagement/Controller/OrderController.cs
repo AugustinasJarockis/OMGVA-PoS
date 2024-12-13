@@ -110,4 +110,28 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult UpdateActiveOrder([FromBody] OrderDTO orderDTO, long id) {
+        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
+            return Forbid();
+        if (orderDTO == null)
+            return BadRequest("Include how you want to update it.");
+
+        try {
+            _orderService.UpdateOrder(orderDTO, id);
+            return NoContent();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An unexpected internal server error occured while updating the order.");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
 }
