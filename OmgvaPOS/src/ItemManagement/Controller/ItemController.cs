@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
-using OmgvaPOS.src.ItemManagement.Mappers;
+using OmgvaPOS.ItemManagement.Mappers;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.Validators;
