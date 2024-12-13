@@ -34,6 +34,7 @@ public class OrderService : IOrderService
 
         return OrderMappers.OrderToOrderDTO(order);
     }
+
     public OrderDTO GetOrder(long id) {
         var order = _orderRepository.GetOrder(id);
         return OrderMappers.OrderToOrderDTO(order);
@@ -46,5 +47,12 @@ public class OrderService : IOrderService
 
         var itemId = order.OrderItems.FirstOrDefault().ItemId;
         return _itemService.GetItemNoException(itemId).BusinessId;
+    }
+    public ICollection<OrderDTO> GetAllBusinessOrders(long businessId) {
+        var orders = _orderRepository.GetAllBusinessOrders(businessId);
+        if (orders == null)
+            throw new KeyNotFoundException("Could not find any business orders");
+       
+        return orders.Select(o => o.OrderToOrderDTO()).ToList();
     }
 }

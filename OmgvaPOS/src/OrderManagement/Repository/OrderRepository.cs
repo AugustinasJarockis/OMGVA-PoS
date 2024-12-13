@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.OrderManagement.Models;
@@ -37,6 +38,25 @@ public class OrderRepository : IOrderRepository
                 .Include(o => o.User) // Include User if necessary
                 .FirstOrDefault();
             return order;
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An error occured while adding a new order.");
+            throw new ApplicationException("Error adding an order.");
+        }
+    }
+
+    public IEnumerable<Order> GetAllBusinessOrders(long businessId) {
+        try {
+            var orders = _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.OrderItemVariation) 
+                .Include(o => o.Payment) 
+                .Include(o => o.Discount) 
+                .Include(o => o.User) 
+                .Where(o => o.OrderItems.Any(oi =>
+                    _context.Items.Any(i => i.Id == oi.ItemId && i.BusinessId == businessId)))
+                .ToList();
+            return orders;
         }
         catch (Exception ex) {
             _logger.LogError(ex, "An error occured while adding a new order.");

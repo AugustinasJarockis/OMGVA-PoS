@@ -17,7 +17,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     private readonly ILogger<DiscountController> _logger = logger;
 
     [HttpPost]
-    [Authorize(Roles = "Admin,Owner")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<OrderDTO>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -44,8 +44,8 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Admin,Owner")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status201Created)]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -65,4 +65,26 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         }
     }
 
+    [HttpGet]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public ActionResult<IEnumerable<OrderDTO>> GetAllBusinessOrders() {
+        long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
+        if (businessId == null) return Forbid();
+
+        try {
+            var orderDTOs = _orderService.GetAllBusinessOrders((long)businessId);
+
+            return Ok(orderDTOs);
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An unexpected internal server error occured while getting all orders.");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
 }

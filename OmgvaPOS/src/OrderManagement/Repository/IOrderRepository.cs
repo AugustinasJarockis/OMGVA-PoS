@@ -6,4 +6,5 @@ public interface IOrderRepository
 {
     public Order AddOrder(Order order);
     Order GetOrder(long id);
+    public IEnumerable<Order> GetAllBusinessOrders(long businessId);
 }
