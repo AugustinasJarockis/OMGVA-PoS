@@ -25,16 +25,6 @@ public class DiscountRepository : IDiscountRepository
         }
     }
 
-    public List<Discount> GetGlobalDiscounts() {
-        try {
-            return [.. _context.Discounts
-                .Where(d => d.Type == DiscountType.Item)];
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An error occurred while fetching all discounts.");
-            throw new ApplicationException("Error fetching all discounts.");
-        }
-    }
     public List<Discount> GetBusinessDiscounts(long businessId) {
         try {
             return [.. _context.Discounts
