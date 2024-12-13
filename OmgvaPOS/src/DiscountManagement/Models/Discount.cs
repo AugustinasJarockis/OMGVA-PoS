@@ -1,7 +1,6 @@
 ﻿using OmgvaPOS.DiscountManagement.Enums;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Models;
-using OmgvaPOS.OrderManagement.Models;
 
 namespace OmgvaPOS.DiscountManagement.Models
 {
@@ -12,6 +11,7 @@ namespace OmgvaPOS.DiscountManagement.Models
         public DateTime TimeValidUntil { get; set; }
         public DiscountType Type { get; set; }
         public bool IsArchived { get; set; }
+        public long BusinessId { get; set; }
 
         // navigational properties
         public ICollection<OrderManagement.Models.Order> Orders { get; set; } // Discount can be applied to Orders

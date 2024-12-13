@@ -5,7 +5,7 @@ using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
-using OmgvaPOS.src.ItemManagement.Mappers;
+using OmgvaPOS.ItemManagement.Mappers;
 using OmgvaPOS.Validators;
 using System.Net;
 
