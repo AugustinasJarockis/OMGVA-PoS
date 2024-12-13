@@ -12,7 +12,7 @@ namespace OmgvaPOS.OrderItemManagement.Models
         public long? DiscountId { get; set; }
 
         // navigational properties
-        public ICollection<OrderItemVariation> OrderItemVariations { get; set; } // OrderItem can have variations
+        public OrderItemVariation? OrderItemVariation { get; set; } // OrderItem can have a variation
 
         // for foreign keys
         public OrderManagement.Models.Order Order { get; set; }

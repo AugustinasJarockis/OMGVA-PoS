@@ -67,6 +67,9 @@ namespace OmgvaPOS.AuthManagement.Service
                 }
                 return new LoginDTO(false, "Invalid Password");
             }
+            catch (KeyNotFoundException) {
+                return new LoginDTO(false, "No user with that username exists.");
+            }
             catch (Exception ex)
             {
                 throw new ApplicationException("Error during login.", ex);

@@ -23,6 +23,8 @@ using OmgvaPOS.ItemVariationManagement.Services;
 using OmgvaPOS.DiscountManagement.Service;
 using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.BusinessManagement.Services;
+using OmgvaPOS.OrderManagement.Service;
+using OmgvaPOS.OrderManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -97,6 +99,8 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
