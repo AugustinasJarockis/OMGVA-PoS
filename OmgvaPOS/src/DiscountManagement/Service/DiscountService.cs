@@ -85,7 +85,7 @@ public class DiscountService : IDiscountService
             throw new Exception("Cannot update Valid Until date for an archived discount");
 
         discount.TimeValidUntil = newValidUntil;
-        _discountRepository.UpdateDiscount(discount);
+        _discountRepository.UpdateDiscountValidUntil(discount);
     }
 
     public void ArchiveDiscount(long id) {
@@ -96,7 +96,7 @@ public class DiscountService : IDiscountService
             throw new Exception("Already archived.");
 
         discount.IsArchived = true;
-        _discountRepository.UpdateDiscount(discount);
+        _discountRepository.ArchiveDiscount(discount);
 
         // remove that discount from all items
         var items = _itemRepository.GetItemsQueriable()

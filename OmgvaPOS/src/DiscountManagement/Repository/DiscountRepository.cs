@@ -48,12 +48,16 @@ public class DiscountRepository : IDiscountRepository
         }
     }
 
-    public void UpdateDiscount(Discount discount) {
+    public void UpdateDiscountValidUntil(Discount discount) {
         var existingDiscount = _context.Discounts.FirstOrDefault(d => d.Id == discount.Id);
         // thats all we can update
         existingDiscount.TimeValidUntil = discount.TimeValidUntil;
-        if (discount.IsArchived)
-            existingDiscount.IsArchived = discount.IsArchived;
+        _context.SaveChanges();
+    }
+
+    public void ArchiveDiscount(Discount discount) {
+        var existingDiscount = _context.Discounts.FirstOrDefault(d => d.Id == discount.Id);
+        existingDiscount.IsArchived = true;
         _context.SaveChanges();
     }
 }
