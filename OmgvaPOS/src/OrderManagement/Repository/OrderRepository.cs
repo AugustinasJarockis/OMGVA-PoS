@@ -86,4 +86,16 @@ public class OrderRepository : IOrderRepository
             throw new ApplicationException("Error updating the order.");
         }
     }
+
+    public void DeleteOrder(Order order) {
+        //cascade delete is purposefully turned off so this is needed
+        foreach (var orderItem in order.OrderItems.ToList()) {
+            if (orderItem.OrderItemVariation != null) {
+                _context.OrderItemVariations.Remove(orderItem.OrderItemVariation);
+            }
+            _context.OrderItems.Remove(orderItem);
+        }
+        _context.Orders.Remove(order);
+        _context.SaveChanges();
+    }
 }

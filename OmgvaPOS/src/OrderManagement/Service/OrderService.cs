@@ -88,4 +88,14 @@ public class OrderService : IOrderService
 
         return existingOrder.OrderToOrderDTO();
     }
+
+    public void DeleteOrder(long id) {
+        var order = _orderRepository.GetOrder(id);
+        if (order == null)
+            throw new KeyNotFoundException($"Order with ID {id} not found.");
+        if (order.Status != OrderStatus.Open)
+            throw new Exception($"Order with ID {id} is {order.Status} (not open for editing)");
+
+        _orderRepository.DeleteOrder(order);
+    }
 }

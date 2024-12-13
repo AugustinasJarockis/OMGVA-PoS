@@ -10,4 +10,5 @@ public interface IOrderRepository
     public IEnumerable<Order> GetAllBusinessOrders(long businessId);
     public void UpdateOrder(Order order);
     public void RemoveOrderItem(OrderItem orderItem);
+    public void DeleteOrder(Order order);
 }
