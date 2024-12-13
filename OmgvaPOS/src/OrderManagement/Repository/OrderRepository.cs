@@ -40,8 +40,8 @@ public class OrderRepository : IOrderRepository
             return order;
         }
         catch (Exception ex) {
-            _logger.LogError(ex, "An error occured while adding a new order.");
-            throw new ApplicationException("Error adding an order.");
+            _logger.LogError(ex, "An error occured while getting an order by Id.");
+            throw new ApplicationException("Error getting an order by Id.");
         }
     }
 
@@ -59,8 +59,8 @@ public class OrderRepository : IOrderRepository
             return orders;
         }
         catch (Exception ex) {
-            _logger.LogError(ex, "An error occured while adding a new order.");
-            throw new ApplicationException("Error adding an order.");
+            _logger.LogError(ex, "An error occured while getting all orders.");
+            throw new ApplicationException("Error getting all orders.");
         }
     }
 }

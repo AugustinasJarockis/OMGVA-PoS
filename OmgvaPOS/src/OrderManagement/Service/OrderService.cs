@@ -3,6 +3,7 @@ using OmgvaPOS.DiscountManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
+using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Mappers;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Repository;
@@ -48,11 +49,20 @@ public class OrderService : IOrderService
         var itemId = order.OrderItems.FirstOrDefault().ItemId;
         return _itemService.GetItemNoException(itemId).BusinessId;
     }
-    public ICollection<OrderDTO> GetAllBusinessOrders(long businessId) {
+    public IEnumerable<OrderDTO> GetAllBusinessOrders(long businessId) {
         var orders = _orderRepository.GetAllBusinessOrders(businessId);
         if (orders == null)
             throw new KeyNotFoundException("Could not find any business orders");
        
         return orders.Select(o => o.OrderToOrderDTO()).ToList();
+    }
+    public IEnumerable<OrderDTO> GetAllActiveOrders(long businessId) {
+        var orders = GetAllBusinessOrders(businessId)
+            .Where(o => o.Status == OrderStatus.Open);
+        //TODO: should be custom exception
+        if (orders == null)
+            throw new KeyNotFoundException("Could not find any active orders"); 
+
+        return orders;
     }
 }

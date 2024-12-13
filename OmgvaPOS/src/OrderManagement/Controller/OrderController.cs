@@ -87,4 +87,27 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
+
+    [HttpGet("active")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public ActionResult<IEnumerable<OrderDTO>> GetAllActiveOrders() {
+        long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
+        if (businessId == null) return Forbid();
+
+        try {
+            var orderDTOs = _orderService.GetAllActiveOrders((long)businessId);
+
+            return Ok(orderDTOs);
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An unexpected internal server error occured while getting all active orders.");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
 }

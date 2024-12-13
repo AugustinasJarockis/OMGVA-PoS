@@ -21,6 +21,7 @@ namespace OmgvaPOS.OrderManagement.Mappers
             };
         }
 
+        // No, I will not separate these into different files.
         public static OrderItem RequestToOrderItem(this CreateOrderItemRequest request) {
             return new OrderItem {
                 ItemId = request.ItemId,
