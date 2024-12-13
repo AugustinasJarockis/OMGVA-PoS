@@ -37,12 +37,13 @@ namespace OmgvaPOS.ItemVariationManagement.Services
         }
         public ItemVariationDTO CreateItemVariation(ItemVariationCreationRequest itemVariationCreationRequest, long itemId) {
             ItemVariation itemVariation = itemVariationCreationRequest.ToItemVariation();
+            itemVariation.ItemId = itemId;
             var newItemVariation = _itemVariationRepository.CreateItemVariation(itemVariation);
             return newItemVariation.ToItemVariationDTO();
         }
-        public ItemVariationDTO UpdateItemVariation(ItemVariationDTO itemVariationDTO) {
-            var itemVariation = _itemVariationRepository.GetItemVariation((long)itemVariationDTO.Id); //TODO: potential error here because id is null ir invalid
-            itemVariation = itemVariationDTO.ToItemVariation(itemVariation);
+        public ItemVariationDTO UpdateItemVariation(ItemVariationUpdateRequest itemVariationUpdateRequest, long id) {
+            var itemVariation = _itemVariationRepository.GetItemVariation(id);
+            itemVariation = itemVariationUpdateRequest.ToItemVariation(itemVariation);
             return _itemVariationRepository.UpdateItemVariation(itemVariation).ToItemVariationDTO();
         }
         public void DeleteItemVariation(long id) {
