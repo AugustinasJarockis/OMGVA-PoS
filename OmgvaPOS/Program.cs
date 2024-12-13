@@ -20,6 +20,7 @@ using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Services;
+using OmgvaPOS.BusinessManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -79,6 +80,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();

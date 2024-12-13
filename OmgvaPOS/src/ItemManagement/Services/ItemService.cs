@@ -47,7 +47,8 @@ namespace OmgvaPOS.ItemManagement.Services
             return newItem.ToItemDTO();
         }
         public ItemDTO UpdateItem(ItemDTO itemDTO) {
-            var item = itemDTO.ToItem();
+            var item = _itemRepository.GetItem((long)itemDTO.Id); //TODO: potential error here. Though unlikely as endpoint should make sure of id existance
+            item = itemDTO.ToItem(item);
             var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
             var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
 
