@@ -38,7 +38,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
             return CreatedAtAction(nameof(GetOrderById), new { orderDTO.Id }, orderDTO);
         }
         catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while trying to get a specific discount.");
+            _logger.LogError(ex, "An unexpected internal server error occured while trying to create an order.");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -52,6 +52,17 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<OrderDTO> GetOrderById(long id) {
-        throw new NotImplementedException();
+        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
+            return Forbid();
+
+        try {
+            OrderDTO orderDTO = _orderService.GetOrder(id);
+            return Ok(orderDTO);
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An unexpected internal server error occured while trying to get an order.");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
     }
+
 }
