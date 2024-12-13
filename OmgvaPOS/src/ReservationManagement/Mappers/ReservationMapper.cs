@@ -16,12 +16,8 @@ namespace OmgvaPOS.ReservationManagement.Mappers
                 Status = reservation.Status,
                 EmployeeId = reservation.EmployeeId,
                 CustomerId = reservation.CustomerId,
-                EmployeeName = reservation.User != null 
-                    ? $"{reservation.User.Name} {reservation.User.Name}"
-                    : string.Empty,
-                CustomerName = reservation.Customer != null 
-                    ? $"{reservation.Customer.Name} {reservation.Customer.Name}"
-                    : string.Empty
+                EmployeeName = reservation.User.Name,
+                CustomerName = reservation.Customer.Name
             };
         }
 
@@ -45,9 +41,10 @@ namespace OmgvaPOS.ReservationManagement.Mappers
 
         public static void UpdateEntity(this Reservation entity, UpdateReservationRequest updateRequest)
         {
-            entity.TimeReserved = updateRequest.TimeReserved;
-            entity.Status = updateRequest.Status;
-            entity.EmployeeId = updateRequest.EmployeeId;
+            entity.TimeReserved = updateRequest.TimeReserved ?? entity.TimeReserved;
+            entity.Status = updateRequest.Status ?? entity.Status;
+            entity.EmployeeId = updateRequest.EmployeeId ?? entity.EmployeeId;
+            entity.CustomerId = updateRequest.CustomerId ?? entity.CustomerId;
         }
     }
 }

@@ -62,7 +62,7 @@ namespace OmgvaPOS.ReservationManagement.Controller
 
         [HttpDelete("{reservationId}")]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ReservationDto>(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         // TODO: add forbidden once we link reservation to business
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,6 +73,7 @@ namespace OmgvaPOS.ReservationManagement.Controller
             return NoContent();
         }
 
+        // TODO: take businessId not from url, but from token
         [HttpGet("business/{businessId}")]
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
