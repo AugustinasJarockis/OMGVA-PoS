@@ -6,9 +6,14 @@ using Microsoft.OpenApi.Models;
 using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.Middleware;
+using OmgvaPOS.ReservationManagement.Repository;
+using OmgvaPOS.ReservationManagement.Service;
 using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.AuthManagement.Service;
+using OmgvaPOS.CustomerManagement.Repository;
+using OmgvaPOS.CustomerManagement.Service;
 using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.TaxManagement.Services;
@@ -88,6 +93,10 @@ builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<ITaxItemRepository, TaxItemRepository>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
@@ -144,11 +153,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Add exception handler before routing/endpoints
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 app.MapControllers();
 
