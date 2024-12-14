@@ -26,7 +26,7 @@ public static class JwtTokenHandler
         return tokenDetails;
     }
     
-    public static long GetTokenBusinessId(string tokenString) => GetTokenDetails(tokenString).BusinessId;
+    public static long GetTokenBusinessId(string? tokenString) => GetTokenDetails(tokenString).BusinessId;
 
     private static long GetBusinessId(JwtSecurityToken token)
     {

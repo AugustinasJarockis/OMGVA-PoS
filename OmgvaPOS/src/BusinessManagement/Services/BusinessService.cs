@@ -11,7 +11,7 @@ namespace OmgvaPOS.BusinessManagement.Services
         public List<BusinessDTO> GetBusinesses() {
             return _businessRepository.GetBusinesses().Select(b => b.ToBusinessDTO()).ToList();
         }
-        public BusinessDTO GetBusiness(long id) {
+        public BusinessDTO? GetBusiness(long id) {
             return _businessRepository.GetBusiness(id).ToBusinessDTO();
         }
         public BusinessDTO CreateBusiness(CreateBusinessRequest request) {

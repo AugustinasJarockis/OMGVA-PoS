@@ -21,19 +21,14 @@ namespace OmgvaPOS.ItemVariationManagement.Services
             var itemVariationDTOs = itemVariations.Select(i => i.ToItemVariationDTO()).ToList();
             return itemVariationDTOs;
         }
-        public ItemVariationDTO GetItemVariation(long id) {
+        public ItemVariationDTO? GetItemVariation(long id) {
             var itemVariation = _itemVariationRepository.GetItemVariation(id);
             return itemVariation.ToItemVariationDTO();
         }
 
         public long GetItemVariationBusinessNoException(long id) {
-            try {
-                return _itemRepository.GetItem(_itemVariationRepository.GetItemVariation(id).ItemId).BusinessId;
-            }
-            catch (Exception ex) {
-                _logger.LogError("Unexpected error occurred when trying to get item variation business id: " + ex);
-                return -1;
-            }
+            // TODO: item variantion may be null. 
+            return _itemRepository.GetItem(_itemVariationRepository.GetItemVariation(id).ItemId).BusinessId;
         }
         public ItemVariationDTO CreateItemVariation(ItemVariationCreationRequest itemVariationCreationRequest, long itemId) {
             ItemVariation itemVariation = itemVariationCreationRequest.ToItemVariation();

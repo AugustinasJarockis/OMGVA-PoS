@@ -48,7 +48,7 @@ public class DiscountRepository : IDiscountRepository
         }
     }
 
-    public void UpdateDiscountValidUntil(Discount discount) {
+    public void UpdateDiscountValidUntil(Discount? discount) {
         var existingDiscount = _context.Discounts.FirstOrDefault(d => d.Id == discount.Id);
         // thats all we can update
         existingDiscount.TimeValidUntil = discount.TimeValidUntil;

@@ -58,7 +58,16 @@ public class ExceptionMiddleware
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 response.Message = exception.Message;
                 break;
-                            
+            
+            // TODO: not implemented exception should not be present.
+            // But if they are, exception handler should return internal server error instead of the actual message 
+            // Leaving the actual message for easier debugging while developing
+            case NotImplementedException: 
+                _logger.LogWarning(exception, exception.Message);
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = exception.Message;
+                break;
+            
             case ForbiddenException:
                 _logger.LogWarning(exception, exception.Message);
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;

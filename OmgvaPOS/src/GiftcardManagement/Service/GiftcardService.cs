@@ -1,4 +1,5 @@
-﻿using OmgvaPOS.GiftcardManagement.DTOs;
+﻿using OmgvaPOS.Exceptions;
+using OmgvaPOS.GiftcardManagement.DTOs;
 using OmgvaPOS.GiftcardManagement.Mappers;
 using OmgvaPOS.GiftcardManagement.Models;
 using OmgvaPOS.GiftcardManagement.Repository;
@@ -10,7 +11,7 @@ namespace OmgvaPOS.GiftcardManagement.Service
         private readonly IGiftcardRepository _giftcardRepository = giftcardRepository;
         private static readonly Random random = new();
 
-        public Giftcard GetGiftcard(long id)
+        public Giftcard? GetGiftcard(long id)
         {
             return _giftcardRepository.GetGiftcardById(id);
         }
@@ -21,7 +22,7 @@ namespace OmgvaPOS.GiftcardManagement.Service
         public Giftcard CreateGiftcard(GiftcardDTO giftcard)
         {
             if (giftcard.Value <= 0)
-                throw new ApplicationException();
+                throw new ApplicationException("Value should be positive");
 
             string code;
             do
@@ -34,9 +35,14 @@ namespace OmgvaPOS.GiftcardManagement.Service
         public void UpdateGiftcard(GiftcardUpdateRequest giftcardUpdateRequest)
         {
             var giftcard = _giftcardRepository.GetGiftcardByCode(giftcardUpdateRequest.Code);
-            
-            if(giftcard.Balance < giftcardUpdateRequest.Amount || giftcardUpdateRequest.Amount <= 0)
-                throw new ApplicationException();
+            if (giftcard == null)
+                return;
+
+            if (giftcard.Balance < giftcardUpdateRequest.Amount)
+                throw new BadRequestException("Giftcard does not have enough balance");
+                
+            if (giftcardUpdateRequest.Amount <= 0)
+                throw new BadRequestException("Amount must be positive");
 
             decimal calculatedAmount = giftcard.Balance - giftcardUpdateRequest.Amount;
             _giftcardRepository.Update(giftcardUpdateRequest.Code, calculatedAmount);

@@ -28,13 +28,7 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(itemId).BusinessId))
                 return Forbid();
 
-            try {
-                return Ok(JsonConvert.SerializeObject(_itemVariationService.GetItemVariations(itemId)));
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving all item variations.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            return Ok(JsonConvert.SerializeObject(_itemVariationService.GetItemVariations(itemId)));
         }
 
         [HttpGet("{id}")]
@@ -48,18 +42,12 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
                 return Forbid();
 
-            try {
-                ItemVariationDTO itemVariation = _itemVariationService.GetItemVariation(id);
+            ItemVariationDTO itemVariation = _itemVariationService.GetItemVariation(id);
 
-                if (itemVariation == null)
-                    return NotFound();
-                else
-                    return Ok(JsonConvert.SerializeObject(itemVariation));
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving an item variation.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            if (itemVariation == null)
+                return NotFound();
+            else
+                return Ok(JsonConvert.SerializeObject(itemVariation));
         }
 
         [HttpPost("{itemId}")] //TODO: Check for potential additional errors
@@ -73,18 +61,8 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(itemId).BusinessId))
                 return Forbid();
 
-            try {
-                ItemVariationDTO itemVariationDTO = _itemVariationService.CreateItemVariation(itemVariationCreationRequest, itemId);
-                if (itemVariationDTO == null) {
-                    _logger.LogError("An unexpected internal server error occured while creating the item variation.");
-                    return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-                }
-                return Created($"/item/{itemVariationDTO.Id}", itemVariationDTO);
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while creating the item variation.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            ItemVariationDTO itemVariationDTO = _itemVariationService.CreateItemVariation(itemVariationCreationRequest, itemId);
+            return Created($"/item/{itemVariationDTO.Id}", itemVariationDTO);
         }
 
         [HttpPatch("{id}")] //Check other status code possibility
@@ -99,17 +77,11 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
                 return Forbid();
 
-            try {
-                var returnedItemVariation = _itemVariationService.UpdateItemVariation(itemVariationUpdateRequest, id);
-                if (returnedItemVariation != null) //TODO: Handle errors, possible null value
-                    return Ok(returnedItemVariation);
-                else
-                    return NotFound();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while updating the item variation.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var returnedItemVariation = _itemVariationService.UpdateItemVariation(itemVariationUpdateRequest, id);
+            if (returnedItemVariation != null) //TODO: Handle errors, possible null value
+                return Ok(returnedItemVariation);
+            else
+                return NotFound();
         }
 
         [HttpDelete("{id}")] //TODO: Consider error codes
@@ -123,17 +95,12 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
                 return Forbid();
 
-            try {
-                if (_itemVariationService.GetItemVariation(id) == null) {
-                    return NotFound("Item variation not found.");
-                }
-                _itemVariationService.DeleteItemVariation(id); //TODO: Handle errors properly
-                return NoContent();
+            if (_itemVariationService.GetItemVariation(id) == null) {
+                return NotFound("Item variation not found.");
             }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while deleting item variation.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            
+            _itemVariationService.DeleteItemVariation(id); //TODO: Handle errors properly
+            return NoContent();
         }
     }
 }

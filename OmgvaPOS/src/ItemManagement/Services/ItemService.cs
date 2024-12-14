@@ -35,20 +35,14 @@ namespace OmgvaPOS.ItemManagement.Services
         }
 
         public Item GetItemNoException(long id) {
-            try {
-                return _itemRepository.GetItem(id);
-            }
-            catch (Exception ex) {
-                _logger.LogError("Unexpected error occurred when trying to get item: " + ex);
-                return null;
-            }
+            return _itemRepository.GetItem(id);
         }
         public ItemDTO CreateItem(Item item) {
             //TODO: Think about discounts
             var newItem = _itemRepository.CreateItem(item);
             return newItem.ToItemDTO();
         }
-        public ItemDTO UpdateItem(ItemDTO itemDTO) {
+        public ItemDTO? UpdateItem(ItemDTO itemDTO) {
             var item = _itemRepository.GetItem((long)itemDTO.Id); //TODO: potential error here. Though unlikely as endpoint should make sure of id existance
             item = itemDTO.ToItem(item);
             return UpdateItem(item).ToItemDTO();
@@ -92,6 +86,7 @@ namespace OmgvaPOS.ItemManagement.Services
                 .Select(t => TaxMapper.ToDTO(t)).ToList();
         }
         public ItemDTO ChangeItemTaxes(ChangeItemTaxesRequest changeItemTaxesRequest, long itemId) {
+            // TODO: REWRITE for better clarity. 
             var newItem = UpdateItem(_itemRepository.GetItem(itemId)); //TODO: Potential error here
 
             var taxItems = _taxItemRepository.GetAllTaxItemQueriable();

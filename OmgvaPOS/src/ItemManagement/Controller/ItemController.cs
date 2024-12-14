@@ -27,17 +27,9 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllBusinessItems() {
-            long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-            if (businessId == null)
-                return Forbid();
+            long businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
 
-            try {
-                return Ok(_itemService.GetItems((long)businessId));
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving all items.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            return Ok(_itemService.GetItems(businessId));
         }
 
 
@@ -52,18 +44,12 @@ namespace OmgvaPOS.ItemManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
-            try {
-                ItemDTO item = _itemService.GetItem(id);
+            ItemDTO item = _itemService.GetItem(id);
 
-                if (item == null)
-                    return NotFound();
-                else
-                    return Ok(item);
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving an item.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            if (item == null)
+                return NotFound();
+            else
+                return Ok(item);
         }
 
         [HttpPost]
@@ -74,9 +60,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) { //TODO: Validate here and in update method, that the employee, if exists, belongs to the correct business
-            long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-            if (businessId == null)
-                return Forbid();
+            long businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
 
             createItemRequest.Currency = createItemRequest.Currency.ToUpper();
             if (!createItemRequest.Currency.IsValidCurrency())
@@ -88,19 +72,9 @@ namespace OmgvaPOS.ItemManagement
             if (createItemRequest.Price < 0)
                 return StatusCode((int)HttpStatusCode.BadRequest, "Price can not be negative");
 
-            try {
-                Item newitem = createItemRequest.ToItem((long)businessId);
-                ItemDTO item = _itemService.CreateItem(newitem);
-                if (item == null) {
-                    _logger.LogError("An unexpected internal server error occured while creating the item.");
-                    return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-                }
-                return Created($"/item/{item.Id}", item);
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while creating the item.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            Item newitem = createItemRequest.ToItem(businessId);
+            ItemDTO item = _itemService.CreateItem(newitem);
+            return Created($"/item/{item.Id}", item);
         }
 
         [HttpPatch("{id}")]
@@ -127,17 +101,11 @@ namespace OmgvaPOS.ItemManagement
             if (item.Price < 0)
                 return StatusCode((int)HttpStatusCode.BadRequest, "Price can not be negative");
 
-            try {
-                var returnItem = _itemService.UpdateItem(item);
-                if (returnItem != null) //TODO: Handle errors, handle possible null
-                    return Ok(returnItem);
-                else
-                    return NotFound();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while updating the item.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var returnItem = _itemService.UpdateItem(item);
+            if (returnItem != null) //TODO: Handle errors, handle possible null
+                return Ok(returnItem);
+            else
+                return NotFound();
         }
 
         [HttpDelete("{id}")]
@@ -151,17 +119,11 @@ namespace OmgvaPOS.ItemManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
-            try {
-                if(_itemService.GetItem(id) == null) {
-                    return NotFound("Item not found.");
-                }
-                _itemService.DeleteItem(id); //TODO: Handle errors properly
-                return NoContent();
+            if(_itemService.GetItem(id) == null) {
+                return NotFound("Item not found.");
             }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while deleting item.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            _itemService.DeleteItem(id); //TODO: Handle errors properly
+            return NoContent();
         }
 
         [HttpGet("{id}/taxes")]
@@ -175,14 +137,8 @@ namespace OmgvaPOS.ItemManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
-            try {
-                List<TaxDto> itemTaxes = _itemService.GetItemTaxes(id);
-                return Ok(itemTaxes);
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving item taxes.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            List<TaxDto> itemTaxes = _itemService.GetItemTaxes(id);
+            return Ok(itemTaxes);
         }
 
         [HttpPost("{id}/taxes")]
@@ -203,17 +159,11 @@ namespace OmgvaPOS.ItemManagement
                 return NotFound("Not all specified taxes exist");
             }
 
-            try {
-                var returnItem = _itemService.ChangeItemTaxes(changeItemTaxesRequest, id);
-                if (returnItem != null) //TODO: Handle errors, handle possible null
-                    return Ok(returnItem);
-                else
-                    return NotFound();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while changing item taxes.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var returnItem = _itemService.ChangeItemTaxes(changeItemTaxesRequest, id);
+            if (returnItem != null) //TODO: Handle errors, handle possible null
+                return Ok(returnItem);
+            else
+                return NotFound();
         }
     }
 }

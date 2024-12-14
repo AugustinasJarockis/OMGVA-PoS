@@ -15,7 +15,11 @@ namespace OmgvaPOS.DiscountManagement.Mappers
             };
         }
 
-        public static DiscountDTO ToDTO(Discount discount) {
+        public static DiscountDTO? ToDTO(Discount? discount)
+        {
+            if (discount == null)
+                return null;
+            
             return new DiscountDTO() {
                 Id = discount.Id,
                 Amount = discount.Amount,

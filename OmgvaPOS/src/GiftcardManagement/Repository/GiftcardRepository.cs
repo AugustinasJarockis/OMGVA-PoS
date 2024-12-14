@@ -7,10 +7,9 @@ namespace OmgvaPOS.GiftcardManagement.Repository
     {
         private readonly OmgvaDbContext _database = database;
 
-        public Giftcard GetGiftcardById(long id)
+        public Giftcard? GetGiftcardById(long id)
         {
-            return _database.Giftcards.FirstOrDefault(g => g.Id == id)
-                ?? throw new KeyNotFoundException("Giftcard not found.");
+            return _database.Giftcards.FirstOrDefault(g => g.Id == id);
         }
         public Giftcard? GetGiftcardByCode(string code)
         {

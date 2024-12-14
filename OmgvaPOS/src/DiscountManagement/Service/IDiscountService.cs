@@ -7,8 +7,8 @@ namespace OmgvaPOS.DiscountManagement.Service
     {
         public DiscountDTO CreateDiscount(CreateDiscountRequest createDiscountRequest);
         public List<DiscountDTO> GetBusinessDiscounts(long businessId);
-        public DiscountDTO GetDiscountById(long id);
-        public Discount GetDiscountNoException(long id);
+        public DiscountDTO? GetDiscountById(long id);
+        public Discount GetDiscountModel(long id);
         public void UpdateDiscountValidUntil(long id, DateTime newValidUntil);
         public void ArchiveDiscount(long id);
         public void UpdateDiscountOfItem(long discountId, long itemId);

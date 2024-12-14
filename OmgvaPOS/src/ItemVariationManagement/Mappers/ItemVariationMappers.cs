@@ -27,7 +27,7 @@ namespace OmgvaPOS.ItemVariationManagement.Mappers
             return baseVariation;
         }
 
-        public static ItemVariationDTO ToItemVariationDTO(this ItemVariation variation) {
+        public static ItemVariationDTO ToItemVariationDTO(this ItemVariation? variation) {
             return new ItemVariationDTO() {
                 Id = variation.Id,
                 ItemId = variation.ItemId,
