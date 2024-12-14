@@ -22,7 +22,7 @@ namespace src.GiftcardManagement.Controller
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Create([FromBody] GiftcardDTO giftcardRequest)
         {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcardRequest.BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcardRequest.BusinessId))
                 return Forbid();
 
             try
@@ -49,7 +49,7 @@ namespace src.GiftcardManagement.Controller
             if (giftcard == null)
                 return NotFound();
 
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
                 return Forbid();
 
             return Ok(giftcard);
@@ -84,7 +84,7 @@ namespace src.GiftcardManagement.Controller
                 if (giftcard == null)
                     return UnprocessableEntity();
 
-                if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
+                if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
                     return Forbid();
 
                 _giftcardService.UpdateGiftcard(giftcardRequest);

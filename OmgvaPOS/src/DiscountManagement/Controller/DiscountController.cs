@@ -29,11 +29,8 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateDiscount([FromBody] CreateDiscountRequest createDiscountRequest) {
-            long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-            if (businessId == null)
-                return Forbid();
-            else
-                createDiscountRequest.BusinessId = businessId;
+            long businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
+            createDiscountRequest.BusinessId = businessId;
 
             try {
                 var discountDTO = _discountService.CreateDiscount(createDiscountRequest);
@@ -59,8 +56,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<DiscountDTO>> GetAllDiscounts() {
-            long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-            if (businessId == null) return Forbid();
+            long businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
 
             try {
                 var discountDTOs = _discountService.GetBusinessDiscounts((long)businessId);
@@ -81,7 +77,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<DiscountDTO> GetDiscountById(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(id).BusinessId))
                 return Forbid();
 
             try {
@@ -106,7 +102,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateDiscountValidUntil([FromBody] DateTime newValidUntil, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(id).BusinessId))
                 return Forbid();
             // there is really nothing else you can update in a discount
             // since we care about historical data:
@@ -129,7 +125,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ArchiveDiscount(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(id).BusinessId))
                 return Forbid();
 
             // essentially update IsArchived to true
@@ -152,7 +148,7 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //TODO: does not work error in ItemRepository UpdateItem(Item item)
         public IActionResult UpdateDiscountOfItem(long discountId, long itemId) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(discountId).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountNoException(discountId).BusinessId))
                 return Forbid();
 
             try {

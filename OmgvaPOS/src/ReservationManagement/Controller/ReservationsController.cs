@@ -82,7 +82,7 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<ReservationDto>> GetBusinessReservations(long businessId)
         {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
                 throw new ForbiddenException(GetForbiddenReservationErrorMessage(businessId));
             
             var reservations = _reservationService.GetAll();

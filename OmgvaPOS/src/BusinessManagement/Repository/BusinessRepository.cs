@@ -1,15 +1,11 @@
-﻿using OmgvaPOS.AuthManagement.Repository;
-using OmgvaPOS.BusinessManagement.DTOs;
-using OmgvaPOS.BusinessManagement.Mappers;
-using OmgvaPOS.BusinessManagement.Models;
+﻿using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
 
 namespace OmgvaPOS.BusinessManagement.Repository
 {
-    public class BusinessRepository(OmgvaDbContext database, IAuthenticationRepository authenticationRepository) : IBusinessRepository
+    public class BusinessRepository(OmgvaDbContext database) : IBusinessRepository
     {
         private readonly OmgvaDbContext _database = database;
-        private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
         public List<Business> GetBusinesses() {
             return [.. _database.Businesses];
         }

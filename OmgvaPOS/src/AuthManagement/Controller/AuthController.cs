@@ -33,7 +33,7 @@ namespace OmgvaPOS.AuthManagement.Controller
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Login(long businessId)
         {
-            var currentToken = JwtTokenHandler.GetTokenDetails(HttpContext.Request.Headers.Authorization!);
+            var currentToken = JwtTokenHandler.GetTokenDetails(HttpContext.Request.Headers.Authorization);
             var login = _authService.LoginAdminWithDifferentBusiness(businessId, currentToken);
             
             Response.Headers.Append("Authorization", "Bearer " + login.Token);

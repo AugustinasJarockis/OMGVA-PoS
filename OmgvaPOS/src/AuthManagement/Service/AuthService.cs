@@ -28,7 +28,7 @@ namespace OmgvaPOS.AuthManagement.Service
             if (user.HasLeft)
                 return new LoginResponseDTO(false, AccountDeactivated);
 
-            bool passwordIsCorrect = BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, user.Password);
+            var passwordIsCorrect = BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, user.Password);
             if (!passwordIsCorrect)
                 return new LoginResponseDTO(false, UsernameOrPasswordIncorrect);
 
@@ -40,9 +40,9 @@ namespace OmgvaPOS.AuthManagement.Service
         public LoginResponseDTO LoginAdminWithDifferentBusiness(long newBusinessId, TokenDetailsDTO tokenDetails)
         {
             var newToken = GenerateJWT(
-                userId: tokenDetails.NameIdentifier,
-                role: tokenDetails.Role,
-                name: tokenDetails.Name,
+                userId: tokenDetails.UserId.ToString(),
+                role: tokenDetails.UserRole.ToString(),
+                name: tokenDetails.UserName,
                 businessId: newBusinessId.ToString());
 
             return new LoginResponseDTO(true, newToken);

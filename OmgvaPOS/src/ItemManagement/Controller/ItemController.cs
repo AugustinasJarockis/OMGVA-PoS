@@ -49,7 +49,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetItem(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
             try {
@@ -112,7 +112,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateItem([FromBody] ItemDTO item, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
             item.Id = id;
@@ -148,7 +148,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteItem(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
             try {
@@ -172,7 +172,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)] //TODO: Should be thrown if item does not exist.
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetItemTaxes(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
             try {
@@ -194,7 +194,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ChangeItemTaxes([FromBody] ChangeItemTaxesRequest changeItemTaxesRequest, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId)) //TODO: Fix crash when inexistant business id is passed
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId)) //TODO: Fix crash when inexistant business id is passed
                 return Forbid();
 
             var allTaxIds = _taxService.GetAllTaxes().Select(t => t.Id);

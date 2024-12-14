@@ -80,7 +80,7 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<IEnumerable<CustomerDTO>> GetBusinessCustomers(long businessId)
     {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
             throw new ForbiddenException("Forbidden");
         
         var customers = _customerService.GetAll();

@@ -40,7 +40,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetBusiness(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
 
             try {
@@ -93,7 +93,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateBusiness([FromBody] BusinessDTO business, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
 
             if (!business.Email?.IsValidEmail() ?? false)
