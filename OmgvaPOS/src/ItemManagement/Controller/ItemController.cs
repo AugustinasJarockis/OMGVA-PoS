@@ -132,10 +132,10 @@ namespace OmgvaPOS.ItemManagement
             item.Currency = item.Currency.ToUpper();
 
             if (item.UserId != null && _userService.GetUser((long)item.UserId).BusinessId != businessId) //TODO: User id may be wrong here
-                return StatusCode((int)HttpStatusCode.BadRequest, "There is no such user that works in this business");
+                throw new NotFoundException("There is no such user that works in this business.");
 
             if (item.DiscountId != null && _discountRepository.GetDiscount((long)item.DiscountId).BusinessId != businessId) //TODO: Discount id may be wrong here
-                return StatusCode((int)HttpStatusCode.BadRequest, "There is no such discount available");
+                throw new NotFoundException("There is no such discount available.");
 
             if (!item.Currency.IsValidCurrency())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
