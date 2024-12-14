@@ -11,7 +11,6 @@ using OmgvaPOS.Validators;
 using System.Net;
 using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.DiscountManagement.Repository;
-using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Exceptions;
 
 namespace OmgvaPOS.ItemManagement
