@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemManagement.Mappers;
+using OmgvaPOS.TaxManagement.Models;
+using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.Validators;
 using System.Net;
 using OmgvaPOS.UserManagement.Service;
@@ -16,11 +17,12 @@ namespace OmgvaPOS.ItemManagement
 {
     [Route("item")]
     [ApiController]
-    public class ItemController(IItemService itemService, IUserService userService, IDiscountRepository discountRepository, ILogger<ItemController> logger) : Controller
+    public class ItemController(IItemService itemService, ITaxService taxService, IUserService userService, IDiscountRepository discountRepository, ILogger<ItemController> logger) : Controller
     {
         private readonly IItemService _itemService = itemService;
         private readonly IUserService _userService = userService;
         private readonly IDiscountRepository _discountRepository = discountRepository;
+        private readonly ITaxService _taxService = taxService;
         private readonly ILogger<ItemController> _logger = logger;
 
         [HttpGet]
@@ -61,7 +63,7 @@ namespace OmgvaPOS.ItemManagement
                 if (item == null)
                     return NotFound();
                 else
-                    return Ok(JsonConvert.SerializeObject(item));
+                    return Ok(item);
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving an item.");
@@ -176,6 +178,58 @@ namespace OmgvaPOS.ItemManagement
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while deleting item.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
+            }
+        }
+
+        [HttpGet("{id}/taxes")]
+        [Authorize(Roles = "Admin, Owner, Employee")]
+        [ProducesResponseType<List<TaxDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] //TODO: Should be thrown if item does not exist.
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetItemTaxes(long id) {
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
+                return Forbid();
+
+            try {
+                List<TaxDto> itemTaxes = _itemService.GetItemTaxes(id);
+                return Ok(itemTaxes);
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, "An unexpected internal server error occured while retrieving item taxes.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
+            }
+        }
+
+        [HttpPost("{id}/taxes")]
+        [Authorize(Roles = "Admin, Owner, Employee")]
+        [ProducesResponseType<ItemDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ChangeItemTaxes([FromBody] ChangeItemTaxesRequest changeItemTaxesRequest, long id) {
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId)) //TODO: Fix crash when inexistant business id is passed
+                return Forbid();
+
+            var allTaxIds = _taxService.GetAllTaxes().Select(t => t.Id);
+            if (!(changeItemTaxesRequest.TaxesToRemoveIds.All(taxId => allTaxIds.Contains(taxId)) 
+                && changeItemTaxesRequest.TaxesToAddIds.All(taxId => allTaxIds.Contains(taxId)))) {
+                return NotFound("Not all specified taxes exist");
+            }
+
+            try {
+                var returnItem = _itemService.ChangeItemTaxes(changeItemTaxesRequest, id);
+                if (returnItem != null) //TODO: Handle errors, handle possible null
+                    return Ok(returnItem);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, "An unexpected internal server error occured while changing item taxes.");
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
             }
         }

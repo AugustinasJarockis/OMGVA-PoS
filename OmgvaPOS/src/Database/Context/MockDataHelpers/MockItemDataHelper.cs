@@ -1,5 +1,4 @@
 ﻿using OmgvaPOS.ItemManagement.Models;
-using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.Database.Context.MockDataHelpers
 {

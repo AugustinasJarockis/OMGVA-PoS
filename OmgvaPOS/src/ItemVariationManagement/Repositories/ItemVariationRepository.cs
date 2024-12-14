@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
-using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Models;
-using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.ItemVariationManagement.Repositories
 {
