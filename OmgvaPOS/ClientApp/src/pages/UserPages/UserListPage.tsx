@@ -42,7 +42,7 @@ const UserListPage: React.FC = () => {
             const { result, error } = await getBusinessUsers(authToken, getTokenBusinessId(authToken ?? ''));
 
             if (!result) {
-                setError('Problem acquiring taxes: ' + error);
+                setError('Problem acquiring user: ' + error);
             }
             else {
                 setListItems(result.map(user =>
