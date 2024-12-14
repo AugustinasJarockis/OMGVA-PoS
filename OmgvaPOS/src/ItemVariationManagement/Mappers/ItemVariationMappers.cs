@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemVariationManagement.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace OmgvaPOS.ItemVariationManagement.Mappers
 {
@@ -15,6 +16,17 @@ namespace OmgvaPOS.ItemVariationManagement.Mappers
             };
         }
 
+        public static ItemVariation ToItemVariation(this ItemVariationUpdateRequest request, ItemVariation baseVariation) {
+            baseVariation.Id = baseVariation.Id;
+            baseVariation.ItemId = baseVariation.ItemId;
+            baseVariation.Name = request.Name ?? baseVariation.Name;
+            baseVariation.InventoryQuantity = request.InventoryQuantity ?? baseVariation.InventoryQuantity;
+            baseVariation.PriceChange = request.PriceChange ?? baseVariation.PriceChange;
+            baseVariation.ItemVariationGroup = request.ItemVariationGroup ?? baseVariation.ItemVariationGroup;
+            baseVariation.IsArchived = false;
+            return baseVariation;
+        }
+
         public static ItemVariationDTO ToItemVariationDTO(this ItemVariation variation) {
             return new ItemVariationDTO() {
                 Id = variation.Id,
@@ -23,18 +35,6 @@ namespace OmgvaPOS.ItemVariationManagement.Mappers
                 InventoryQuantity = variation.InventoryQuantity,
                 PriceChange = variation.PriceChange,
                 ItemVariationGroup = variation.ItemVariationGroup
-            };
-        }
-
-        public static ItemVariation ToItemVariation(this ItemVariationDTO variation) {
-            return new ItemVariation {
-                Id = variation.Id,
-                ItemId = variation.ItemId,
-                Name = variation.Name,
-                InventoryQuantity = variation.InventoryQuantity,
-                PriceChange = variation.PriceChange,
-                ItemVariationGroup = variation.ItemVariationGroup,
-                IsArchived = false
             };
         }
     }

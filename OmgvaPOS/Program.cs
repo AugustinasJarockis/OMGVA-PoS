@@ -6,9 +6,14 @@ using Microsoft.OpenApi.Models;
 using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.Middleware;
+using OmgvaPOS.ReservationManagement.Repository;
+using OmgvaPOS.ReservationManagement.Service;
 using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.AuthManagement.Service;
+using OmgvaPOS.CustomerManagement.Repository;
+using OmgvaPOS.CustomerManagement.Service;
 using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.TaxManagement.Services;
@@ -17,6 +22,9 @@ using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Services;
 using OmgvaPOS.GiftcardManagement.Repository;
 using OmgvaPOS.GiftcardManagement.Service;
+using OmgvaPOS.DiscountManagement.Service;
+using OmgvaPOS.DiscountManagement.Repository;
+using OmgvaPOS.BusinessManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -76,6 +84,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
@@ -86,6 +95,12 @@ builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<ITaxItemRepository, TaxItemRepository>();
 builder.Services.AddScoped<IGiftcardRepository, GiftcardRepository>();
 builder.Services.AddScoped<IGiftcardService, GiftcardService>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
@@ -142,11 +157,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Add exception handler before routing/endpoints
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 app.MapControllers();
 

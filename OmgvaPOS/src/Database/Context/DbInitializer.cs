@@ -66,9 +66,9 @@ public class DbInitializer
     private void RemoveAllData()
     {
         _logger.LogInformation("Removing all data from the database...");
+        MockTaxesDataHelper.RemoveAllTax(_context, _logger);
         MockItemDataHelper.RemoveAllItems(_context, _logger);
         MockUserDataHelper.RemoveAllUsers(_context, _logger);
-        MockTaxesDataHelper.RemoveAllTax(_context, _logger);
         MockBusinessesDataHelper.RemoveAllBusinesses(_context, _logger);
         _logger.LogInformation("All data removed");
     }

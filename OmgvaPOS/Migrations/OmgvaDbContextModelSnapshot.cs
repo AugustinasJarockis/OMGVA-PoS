@@ -83,6 +83,9 @@ namespace OmgvaPOS.Migrations
                     b.Property<short>("Amount")
                         .HasColumnType("smallint");
 
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
