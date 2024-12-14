@@ -118,8 +118,6 @@ builder.Services.AddAuthentication(options =>
         });
 
 var configuration = builder.Configuration;
-var stripeSecretKey = configuration["Stripe:SecretKey"];
-Stripe.StripeConfiguration.ApiKey = stripeSecretKey;
 
 var app = builder.Build();
 
