@@ -3,7 +3,9 @@ using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.DTOs;
-using OmgvaPOS.src.ItemManagement.Mappers;
+using OmgvaPOS.ItemManagement.Mappers;
+using OmgvaPOS.TaxManagement.Models;
+using OmgvaPOS.TaxManagement.Mappers;
 
 namespace OmgvaPOS.ItemManagement.Services
 {
@@ -47,7 +49,12 @@ namespace OmgvaPOS.ItemManagement.Services
             return newItem.ToItemDTO();
         }
         public ItemDTO UpdateItem(ItemDTO itemDTO) {
-            var item = itemDTO.ToItem();
+            var item = _itemRepository.GetItem((long)itemDTO.Id); //TODO: potential error here. Though unlikely as endpoint should make sure of id existance
+            item = itemDTO.ToItem(item);
+            return UpdateItem(item).ToItemDTO();
+        }
+
+        private Item UpdateItem(Item item) {
             var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
             var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
 
@@ -56,7 +63,7 @@ namespace OmgvaPOS.ItemManagement.Services
             _itemVariationRepository.DuplicateItemVariations(itemVariations, recreatedItem.Id);
             //TODO: Update open orders
             //TODO: Think about discounts
-            return recreatedItem.ToItemDTO();
+            return recreatedItem;
         }
 
         public void DuplicateItems(IEnumerable<Item> items) {
@@ -76,6 +83,26 @@ namespace OmgvaPOS.ItemManagement.Services
 
             //TODO: Delete from open orders?
             //TODO: Think about discounts
+        }
+
+        public List<TaxDto> GetItemTaxes(long id) {
+            var taxItems = _taxItemRepository.GetAllTaxItemQueriable().Where(c => c.ItemId == id);
+            return _taxRepository.GetAllTaxes()
+                .Where(t => taxItems.Select(c => c.TaxId).Contains(t.Id))
+                .Select(t => TaxMapper.ToDTO(t)).ToList();
+        }
+        public ItemDTO ChangeItemTaxes(ChangeItemTaxesRequest changeItemTaxesRequest, long itemId) {
+            var newItem = UpdateItem(_itemRepository.GetItem(itemId)); //TODO: Potential error here
+
+            var taxItems = _taxItemRepository.GetAllTaxItemQueriable();
+            
+            var taxItemIdsToRemove = taxItems
+                .Where(c => c.ItemId == newItem.Id && changeItemTaxesRequest.TaxesToRemoveIds.Contains(c.TaxId))
+                .Select(c => c.Id);
+            _taxItemRepository.DeleteTaxItems(taxItemIdsToRemove);
+            _taxItemRepository.AddConnectionsBetweenItemAndTaxes(changeItemTaxesRequest.TaxesToAddIds, newItem.Id);
+
+            return newItem.ToItemDTO();
         }
     }
 }

@@ -3,16 +3,10 @@ using OmgvaPOS.ItemVariationManagement.Services;
 using OmgvaPOS.ItemManagement;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
-using OmgvaPOS.ItemManagement.DTOs;
 using System.Net;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemManagement.Services;
-using OmgvaPOS.ItemManagement.Models;
-using OmgvaPOS.Validators;
-using OmgvaPOS.ItemVariationManagement.Mappers;
-using OmgvaPOS.ItemVariationManagement.Models;
-using OmgvaPOS.ItemVariationManagement.Services;
 
 namespace OmgvaPOS.ItemVariationManagement
 {
@@ -24,7 +18,7 @@ namespace OmgvaPOS.ItemVariationManagement
         private readonly IItemService _itemService = itemService;
         private readonly ILogger<ItemController> _logger = logger;
 
-        [HttpGet("{itemId}")] //TODO: Check for potential additional errors
+        [HttpGet("item/{itemId}")] //TODO: Check for potential additional errors
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<ItemVariationDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -101,13 +95,12 @@ namespace OmgvaPOS.ItemVariationManagement
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateItemVariation([FromBody] ItemVariationDTO itemVariation, long id) {
+        public IActionResult UpdateItemVariation([FromBody] ItemVariationUpdateRequest itemVariationUpdateRequest, long id) {
             if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
                 return Forbid();
 
-            itemVariation.Id = id;
             try {
-                var returnedItemVariation = _itemVariationService.UpdateItemVariation(itemVariation);
+                var returnedItemVariation = _itemVariationService.UpdateItemVariation(itemVariationUpdateRequest, id);
                 if (returnedItemVariation != null) //TODO: Handle errors, possible null value
                     return Ok(returnedItemVariation);
                 else

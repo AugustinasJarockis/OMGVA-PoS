@@ -1,22 +1,18 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OmgvaPOS.BusinessManagement.DTOs;
-using OmgvaPOS.BusinessManagement.Models;
-using OmgvaPOS.BusinessManagement.Repository;
+using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.HelperUtils;
-using OmgvaPOS.UserManagement.Enums;
 using OmgvaPOS.Validators;
 
 namespace OmgvaPOS.BusinessManagement.Controller
 {
     [Route("business")]
     [ApiController]
-    public class BusinessController(IBusinessRepository businessRepository, ILogger<BusinessController> logger) : Microsoft.AspNetCore.Mvc.Controller
+    public class BusinessController(IBusinessService businessService, ILogger<BusinessController> logger) : Microsoft.AspNetCore.Mvc.Controller
     {
-        private readonly IBusinessRepository _businessRepository = businessRepository;
+        private readonly IBusinessService _businessService = businessService;
         private readonly ILogger<BusinessController> _logger = logger;
 
         [HttpGet]
@@ -27,7 +23,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllBusinesses() {
             try {
-                return Ok(JsonConvert.SerializeObject(_businessRepository.GetBusinesses()));
+                return Ok(_businessService.GetBusinesses());
             }
             catch (Exception ex) {
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving all businesses.");
@@ -44,16 +40,16 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetBusiness(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, id))
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
 
             try {
-                BusinessDTO business = _businessRepository.GetBusiness(id);
+                BusinessDTO business = _businessService.GetBusiness(id);
 
                 if (business == null)
                     return NotFound();
                 else
-                    return Ok(JsonConvert.SerializeObject(business));
+                    return Ok(business);
             }
             catch (Exception ex){
                 _logger.LogError(ex, "An unexpected internal server error occured while retrieving a business.");
@@ -75,7 +71,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
                 return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
 
             try {
-                BusinessDTO business = _businessRepository.CreateBusiness(createBusinessRequest);
+                BusinessDTO business = _businessService.CreateBusiness(createBusinessRequest);
                 if (business == null) {
                     _logger.LogError("An unexpected internal server error occured while creating the business.");
                     return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
@@ -97,7 +93,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateBusiness([FromBody] BusinessDTO business, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, id))
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
 
             if (!business.Email?.IsValidEmail() ?? false)
@@ -106,7 +102,8 @@ namespace OmgvaPOS.BusinessManagement.Controller
                 return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
 
             try {
-                if (_businessRepository.UpdateBusiness(id, business))
+                business.Id = id;
+                if (_businessService.UpdateBusiness(business))
                     return Ok();
                 else
                     return NotFound();
