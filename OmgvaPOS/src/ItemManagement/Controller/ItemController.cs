@@ -9,14 +9,19 @@ using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.Validators;
 using System.Net;
+using OmgvaPOS.UserManagement.Service;
+using OmgvaPOS.DiscountManagement.Repository;
+using OmgvaPOS.Exceptions;
 
 namespace OmgvaPOS.ItemManagement
 {
     [Route("item")]
     [ApiController]
-    public class ItemController(IItemService itemService, ITaxService taxService, ILogger<ItemController> logger) : Controller
+    public class ItemController(IItemService itemService, ITaxService taxService, IUserService userService, IDiscountRepository discountRepository, ILogger<ItemController> logger) : Controller
     {
         private readonly IItemService _itemService = itemService;
+        private readonly IUserService _userService = userService;
+        private readonly IDiscountRepository _discountRepository = discountRepository;
         private readonly ITaxService _taxService = taxService;
         private readonly ILogger<ItemController> _logger = logger;
 
@@ -62,6 +67,12 @@ namespace OmgvaPOS.ItemManagement
         public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) { //TODO: Validate here and in update method, that the employee, if exists, belongs to the correct business
             long businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
             
+            if (createItemRequest.UserId != null && _userService.GetUser((long)createItemRequest.UserId).BusinessId != businessId) //TODO: User id may be wrong here
+                throw new NotFoundException("There is no such user that works in this business.");
+
+            if (createItemRequest.DiscountId != null && _discountRepository.GetDiscount((long)createItemRequest.DiscountId).BusinessId != businessId) //TODO: Discount id may be wrong here
+                throw new NotFoundException("There is no such discount available.");
+            
             ItemDTO item = _itemService.CreateItem(createItemRequest, businessId);
             return Created($"/item/{item.Id}", item);
         }
@@ -75,12 +86,20 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateItem([FromBody] ItemDTO item, long id) {
+            long itemBusinessId = _itemService.GetItemNoException(id).BusinessId;
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
             item.Id = id;
             item.Currency = item.Currency?.ToUpper();
 
+            if (item.UserId != null && _userService.GetUser((long)item.UserId).BusinessId != itemBusinessId) //TODO: User id may be wrong here
+                throw new NotFoundException("There is no such user that works in this business.");
+
+            if (item.DiscountId != null && _discountRepository.GetDiscount((long)item.DiscountId).BusinessId != itemBusinessId) //TODO: Discount id may be wrong here
+                throw new NotFoundException("There is no such discount available.");
+
+            
             var returnItem = _itemService.UpdateItem(item);
             if (returnItem != null) //TODO: Handle errors, handle possible null
                 return Ok(returnItem);
