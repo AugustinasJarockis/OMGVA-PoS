@@ -74,7 +74,7 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateItem([FromBody] UpdateItemRequest item, long id) {
+        public IActionResult UpdateItem([FromBody] ItemDTO item, long id) {
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 

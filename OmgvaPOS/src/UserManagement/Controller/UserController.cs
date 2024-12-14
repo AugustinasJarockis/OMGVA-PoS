@@ -47,7 +47,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllUsers()
         {
-            return Ok(JsonConvert.SerializeObject(_userService.GetAllUsers()));
+            return Ok(_userService.GetAllUsers());
         }
 
         [HttpGet("{id}")]
@@ -63,7 +63,7 @@ namespace OmgvaPOS.UserManagement.Controller
                 return Forbid();
 
             var user = _userService.GetUser(id);
-            return Ok(JsonConvert.SerializeObject(user));
+            return Ok(user);
         }
 
         [HttpPatch("{id}")]
@@ -118,7 +118,7 @@ namespace OmgvaPOS.UserManagement.Controller
             if (businessUsers == null)
                 return NotFound();
 
-            return Ok(JsonConvert.SerializeObject(businessUsers));
+            return Ok(businessUsers);
         }
 
         [HttpGet("{userId}/schedules")]
@@ -133,7 +133,7 @@ namespace OmgvaPOS.UserManagement.Controller
                 return Forbid();
 
             var schedules = _userService.GetUserSchedules(userId);
-            return Ok(JsonConvert.SerializeObject(schedules));
+            return Ok(schedules);
         }
 
         [HttpGet("{userId}/order")]
@@ -148,7 +148,7 @@ namespace OmgvaPOS.UserManagement.Controller
                 return Forbid();
 
             var orders = _userService.GetUserOrders(userId);
-            return Ok(JsonConvert.SerializeObject(orders));
+            return Ok(orders);
         }
     }
 }

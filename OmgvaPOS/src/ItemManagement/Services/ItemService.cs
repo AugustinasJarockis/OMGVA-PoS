@@ -48,9 +48,9 @@ namespace OmgvaPOS.ItemManagement.Services
             
             return newItem.ToItemDTO();
         }
-        public ItemDTO? UpdateItem(UpdateItemRequest updateItemRequest) {
+        public ItemDTO? UpdateItem(ItemDTO updateItemRequest) {
             var item = _itemRepository.GetItem((long)updateItemRequest.Id); //TODO: potential error here. Though unlikely as endpoint should make sure of id existance
-            item = updateItemRequest.ToItem(item);
+            item = updateItemRequest.FromUpdateRequestToItem(item);
             return UpdateItem(item).ToItemDTO();
         }
 

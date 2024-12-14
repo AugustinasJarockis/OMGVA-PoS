@@ -28,7 +28,7 @@ namespace OmgvaPOS.ItemVariationManagement
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(itemId).BusinessId))
                 return Forbid();
 
-            return Ok(JsonConvert.SerializeObject(_itemVariationService.GetItemVariations(itemId)));
+            return Ok(_itemVariationService.GetItemVariations(itemId));
         }
 
         [HttpGet("{id}")]
@@ -47,7 +47,7 @@ namespace OmgvaPOS.ItemVariationManagement
             if (itemVariation == null)
                 return NotFound();
             else
-                return Ok(JsonConvert.SerializeObject(itemVariation));
+                return Ok(itemVariation);
         }
 
         [HttpPost("{itemId}")] //TODO: Check for potential additional errors

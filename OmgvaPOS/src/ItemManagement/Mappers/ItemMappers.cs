@@ -35,17 +35,17 @@ namespace OmgvaPOS.ItemManagement.Mappers
             };
         }
 
-        public static Item ToItem(this UpdateItemRequest itemDTO, Item baseItem) {
+        public static Item FromUpdateRequestToItem(this ItemDTO updateItemDTO, Item baseItem) {
             baseItem.Id = baseItem.Id;
-            baseItem.Name = itemDTO.Name ?? baseItem.Name;
-            baseItem.InventoryQuantity = itemDTO.InventoryQuantity ?? baseItem.InventoryQuantity;
-            baseItem.Price = itemDTO.Price ?? baseItem.Price;
-            baseItem.Currency = itemDTO.Currency ?? baseItem.Currency;
-            baseItem.ItemGroup = itemDTO.ItemGroup ?? baseItem.ItemGroup;
-            baseItem.Duration = itemDTO.Duration ?? baseItem.Duration;
-            baseItem.ImgPath = itemDTO.ImgPath ?? baseItem.ImgPath;
-            baseItem.DiscountId = itemDTO.DiscountId ?? baseItem.DiscountId;
-            baseItem.UserId = itemDTO.UserId ?? baseItem.UserId;
+            baseItem.Name = updateItemDTO.Name ?? baseItem.Name;
+            baseItem.InventoryQuantity = updateItemDTO.InventoryQuantity ?? baseItem.InventoryQuantity;
+            baseItem.Price = updateItemDTO.Price ?? baseItem.Price;
+            baseItem.Currency = updateItemDTO.Currency ?? baseItem.Currency;
+            baseItem.ItemGroup = updateItemDTO.ItemGroup ?? baseItem.ItemGroup;
+            baseItem.Duration = updateItemDTO.Duration ?? baseItem.Duration;
+            baseItem.ImgPath = updateItemDTO.ImgPath ?? baseItem.ImgPath;
+            baseItem.DiscountId = updateItemDTO.DiscountId ?? baseItem.DiscountId;
+            baseItem.UserId = updateItemDTO.UserId ?? baseItem.UserId;
             return baseItem;
         }
     }

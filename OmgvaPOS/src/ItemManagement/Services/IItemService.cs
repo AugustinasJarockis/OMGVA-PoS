@@ -11,7 +11,7 @@ namespace OmgvaPOS.ItemManagement.Services
         public Item GetItemNoException(long id);
         public ItemDTO CreateItem(CreateItemRequest createItemRequest, long businessId);
         public void DuplicateItems(IEnumerable<Item> items);
-        public ItemDTO UpdateItem(UpdateItemRequest item);
+        public ItemDTO UpdateItem(ItemDTO item);
         public void DeleteItem(long id);
 
         public List<TaxDto> GetItemTaxes(long id);
