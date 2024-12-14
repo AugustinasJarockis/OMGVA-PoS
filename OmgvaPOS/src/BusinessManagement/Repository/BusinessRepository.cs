@@ -11,7 +11,8 @@ namespace OmgvaPOS.BusinessManagement.Repository
         private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
         public BusinessDTO CreateBusiness(CreateBusinessRequest createBusinessRequest) {
             Business business = new() {
-                StripeAccId = "/////////////////////////",//TODO: somehow acquire stripe acc id
+                StripeSecretKey = "/////////////////////////",//TODO: somehow acquire stripe acc id
+                StripePublishKey = "/////////////////////////",
                 Name = createBusinessRequest.Name,
                 Address = createBusinessRequest.Address,
                 Phone = createBusinessRequest.Phone,
@@ -23,6 +24,8 @@ namespace OmgvaPOS.BusinessManagement.Repository
 
             return new () {
                 Id = business.Id,
+                StripeSecretKey = business.StripeSecretKey,
+                StripePublishKey = business.StripePublishKey,
                 Name = business.Name,
                 Address = business.Address,
                 Phone = business.Phone,
@@ -33,6 +36,8 @@ namespace OmgvaPOS.BusinessManagement.Repository
         public bool UpdateBusiness(long businessId, BusinessDTO business) {
             var businessToUpdate = _database.Businesses.SingleOrDefault(b => b.Id == businessId);
             if (businessToUpdate != null) {
+                businessToUpdate.StripeSecretKey = business.StripeSecretKey ?? businessToUpdate.StripeSecretKey;
+                businessToUpdate.StripePublishKey = business.StripePublishKey ?? businessToUpdate.StripePublishKey;
                 businessToUpdate.Name = business.Name ?? businessToUpdate.Name;
                 businessToUpdate.Address = business.Address ?? businessToUpdate.Address;
                 businessToUpdate.Phone = business.Phone ?? businessToUpdate.Phone;
