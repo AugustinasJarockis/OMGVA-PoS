@@ -43,8 +43,8 @@ namespace OmgvaPOS.UserManagement.Controller
             if (!signUpRequest.Username.IsValidUsername())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Username is not valid.");
 
-            // if (!signUpRequest.Password.IsValidPassword())
-            //     return StatusCode((int)HttpStatusCode.BadRequest, "Password is not valid.");
+            if (!signUpRequest.Password.IsValidPassword())
+                return StatusCode((int)HttpStatusCode.BadRequest, "Password is not valid.");
 
             if (_authService.IsSignedUp(signUpRequest.Username, signUpRequest.Password))
                 return StatusCode((int)HttpStatusCode.Conflict, "User is already signed up or session exists.");

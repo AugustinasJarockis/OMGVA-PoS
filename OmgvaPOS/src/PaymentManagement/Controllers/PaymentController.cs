@@ -107,8 +107,6 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 CustomerId = 0,
                 OrderId = 0
             };
-            // _context.Payments.Add(payment);
-            // _context.SaveChanges();
             return Ok(new { success = true, payment });
         }
     }
