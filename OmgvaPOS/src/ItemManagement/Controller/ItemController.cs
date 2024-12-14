@@ -61,19 +61,8 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) { //TODO: Validate here and in update method, that the employee, if exists, belongs to the correct business
             long businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-
-            createItemRequest.Currency = createItemRequest.Currency.ToUpper();
-            if (!createItemRequest.Currency.IsValidCurrency())
-                return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
-
-            if (createItemRequest.InventoryQuantity < 0)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Inventory quantity can not be negative");
-
-            if (createItemRequest.Price < 0)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Price can not be negative");
-
-            Item newitem = createItemRequest.ToItem(businessId);
-            ItemDTO item = _itemService.CreateItem(newitem);
+            
+            ItemDTO item = _itemService.CreateItem(createItemRequest, businessId);
             return Created($"/item/{item.Id}", item);
         }
 
@@ -85,21 +74,12 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateItem([FromBody] ItemDTO item, long id) {
+        public IActionResult UpdateItem([FromBody] UpdateItemRequest item, long id) {
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
                 return Forbid();
 
             item.Id = id;
-            item.Currency = item.Currency.ToUpper();
-
-            if (!item.Currency.IsValidCurrency())
-                return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
-
-            if (item.InventoryQuantity < 0)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Inventory quantity can not be negative");
-
-            if (item.Price < 0)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Price can not be negative");
+            item.Currency = item.Currency?.ToUpper();
 
             var returnItem = _itemService.UpdateItem(item);
             if (returnItem != null) //TODO: Handle errors, handle possible null

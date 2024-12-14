@@ -4,6 +4,7 @@ using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Mappers;
+using OmgvaPOS.ItemManagement.Validator;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Mappers;
 
@@ -37,14 +38,19 @@ namespace OmgvaPOS.ItemManagement.Services
         public Item GetItemNoException(long id) {
             return _itemRepository.GetItem(id);
         }
-        public ItemDTO CreateItem(Item item) {
+        public ItemDTO CreateItem(CreateItemRequest createItemRequest, long businessId) {
             //TODO: Think about discounts
-            var newItem = _itemRepository.CreateItem(item);
+            createItemRequest.Currency = createItemRequest.Currency.ToUpper();
+            ItemValidator.ValidateCreateItemRequest(createItemRequest);
+            
+            var newItemData = createItemRequest.ToItem(businessId);
+            var newItem = _itemRepository.CreateItem(newItemData);
+            
             return newItem.ToItemDTO();
         }
-        public ItemDTO? UpdateItem(ItemDTO itemDTO) {
-            var item = _itemRepository.GetItem((long)itemDTO.Id); //TODO: potential error here. Though unlikely as endpoint should make sure of id existance
-            item = itemDTO.ToItem(item);
+        public ItemDTO? UpdateItem(UpdateItemRequest updateItemRequest) {
+            var item = _itemRepository.GetItem((long)updateItemRequest.Id); //TODO: potential error here. Though unlikely as endpoint should make sure of id existance
+            item = updateItemRequest.ToItem(item);
             return UpdateItem(item).ToItemDTO();
         }
 

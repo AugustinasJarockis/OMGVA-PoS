@@ -36,13 +36,6 @@ namespace OmgvaPOS.UserManagement.Controller
         {
             
             UserResponse user = _userService.CreateUser(createUserRequest);
-
-            if (user == null)
-            {
-                _logger.LogError("An unexpected internal server error occured while creating user.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error");
-            }
-
             return Created($"/user/{user.Id}", user);
         }
 
@@ -69,20 +62,8 @@ namespace OmgvaPOS.UserManagement.Controller
             if (!AuthorizationHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
-            try
-            {
-                var user = _userService.GetUser(id);
-                return Ok(JsonConvert.SerializeObject(user));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected internal server error occured while getting user.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var user = _userService.GetUser(id);
+            return Ok(JsonConvert.SerializeObject(user));
         }
 
         [HttpPatch("{id}")]
@@ -97,23 +78,11 @@ namespace OmgvaPOS.UserManagement.Controller
             if (!AuthorizationHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
-            try
-            {
-                if (!user.Email.IsValidEmail())
-                    return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
+            if (!user.Email.IsValidEmail())
+                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
 
-                _userService.UpdateUser(id, user);
-                return Ok();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected internal server error occured while updating user.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            _userService.UpdateUser(id, user);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -128,17 +97,10 @@ namespace OmgvaPOS.UserManagement.Controller
             if (!AuthorizationHandler.CanDeleteUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(id)?.BusinessId, id))
                 return Forbid();
 
-            try
-            {
-                if (_userService.DeleteUser(id))
-                    return NoContent();
-                return NotFound("User not found.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected internal server error occured while deleting user.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            if (_userService.DeleteUser(id))
+                return NoContent();
+            
+            return NotFound("User not found.");
         }
 
         [HttpGet("business/{businessId}")]
@@ -170,20 +132,8 @@ namespace OmgvaPOS.UserManagement.Controller
             if (!AuthorizationHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(userId)?.BusinessId, userId))
                 return Forbid();
 
-            try
-            {
-                var schedules = _userService.GetUserSchedules(userId);
-                return Ok(JsonConvert.SerializeObject(schedules));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected internal server error occured while getting user schedules.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var schedules = _userService.GetUserSchedules(userId);
+            return Ok(JsonConvert.SerializeObject(schedules));
         }
 
         [HttpGet("{userId}/order")]
@@ -197,20 +147,8 @@ namespace OmgvaPOS.UserManagement.Controller
             if (!AuthorizationHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(userId)?.BusinessId, userId))
                 return Forbid();
 
-            try
-            {
-                var orders = _userService.GetUserOrders(userId);
-                return Ok(JsonConvert.SerializeObject(orders));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected internal server error occured while getting user orders.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var orders = _userService.GetUserOrders(userId);
+            return Ok(JsonConvert.SerializeObject(orders));
         }
     }
 }

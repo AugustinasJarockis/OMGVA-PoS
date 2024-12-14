@@ -2,6 +2,7 @@
 using OmgvaPOS.BusinessManagement.Mappers;
 using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.BusinessManagement.Repository;
+using OmgvaPOS.BusinessManagement.Validator;
 
 namespace OmgvaPOS.BusinessManagement.Services
 {
@@ -17,7 +18,9 @@ namespace OmgvaPOS.BusinessManagement.Services
         public BusinessDTO CreateBusiness(CreateBusinessRequest request) {
             return _businessRepository.CreateBusiness(request.ToBusiness()).ToBusinessDTO();
         }
-        public bool UpdateBusiness(BusinessDTO business) {
+        public bool UpdateBusiness(BusinessDTO business)
+        {
+            BusinessValidator.ValidateBusinessDTO(business);
             Business businessToUpdate = _businessRepository.GetBusiness((long)business.Id); //TODO: Unlikely but potential error here 
             businessToUpdate = business.ToBusiness(businessToUpdate);
             return _businessRepository.UpdateBusiness(businessToUpdate);

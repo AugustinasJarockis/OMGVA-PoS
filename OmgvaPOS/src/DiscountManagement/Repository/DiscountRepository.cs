@@ -14,38 +14,20 @@ public class DiscountRepository : IDiscountRepository
         _logger = logger;
     }
     public Discount AddDiscount(Discount discount) {
-        try {
-            _context.Discounts.Add(discount);
-            _context.SaveChanges();
-            return discount;
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An error occurred while saving discount.");
-            throw new ApplicationException("Error saving discount.");
-        }
+        _context.Discounts.Add(discount);
+        _context.SaveChanges();
+        return discount;
     }
 
     public List<Discount> GetBusinessDiscounts(long businessId) {
-        try {
-            return [.. _context.Discounts
-                .Where(d => d.BusinessId == businessId)
-                .Where(d => d.Type == DiscountType.Item)
-                .Where(d => d.IsArchived == false)];
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An error occurred while fetching all discounts.");
-            throw new ApplicationException("Error fetching all discounts.");
-        }
+        return [.. _context.Discounts
+            .Where(d => d.BusinessId == businessId)
+            .Where(d => d.Type == DiscountType.Item)
+            .Where(d => d.IsArchived == false)];
     }
 
     public Discount GetDiscount(long id) {
-        try {
-            return _context.Discounts.Where(d => d.Id == id).FirstOrDefault();
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, $"An error occurred while retrieving item with ID {id}.");
-            throw new ApplicationException("Error retrieving item.");
-        }
+        return _context.Discounts.Where(d => d.Id == id).FirstOrDefault();
     }
 
     public void UpdateDiscountValidUntil(Discount? discount) {

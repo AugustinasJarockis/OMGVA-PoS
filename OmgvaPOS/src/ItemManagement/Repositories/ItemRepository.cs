@@ -20,13 +20,13 @@ namespace OmgvaPOS.ItemManagement.Repositories
         }
 
         public Item? GetItem(long id) {
-                return _database.Items.Where(item => item.Id == id).FirstOrDefault();
+            return _database.Items.Where(item => item.Id == id).FirstOrDefault();
         }
 
         public Item CreateItem(Item item) {
-                _database.Items.Add(item);
-                _database.SaveChanges();
-                return item;
+            _database.Items.Add(item);
+            _database.SaveChanges();
+            return item;
         }
 
         public Item UpdateItem(Item item) // TODO: Proper error handling

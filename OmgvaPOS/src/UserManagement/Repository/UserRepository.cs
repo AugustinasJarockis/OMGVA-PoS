@@ -1,4 +1,5 @@
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.Exceptions;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.ScheduleManagement.Models;
 using OmgvaPOS.UserManagement.DTOs;
@@ -22,15 +23,9 @@ namespace OmgvaPOS.UserManagement.Repository
             return [.. _database.Users];
         }
 
-        public User GetUser(long id)
+        public User? GetUser(long id)
         {
-            try {
-                return _database.Users.FirstOrDefault(u => u.Id == id)
-                    ?? throw new KeyNotFoundException("User not found.");
-            }
-            catch (Exception ex) {
-                throw new ApplicationException("Error retrieving the user.", ex);
-            }
+            return _database.Users.FirstOrDefault(u => u.Id == id);
         }
         
         public User? GetUserByUsername(string username)
@@ -41,99 +36,50 @@ namespace OmgvaPOS.UserManagement.Repository
         }
         
         public User? GetUserNoException(long id) {
-            try {
-                return _database.Users.FirstOrDefault(u => u.Id == id);
-            }
-            catch (Exception) {
-                return null;
-            }
+            return _database.Users.FirstOrDefault(u => u.Id == id);
         }
         public void UpdateUser(long id, UpdateUserRequest user)
         {
-            try
-            {
-                var userToUpdate = _database.Users.SingleOrDefault(u => u.Id == id);
-                if (userToUpdate == null)
-                    throw new KeyNotFoundException("User not found.");
+            var userToUpdate = _database.Users.SingleOrDefault(u => u.Id == id);
+            if (userToUpdate == null)
+                throw new NotFoundException("User not found.");
 
-                userToUpdate.Name = user.Name ?? userToUpdate.Name;
-                userToUpdate.Username = user.Username ?? userToUpdate.Username;
-                userToUpdate.Email = user.Email ?? userToUpdate.Email;
-                userToUpdate.Role = user.Role ?? userToUpdate.Role;
-                userToUpdate.Password = user.Password ?? userToUpdate.Password;
+            userToUpdate.Name = user.Name ?? userToUpdate.Name;
+            userToUpdate.Username = user.Username ?? userToUpdate.Username;
+            userToUpdate.Email = user.Email ?? userToUpdate.Email;
+            userToUpdate.Role = user.Role ?? userToUpdate.Role;
+            userToUpdate.Password = user.Password ?? userToUpdate.Password;
 
-                _database.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error updating the user.", ex);
-            }
+            _database.SaveChanges();
         }
 
         public bool DeleteUser(long id)
         {
-            try
-            {
-                var user = _database.Users.SingleOrDefault(u => u.Id == id);
-                if (user == null)
-                    return false;
+            var user = _database.Users.SingleOrDefault(u => u.Id == id);
+            if (user == null)
+                return false;
 
-                user.HasLeft = true;
-                _database.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error deleting the user.", ex);
-            }
+            user.HasLeft = true;
+            _database.SaveChanges();
+            return true;
         }
 
         public List<User> GetBusinessUsers(long businessId)
         {
-            try
-            {
-                return [.. _database.Users.Where(u => u.BusinessId == businessId)];
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error retrieving business users.", ex);
-            }
+            return [.. _database.Users.Where(u => u.BusinessId == businessId)];
         }
         public List<EmployeeSchedule> GetUserSchedules(long id)
         {
-            try
-            {
-                return [.. _database.EmployeeSchedules.Where(s => s.Id == id)];
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error retrieving user schedules.", ex);
-            }
+            return [.. _database.EmployeeSchedules.Where(s => s.Id == id)];
         }
         public List<Order> GetUserOrders(long id)
         {
-            try
-            {
-                return [.. _database.Orders.Where(o => o.Id == id)];
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error retrieving user orders.", ex);
-            }
+            return [.. _database.Orders.Where(o => o.Id == id)];
         }
-        public long GetUserId(string username)
+        public long? GetUserId(string username)
         {
-            try
-            {
-                var user = _database.Users.FirstOrDefault(u => u.Username.Equals(username));
-                if (user == null)
-                    throw new KeyNotFoundException("User not found.");
-                return user.Id;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error retrieving user ID.", ex);
-            }
+            var user = _database.Users.FirstOrDefault(u => u.Username.Equals(username));
+            return user?.Id;
         }
         
         public bool AnyUserEmailDuplicate(string email)

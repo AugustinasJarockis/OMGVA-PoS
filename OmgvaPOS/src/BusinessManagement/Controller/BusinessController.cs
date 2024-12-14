@@ -75,12 +75,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
         public IActionResult UpdateBusiness([FromBody] BusinessDTO businessDTO, long id) {
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
-
-            if (!businessDTO.Email?.IsValidEmail() ?? false)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid");
-            if (!businessDTO.Phone?.IsValidPhone() ?? false)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
-
+            
             businessDTO.Id = id;
             if (_businessService.UpdateBusiness(businessDTO))
                 return Ok();

@@ -41,7 +41,7 @@ namespace OmgvaPOS.UserManagement.Service
         public void UpdateUser(long id, UpdateUserRequest user)
         {
             if (user.Username != null && _userRepository.AnyUserUsernameDuplicate(user.Username))
-                throw new ArgumentException(nameof(user.Username));
+                throw new ConflictException(nameof(user.Username));
 
             user.Password = !string.IsNullOrEmpty(user.Password)
                     ? BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password, 13)
