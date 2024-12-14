@@ -12,6 +12,7 @@ using System.Net;
 using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.BusinessManagement.Models;
+using OmgvaPOS.Exceptions;
 
 namespace OmgvaPOS.ItemManagement
 {
@@ -84,10 +85,10 @@ namespace OmgvaPOS.ItemManagement
                 return Forbid();
 
             if (createItemRequest.UserId != null && _userService.GetUser((long)createItemRequest.UserId).BusinessId != businessId) //TODO: User id may be wrong here
-                return StatusCode((int)HttpStatusCode.BadRequest, "There is no such user that works in this business");
+                throw new NotFoundException("There is no such user that works in this business.");
 
             if (createItemRequest.DiscountId != null && _discountRepository.GetDiscount((long)createItemRequest.DiscountId).BusinessId != businessId) //TODO: Discount id may be wrong here
-                return StatusCode((int)HttpStatusCode.BadRequest, "There is no such discount available");
+                throw new NotFoundException("There is no such discount available.");
 
             createItemRequest.Currency = createItemRequest.Currency.ToUpper();
             if (!createItemRequest.Currency.IsValidCurrency())
