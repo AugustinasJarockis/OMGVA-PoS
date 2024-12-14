@@ -99,7 +99,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             {
                 return Unauthorized(new { error = "Unauthorized" });
             }
-            
+            var business = _context.Businesses.Find(businessId);
             var payment = new Payment
             {
                 Id = Guid.NewGuid().ToString(),
@@ -107,6 +107,8 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 CustomerId = 0,
                 OrderId = 0
             };
+            // _context.Payments.Add(payment);
+            // _context.SaveChanges();
             return Ok(new { success = true, payment });
         }
     }
