@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.PaymentManagement.DTOs;
+using OmgvaPOS.PaymentManagement.Models;
+
 using Stripe;
+using PaymentMethod = OmgvaPOS.PaymentManagement.Enums.PaymentMethod;
 
 namespace OMGVA_PoS.Business_layer.Controllers
 {
@@ -85,6 +88,28 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 // Handle other errors
                 return BadRequest(new { error = e.Message });
             }
+        }
+        
+        [HttpPost]
+        [Route("process-cash")]
+        public IActionResult ProcessCashPayment([FromBody] PaymentRequest request)
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+            {
+                return Unauthorized(new { error = "Unauthorized" });
+            }
+            var business = _context.Businesses.Find(businessId);
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid().ToString(),
+                Method = PaymentMethod.Cash,
+                CustomerId = 0,
+                OrderId = 0
+            };
+            // _context.Payments.Add(payment);
+            // _context.SaveChanges();
+            return Ok(new { success = true, payment });
         }
     }
 }
