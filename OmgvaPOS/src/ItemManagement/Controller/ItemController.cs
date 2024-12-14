@@ -9,14 +9,19 @@ using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.Validators;
 using System.Net;
+using OmgvaPOS.UserManagement.Service;
+using OmgvaPOS.DiscountManagement.Repository;
+using OmgvaPOS.Exceptions;
 
 namespace OmgvaPOS.ItemManagement
 {
     [Route("item")]
     [ApiController]
-    public class ItemController(IItemService itemService, ITaxService taxService, ILogger<ItemController> logger) : Controller
+    public class ItemController(IItemService itemService, ITaxService taxService, IUserService userService, IDiscountRepository discountRepository, ILogger<ItemController> logger) : Controller
     {
         private readonly IItemService _itemService = itemService;
+        private readonly IUserService _userService = userService;
+        private readonly IDiscountRepository _discountRepository = discountRepository;
         private readonly ITaxService _taxService = taxService;
         private readonly ILogger<ItemController> _logger = logger;
 
@@ -73,10 +78,16 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) { //TODO: Validate here and in update method, that the employee, if exists, belongs to the correct business
+        public IActionResult CreateItem([FromBody] CreateItemRequest createItemRequest) {
             long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
             if (businessId == null)
                 return Forbid();
+
+            if (createItemRequest.UserId != null && _userService.GetUser((long)createItemRequest.UserId).BusinessId != businessId) //TODO: User id may be wrong here
+                throw new NotFoundException("There is no such user that works in this business.");
+
+            if (createItemRequest.DiscountId != null && _discountRepository.GetDiscount((long)createItemRequest.DiscountId).BusinessId != businessId) //TODO: Discount id may be wrong here
+                throw new NotFoundException("There is no such discount available.");
 
             createItemRequest.Currency = createItemRequest.Currency.ToUpper();
             if (!createItemRequest.Currency.IsValidCurrency())
@@ -112,11 +123,18 @@ namespace OmgvaPOS.ItemManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateItem([FromBody] ItemDTO item, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(id).BusinessId))
+            long businessId = _itemService.GetItemNoException(id).BusinessId;
+            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
                 return Forbid();
 
             item.Id = id;
             item.Currency = item.Currency.ToUpper();
+
+            if (item.UserId != null && _userService.GetUser((long)item.UserId).BusinessId != businessId) //TODO: User id may be wrong here
+                throw new NotFoundException("There is no such user that works in this business.");
+
+            if (item.DiscountId != null && _discountRepository.GetDiscount((long)item.DiscountId).BusinessId != businessId) //TODO: Discount id may be wrong here
+                throw new NotFoundException("There is no such discount available.");
 
             if (!item.Currency.IsValidCurrency())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Currency is not valid");
