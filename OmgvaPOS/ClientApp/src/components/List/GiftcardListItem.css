@@ -1,0 +1,21 @@
+﻿.giftcard-list-item {
+    align-content: center;
+    background: #DDCCCC;
+    border: 1px solid #999999AA;
+    border-collapse: collapse;
+    border-radius: 8px;
+    color: #444444;
+    height: 50px;
+    text-align: center;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 10px 20px;
+    text-align: left;
+}
