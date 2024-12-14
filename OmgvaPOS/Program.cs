@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.Middleware;
@@ -81,7 +80,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();

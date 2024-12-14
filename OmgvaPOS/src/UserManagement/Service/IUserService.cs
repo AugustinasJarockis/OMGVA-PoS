@@ -7,7 +7,7 @@ namespace OmgvaPOS.UserManagement.Service
 {
     public interface IUserService
     {
-        public UserResponse CreateUser(SignUpRequest userRequest);
+        public UserResponse CreateUser(CreateUserRequest userRequest);
         public List<UserResponse> GetAllUsers();
         public UserResponse GetUser(long id);
         public void UpdateUser(long id, UpdateUserRequest user);

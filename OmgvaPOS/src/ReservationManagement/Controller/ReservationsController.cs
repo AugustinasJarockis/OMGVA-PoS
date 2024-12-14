@@ -83,7 +83,7 @@ namespace OmgvaPOS.ReservationManagement.Controller
         public ActionResult<IEnumerable<ReservationDto>> GetBusinessReservations(long businessId)
         {
             if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
-                throw new ForbiddenResourceException(GetForbiddenReservationErrorMessage(businessId));
+                throw new ForbiddenException(GetForbiddenReservationErrorMessage(businessId));
             
             var reservations = _reservationService.GetAll();
             return Ok(reservations);

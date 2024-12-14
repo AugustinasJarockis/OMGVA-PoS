@@ -10,29 +10,16 @@ namespace OmgvaPOS.UserManagement.Repository
     {
         private readonly OmgvaDbContext _database = database;
 
-        public void CreateUser(User user)
+        public User CreateUser(User user)
         {
-            try
-            {
-                _database.Users.Add(user);
-                _database.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error saving user.", ex);
-            }
+            _database.Users.Add(user);
+            _database.SaveChanges();
+            return user;
         }
 
         public List<User> GetUsers()
         {
-            try
-            {
-                return [.. _database.Users];
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Error retrieving users.", ex);
-            }
+            return [.. _database.Users];
         }
 
         public User GetUser(long id)
@@ -45,6 +32,14 @@ namespace OmgvaPOS.UserManagement.Repository
                 throw new ApplicationException("Error retrieving the user.", ex);
             }
         }
+        
+        public User? GetUserByUsername(string username)
+        {
+            var user = _database.Users
+                .FirstOrDefault(u => u.Username.Equals(username));
+            return user;
+        }
+        
         public User? GetUserNoException(long id) {
             try {
                 return _database.Users.FirstOrDefault(u => u.Id == id);
@@ -139,6 +134,18 @@ namespace OmgvaPOS.UserManagement.Repository
             {
                 throw new ApplicationException("Error retrieving user ID.", ex);
             }
+        }
+        
+        public bool AnyUserEmailDuplicate(string email)
+        {
+            return _database.Users
+                .Any(u => u.Email == email);
+        }
+
+        public bool AnyUserUsernameDuplicate(string username)
+        {
+            return _database.Users
+                .Any(u => u.Username == username);
         }
     }
 }

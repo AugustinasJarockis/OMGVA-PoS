@@ -81,7 +81,7 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     public ActionResult<IEnumerable<CustomerDTO>> GetBusinessCustomers(long businessId)
     {
         if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
-            throw new ForbiddenResourceException("Forbidden");
+            throw new ForbiddenException("Forbidden");
         
         var customers = _customerService.GetAll();
         return Ok(customers);

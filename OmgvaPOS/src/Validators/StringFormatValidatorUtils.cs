@@ -2,7 +2,7 @@
 
 namespace OmgvaPOS.Validators
 {
-    public static class StringFormatValidators
+    public static class StringFormatValidatorUtils
     {
         public static bool IsValidEmail(this string str) {
             if (str == null || str.Length == 0) 

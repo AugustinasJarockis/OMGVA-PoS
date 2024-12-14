@@ -32,30 +32,10 @@ namespace OmgvaPOS.UserManagement.Controller
         // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateUser([FromBody] SignUpRequest signUpRequest)
+        public IActionResult CreateUser([FromBody] CreateUserRequest createUserRequest)
         {
-            if (!signUpRequest.Email.IsValidEmail())
-                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid.");
-
-            if (!signUpRequest.Name.IsValidName())
-                return StatusCode((int)HttpStatusCode.BadRequest, "Name is not valid.");
-
-            if (!signUpRequest.Username.IsValidUsername())
-                return StatusCode((int)HttpStatusCode.BadRequest, "Username is not valid.");
-
-            if (!signUpRequest.Password.IsValidPassword())
-                return StatusCode((int)HttpStatusCode.BadRequest, "Password is not valid.");
-
-            if (_authService.IsSignedUp(signUpRequest.Username, signUpRequest.Password))
-                return StatusCode((int)HttpStatusCode.Conflict, "User is already signed up or session exists.");
-
-            if (_authService.IsEmailUsed(signUpRequest.Email))
-                return StatusCode((int)HttpStatusCode.Conflict, "This email is already in use.");
-
-            if (_authService.IsUsernameUsed(signUpRequest.Username))
-                return StatusCode((int)HttpStatusCode.Conflict, "This username is already in use.");
-
-            UserResponse user = _userService.CreateUser(signUpRequest);
+            
+            UserResponse user = _userService.CreateUser(createUserRequest);
 
             if (user == null)
             {
