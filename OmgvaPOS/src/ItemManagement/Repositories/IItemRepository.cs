@@ -7,7 +7,7 @@ namespace OmgvaPOS.ItemManagement.Repositories
         public IQueryable<Item> GetItemsQueriable();
         public List<Item> GetItems(long businessId);
 
-        public Item GetItem(long id);
+        public Item? GetItem(long id);
 
         public Item CreateItem(Item item);
 

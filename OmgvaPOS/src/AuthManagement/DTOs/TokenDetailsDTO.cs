@@ -1,9 +1,12 @@
-﻿namespace OmgvaPOS.AuthManagement.DTOs
+﻿using OmgvaPOS.UserManagement.Enums;
+
+namespace OmgvaPOS.AuthManagement.DTOs
 {
     public class TokenDetailsDTO
     {
-        public string Name { get; set; }
-        public string Role { get; set; }
-        public string NameIdentifier { get; set; }
+        public long UserId { get; set; }
+        public UserRole UserRole { get; set; }
+        public string UserName { get; set; }
+        public long BusinessId { get; set; }
     }
 }

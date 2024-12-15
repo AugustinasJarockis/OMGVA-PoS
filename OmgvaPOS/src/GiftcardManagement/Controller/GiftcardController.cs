@@ -22,18 +22,11 @@ namespace src.GiftcardManagement.Controller
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Create([FromBody] GiftcardDTO giftcardRequest)
         {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcardRequest.BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcardRequest.BusinessId))
                 return Forbid();
 
-            try
-            {
-                var giftcard = _giftcardService.CreateGiftcard(giftcardRequest);
-                return Ok(giftcard);
-            }
-            catch (ApplicationException)
-            {
-                return StatusCode((int)HttpStatusCode.BadRequest, "Value should be positive.");
-            }
+            var giftcard = _giftcardService.CreateGiftcard(giftcardRequest);
+            return Ok(giftcard);
         }
 
         [HttpGet]
@@ -49,7 +42,7 @@ namespace src.GiftcardManagement.Controller
             if (giftcard == null)
                 return NotFound();
 
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
                 return Forbid();
 
             return Ok(giftcard);
@@ -60,7 +53,7 @@ namespace src.GiftcardManagement.Controller
         [ProducesResponseType<Giftcard>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public IActionResult GetGiftcards()
+        public IActionResult GetGiftCards()
         {
             long businessId = (long)JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
 
@@ -77,23 +70,16 @@ namespace src.GiftcardManagement.Controller
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public IActionResult UpdateGiftcard([FromBody] GiftcardUpdateRequest giftcardRequest)
         {
-            try
-            {
-                var giftcard = _giftcardService.GetGiftcard(giftcardRequest.Code);
+            var giftcard = _giftcardService.GetGiftcard(giftcardRequest.Code);
 
-                if (giftcard == null)
-                    return UnprocessableEntity();
+            if (giftcard == null)
+                return NotFound();
 
-                if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
-                    return Forbid();
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, giftcard.BusinessId))
+                return Forbid();
 
-                _giftcardService.UpdateGiftcard(giftcardRequest);
-                return Ok();
-            }
-            catch (ApplicationException)
-            {
-                return UnprocessableEntity();
-            }
+            _giftcardService.UpdateGiftcard(giftcardRequest);
+            return Ok();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.CustomerManagement.DTOs;
 using OmgvaPOS.CustomerManagement.Mappers;
+using OmgvaPOS.CustomerManagement.Models;
 using OmgvaPOS.CustomerManagement.Repository;
 using OmgvaPOS.Exceptions;
 
@@ -37,9 +38,7 @@ public class CustomerService : ICustomerService
 
     public CustomerDTO Update(long id, UpdateCustomerRequest updateRequest)
     {
-        var existingCustomer = _repository.GetById(id);
-        if (existingCustomer == null)
-            throw new NotFoundException($"Customer with ID {id} not found");
+        var existingCustomer = GetCustomerOrThrow(id);
 
         existingCustomer.UpdateModel(updateRequest);
             
@@ -47,13 +46,20 @@ public class CustomerService : ICustomerService
         return updatedCustomer.ToDto();
     }
 
-    // TODO think if we really need to throw an exception for DELETE when we cant find by id
     public void Delete(long id)
     {
-        var customer = _repository.GetById(id);
-        if (customer == null)
-            throw new NotFoundException($"Customer with ID {id} not found");
+        var customer = GetCustomerOrThrow(id);
 
-        _repository.Delete(id);
+        _repository.Delete(customer.Id);
     }
+
+    private Customer GetCustomerOrThrow(long customerId)
+    {
+        var customer = _repository.GetById(customerId);
+        if (customer == null)
+            throw new NotFoundException($"Customer with ID {customerId} not found");
+
+        return customer;
+    }
+    
 }

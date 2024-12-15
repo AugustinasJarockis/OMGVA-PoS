@@ -33,7 +33,6 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<CustomerDTO>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    // TODO: add forbidden once we link reservation to business
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<CustomerDTO> GetCustomer(long customerId)
@@ -49,7 +48,6 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<CustomerDTO>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    // TODO: add forbidden once we link reservation to business
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     // TODO: if reservation status is done, don't let to update it for historical reasons
@@ -63,7 +61,6 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<CustomerDTO>(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    // TODO: add forbidden once we link reservation to business
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult DeleteCustomer(long customerId)
@@ -80,8 +77,8 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<IEnumerable<CustomerDTO>> GetBusinessCustomers(long businessId)
     {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
-            throw new ForbiddenResourceException("Forbidden");
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
+            throw new ForbiddenException("Forbidden");
         
         var customers = _customerService.GetAll();
         return Ok(customers);

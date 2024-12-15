@@ -33,7 +33,7 @@ public class TaxMapper
 
     public static IEnumerable<TaxDto> ToDTOs(IEnumerable<Tax> taxes)
     {
-        return taxes.Select(tax => ToDTO(tax));
+        return taxes.Select(ToDTO);
     }
     
 }
