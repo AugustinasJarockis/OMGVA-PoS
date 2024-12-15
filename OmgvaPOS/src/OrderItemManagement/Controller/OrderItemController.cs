@@ -26,7 +26,7 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<OrderItemDTO> AddOrderItem([FromBody] CreateOrderItemRequest request, long orderId) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         try {
@@ -48,7 +48,7 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult GetOrderItem(long orderId, long orderItemId) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         return Ok(_orderItemService.GetOrderItem(orderItemId));
@@ -63,7 +63,7 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult UpdateOrderItem([FromBody] UpdateOrderItemRequest request, long orderId, long orderItemId) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         _orderItemService.UpdateOrderItem(orderItemId, request);
@@ -80,7 +80,7 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult DeleteOrderItem(long orderId, long orderItemId) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         _orderItemService.DeleteOrderItem(orderItemId);

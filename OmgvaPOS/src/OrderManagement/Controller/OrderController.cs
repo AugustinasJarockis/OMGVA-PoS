@@ -45,7 +45,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<OrderDTO> GetOrderById(long orderId) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         OrderDTO orderDTO = _orderService.GetOrder(orderId);
@@ -102,7 +102,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult DeleteActiveOrder(long id) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
             return Forbid();
 
         try {
@@ -124,7 +124,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult UpdateOrderTip(short tip, long orderId) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         try {

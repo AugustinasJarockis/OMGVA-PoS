@@ -5,6 +5,7 @@ using OmgvaPOS.DiscountManagement.DTOs;
 using OmgvaPOS.DiscountManagement.Service;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using OmgvaPOS.DiscountManagement.Mappers;
 
 namespace OmgvaPOS.DiscountManagement.Controller
 {
