@@ -28,8 +28,7 @@ namespace OmgvaPOS.UserManagement.Controller
         [Authorize(Roles = "Admin, Owner")]
         [ProducesResponseType<User>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // TODO: Uncomment this line when all of the admin users have their accounts:
-        // [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateUser([FromBody] CreateUserRequest createUserRequest)

@@ -8,6 +8,7 @@ namespace OmgvaPOS.ItemVariationManagement.Repositories
         public ItemVariation? GetItemVariation(long itemVariationId);
         public ItemVariation CreateItemVariation(ItemVariation itemVariation);
         public ItemVariation UpdateItemVariation(ItemVariation itemVariation);
+        public void UpdateItemVariationInventoryQuantity(ItemVariation itemVariation);
         public void DeleteItemVariation(long itemVariationId);
         public void DuplicateItemVariations(IEnumerable<ItemVariation> itemVariations, long itemId);
         public IQueryable<ItemVariation> GetItemVariationQueriable();

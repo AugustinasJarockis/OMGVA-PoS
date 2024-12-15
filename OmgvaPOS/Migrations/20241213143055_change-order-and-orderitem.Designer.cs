@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OmgvaPOS.Database.Context;
 
@@ -11,9 +12,11 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    partial class OmgvaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241213143055_change-order-and-orderitem")]
+    partial class changeorderandorderitem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,11 +49,7 @@ namespace OmgvaPOS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StripePublishKey")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StripeSecretKey")
+                    b.Property<string>("StripeAccId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -280,7 +279,8 @@ namespace OmgvaPOS.Migrations
 
                     b.HasIndex("ItemVariationId");
 
-                    b.HasIndex("OrderItemId");
+                    b.HasIndex("OrderItemId")
+                        .IsUnique();
 
                     b.ToTable("OrderItemVariations");
                 });
@@ -292,9 +292,6 @@ namespace OmgvaPOS.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("BusinessId")
-                        .HasColumnType("bigint");
 
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
@@ -582,8 +579,8 @@ namespace OmgvaPOS.Migrations
                         .IsRequired();
 
                     b.HasOne("OmgvaPOS.OrderItemManagement.Models.OrderItem", "OrderItem")
-                        .WithMany("OrderItemVariations")
-                        .HasForeignKey("OrderItemId")
+                        .WithOne("OrderItemVariation")
+                        .HasForeignKey("OmgvaPOS.OrderItemVariationManagement.Models.OrderItemVariation", "OrderItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -744,7 +741,8 @@ namespace OmgvaPOS.Migrations
 
             modelBuilder.Entity("OmgvaPOS.OrderItemManagement.Models.OrderItem", b =>
                 {
-                    b.Navigation("OrderItemVariations");
+                    b.Navigation("OrderItemVariation")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OmgvaPOS.OrderManagement.Models.Order", b =>
