@@ -33,16 +33,6 @@ const App: React.FC = () => {
 
     useEffect(() => {
         checkTokenValidity();
-
-        const handleUnload = () => {
-            localStorage.removeItem('authToken');
-        };
-
-        window.addEventListener('beforeunload', handleUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleUnload);
-        };
     }, []);
 
     const handleLoginSuccess = () => {
@@ -84,11 +74,12 @@ const App: React.FC = () => {
                             <Route path="/giftcard" element={<GiftcardListPage />} />
                             <Route path="/giftcard/create" element={<CreateGiftcardPage />} />
                             <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
-                                {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
-                                    ? (<Route path="*" element={<Navigate to="/business" />} />)
-                                    : (<Route path="*" element={<Navigate to="/weather" />} />)}
+                            {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
+                                ? (<Route path="*" element={<Navigate to="/business" />} />)
+                                : (<Route path="*" element={<Navigate to="/weather" />} />)}
                         </>
                     )}
+                    {!isAuthenticated && <Route path="*" element={<Navigate to="/" />} />}
                 </Routes>
             </div>
         </Router>

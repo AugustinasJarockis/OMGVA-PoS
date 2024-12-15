@@ -22,10 +22,10 @@ const GiftcardListPage: React.FC = () => {
             } else {
                 setListItems(result.map(giftcard => 
                         <GiftcardListItem
-                            key={giftcard.id}
-                            text={giftcard.code}
-                            value={giftcard.value}
-                            balance={giftcard.balance}
+                            key={giftcard.Id}
+                            text={giftcard.Code}
+                            value={giftcard.Value}
+                            balance={giftcard.Balance}
                         />));
             }
         } catch (err: any) {

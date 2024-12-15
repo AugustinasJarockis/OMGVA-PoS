@@ -15,10 +15,10 @@ const CreateTaxPage: React.FC<CreateTaxPageProps> = ({ token: authToken }) => {
     const handleSubmission = async (taxInfo: TaxUpdateRequest) => {
         try {
             let taxCreateRequest: TaxCreateRequest;
-            if (taxInfo.taxType && taxInfo.percent) {
+            if (taxInfo.TaxType && taxInfo.Percent) {
                 taxCreateRequest = {
-                    taxType: taxInfo.taxType,
-                    percent: +taxInfo.percent
+                    TaxType: taxInfo.TaxType,
+                    Percent: +taxInfo.Percent
                 }
             }
             else {

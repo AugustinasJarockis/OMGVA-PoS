@@ -30,10 +30,10 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
             }
 
             if (authToken) {
-                const { token } = await loginWithNewToken(authToken, id);
-                newToken = token;
-                if (token) {
-                    setAuthToken(token);
+                const { Token } = await loginWithNewToken(authToken, id);
+                newToken = Token;
+                if (Token) {
+                    setAuthToken(Token);
                 }
             }
 
