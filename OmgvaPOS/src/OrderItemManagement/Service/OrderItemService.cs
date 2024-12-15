@@ -56,7 +56,8 @@ public class OrderItemService : IOrderItemService
             ItemId = request.ItemId,
             Quantity = request.Quantity,
             OrderId = orderId,
-            DiscountId = item.DiscountId
+            DiscountId = item.DiscountId,
+            OrderItemVariations = new List<OrderItemVariation>()
         };
 
         List<ItemVariation> itemVariations = [];
@@ -173,6 +174,8 @@ public class OrderItemService : IOrderItemService
     public void UpdateOrderItem(long orderItemId, UpdateOrderItemRequest request) {
         var orderItem = _orderItemRepository.GetOrderItem(orderItemId);
         OrderItemValidator.Exists(orderItem);
+
+        var changeInQuantity = request.Quantity - orderItem.Quantity;
         orderItem.Quantity = request.Quantity;
 
         var order = _orderRepository.GetOrder(orderItem.OrderId);
@@ -182,8 +185,6 @@ public class OrderItemService : IOrderItemService
         var item = _itemRepository.GetItem(orderItem.ItemId);
         ItemValidator.Exists(item);
         ItemValidator.IsNotArchived(item);
-
-        var changeInQuantity = request.Quantity - orderItem.Quantity;
         ItemValidator.EnoughInventoryQuantity(item, changeInQuantity);
         item.InventoryQuantity -= changeInQuantity;
 

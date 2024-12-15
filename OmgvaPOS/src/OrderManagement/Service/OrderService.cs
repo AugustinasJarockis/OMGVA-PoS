@@ -76,6 +76,10 @@ public class OrderService : IOrderService
 
         using var transaction = _context.Database.BeginTransaction();
         try {
+            // TODO: nested transactions dont work
+            // if order has order items you cannot delete the order
+            // you need to delete order items first
+            // it should not be like that
             foreach (var orderItem in order.OrderItems) {
                 _orderItemService.DeleteOrderItem(orderItem.Id);
             }
