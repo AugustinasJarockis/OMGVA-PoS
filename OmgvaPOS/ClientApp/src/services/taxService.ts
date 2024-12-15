@@ -1,17 +1,17 @@
 ﻿import axios from 'axios';
 
 export interface Tax {
-    id: string,
-    taxType: string,
-    percent: string,
+    Id: string,
+    TaxType: string,
+    Percent: string,
 }
 export interface TaxUpdateRequest {
-    taxType?: string,
-    percent?: string,
+    TaxType?: string,
+    Percent?: string,
 }
 export interface TaxCreateRequest {
-    taxType: string,
-    percent: number
+    TaxType: string,
+    Percent: number
 }
 
 const getAllTaxes = async (token: string | null): Promise<{ result?: Array<Tax>, error?: string }> => {

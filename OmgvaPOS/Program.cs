@@ -20,6 +20,8 @@ using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Services;
+using OmgvaPOS.GiftcardManagement.Repository;
+using OmgvaPOS.GiftcardManagement.Service;
 using OmgvaPOS.DiscountManagement.Service;
 using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.BusinessManagement.Services;
@@ -29,7 +31,10 @@ var initDatabaseAction = DbInitializerAction.DoNothing;
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -91,6 +96,8 @@ builder.Services.AddScoped<IItemVariationRepository, ItemVariationRepository>();
 builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<ITaxItemRepository, TaxItemRepository>();
+builder.Services.AddScoped<IGiftcardRepository, GiftcardRepository>();
+builder.Services.AddScoped<IGiftcardService, GiftcardService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();

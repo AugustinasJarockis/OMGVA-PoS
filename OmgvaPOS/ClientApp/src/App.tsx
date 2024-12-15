@@ -15,6 +15,8 @@ import UpdateUserPage from './pages/UserPages/UpdateUserPage';
 import UserDetailsPage from './pages/UserPages/UserDetailsPage';
 import CreateUserPage from './pages/UserPages/CreateUserPage';
 import UserListPage from './pages/UserPages/UserListPage';
+import GiftcardListPage from './pages/GiftcardPage/GiftcardListPage';
+import CreateGiftcardPage from './pages/GiftcardPage/CreateGiftcardPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -31,16 +33,6 @@ const App: React.FC = () => {
 
     useEffect(() => {
         checkTokenValidity();
-
-        const handleUnload = () => {
-            localStorage.removeItem('authToken');
-        };
-
-        window.addEventListener('beforeunload', handleUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleUnload);
-        };
     }, []);
 
     const handleLoginSuccess = () => {
@@ -79,12 +71,15 @@ const App: React.FC = () => {
                             <Route path="/user/update/:id" element={<UpdateUserPage />} />
                             <Route path="/user/business" element={<UserListPage />} />
                             <Route path="/user/create" element={<CreateUserPage />} />
+                            <Route path="/giftcard" element={<GiftcardListPage />} />
+                            <Route path="/giftcard/create" element={<CreateGiftcardPage />} />
                             <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
-                                {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
-                                    ? (<Route path="*" element={<Navigate to="/business" />} />)
-                                    : (<Route path="*" element={<Navigate to="/weather" />} />)}
+                            {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
+                                ? (<Route path="*" element={<Navigate to="/business" />} />)
+                                : (<Route path="*" element={<Navigate to="/weather" />} />)}
                         </>
                     )}
+                    {!isAuthenticated && <Route path="*" element={<Navigate to="/" />} />}
                 </Routes>
             </div>
         </Router>
