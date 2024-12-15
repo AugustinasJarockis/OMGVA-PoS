@@ -16,53 +16,29 @@ namespace OmgvaPOS.ItemManagement.Repositories
         }
 
         public List<Item> GetItems(long businessId) {
-            try {
-                return _database.Items
-                    .Where(t => t.IsArchived == false && t.BusinessId == businessId).ToList();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An error occurred while retrieving all items.");
-                throw new ApplicationException("Error retrieving items.");
-            }
+            return _database.Items
+                .Where(t => t.IsArchived == false && t.BusinessId == businessId).ToList();
         }
 
-        public Item GetItem(long id) {
-            try {
-                return _database.Items.Where(item => item.Id == id).FirstOrDefault();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, $"An error occurred while retrieving item with ID {id}.");
-                throw new ApplicationException("Error retrieving item.");
-            }
+        public Item? GetItem(long id) {
+            return _database.Items.Where(item => item.Id == id).FirstOrDefault();
         }
 
         public Item CreateItem(Item item) {
-            try {
-                _database.Items.Add(item);
-                _database.SaveChanges();
-                return item;
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An error occurred while creating item.");
-                throw new ApplicationException("An unexpected error occurred while creating item.");
-            }
+            _database.Items.Add(item);
+            _database.SaveChanges();
+            return item;
         }
 
         public Item UpdateItem(Item item) // TODO: Proper error handling
         {
-            try {
-                var newItem = (Item)item.Clone();
-                _database.Add(newItem);
-                _database.Entry(item).CurrentValues.SetValues(_database.Entry(item).OriginalValues);
-                item.IsArchived = true;
-                _database.Items.Update(item);
-                _database.SaveChanges();
-                return newItem;
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, $"An error occurred while updating item with ID {item.Id}.");
-                throw new ApplicationException("Error updating item.");
-            }
+            var newItem = (Item)item.Clone();
+            _database.Add(newItem);
+            _database.Entry(item).CurrentValues.SetValues(_database.Entry(item).OriginalValues);
+            item.IsArchived = true;
+            _database.Items.Update(item);
+            _database.SaveChanges();
+            return newItem;
         }
 
         public void UpdateItemInventoryQuantity(Item item) {
@@ -77,17 +53,11 @@ namespace OmgvaPOS.ItemManagement.Repositories
         }
 
         public void DeleteItem(long id) {
-            try {
-                var item = _database.Items.Find(id);
-                if (item != null) {
-                    item.IsArchived = true;
-                    _database.Items.Update(item);
-                    _database.SaveChanges();
-                }
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, $"An error occurred while deleting an item with ID {id}.");
-                throw new ApplicationException("Error deleting item.");
+            var item = _database.Items.Find(id);
+            if (item != null) {
+                item.IsArchived = true;
+                _database.Items.Update(item);
+                _database.SaveChanges();
             }
         }
     }

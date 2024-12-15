@@ -2,7 +2,7 @@
 
 namespace OmgvaPOS.AuthManagement.DTOs
 {
-    public class SignUpRequest
+    public class CreateUserRequest
     {
         public long? BusinessId { get; set; }
         public string Name { get; set; }

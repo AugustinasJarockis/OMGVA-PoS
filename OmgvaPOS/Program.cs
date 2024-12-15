@@ -3,6 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OmgvaPOS.AuthManagement.Repository;
+using OmgvaPOS.BusinessManagement.Repository;
+using OmgvaPOS.Database.Context;
+using OmgvaPOS.Middleware;
+using OmgvaPOS.ReservationManagement.Repository;
+using OmgvaPOS.ReservationManagement.Service;
+using OmgvaPOS.TaxManagement.Repository;
+using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.AuthManagement.Service;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.BusinessManagement.Services;
@@ -27,13 +34,21 @@ using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.UserManagement.Service;
 using System.Text;
+using OmgvaPOS.GiftcardManagement.Repository;
+using OmgvaPOS.GiftcardManagement.Service;
+using OmgvaPOS.DiscountManagement.Service;
+using OmgvaPOS.DiscountManagement.Repository;
+using OmgvaPOS.BusinessManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -83,7 +98,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -99,6 +113,9 @@ builder.Services.AddScoped<ITaxService, TaxService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<ITaxItemRepository, TaxItemRepository>();
 
+builder.Services.AddScoped<IGiftcardRepository, GiftcardRepository>();
+builder.Services.AddScoped<IGiftcardService, GiftcardService>();
+
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 
@@ -113,6 +130,8 @@ builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 
+
+builder.Services.AddScoped<DiscountValidatorService, DiscountValidatorService>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
@@ -147,6 +166,8 @@ builder.Services.AddAuthentication(options =>
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
             };
         });
+
+var configuration = builder.Configuration;
 
 var app = builder.Build();
 

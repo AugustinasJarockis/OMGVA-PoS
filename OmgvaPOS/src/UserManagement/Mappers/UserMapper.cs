@@ -6,9 +6,9 @@ using System.Data;
 
 namespace OmgvaPOS.UserManagement.Mappers
 {
-    public class UserMapper
+    public static class UserMapper
     {
-        public static UserResponse FromUser(User user)
+        public static UserResponse ToUserResponse(this User user)
         {
             return new UserResponse()
             {
@@ -21,7 +21,7 @@ namespace OmgvaPOS.UserManagement.Mappers
                 HasLeft = user.HasLeft
             };
         }
-        public static User FromSignUpRequest(SignUpRequest request)
+        public static User ToUser(this CreateUserRequest request)
         {
             return new User()
             {

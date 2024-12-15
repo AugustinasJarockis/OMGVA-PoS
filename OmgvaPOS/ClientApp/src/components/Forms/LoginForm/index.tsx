@@ -20,11 +20,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
         try {
             const response = await login(loginRequest);
-            if (response.isSuccess && response.token != null) {
-                localStorage.setItem('authToken', response.token);
+            if (response.IsSuccess && response.Token != null) {
+                localStorage.setItem('authToken', response.Token);
                 onLoginSuccess();
             } else {
-                setError(response.message);
+                setError(response.Message);
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');

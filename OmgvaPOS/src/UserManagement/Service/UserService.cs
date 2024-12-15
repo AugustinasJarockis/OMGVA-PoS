@@ -3,28 +3,25 @@ using OmgvaPOS.UserManagement.DTOs;
 using OmgvaPOS.ScheduleManagement.Models;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.AuthManagement.DTOs;
-using OmgvaPOS.AuthManagement.Repository;
+using OmgvaPOS.Exceptions;
 using OmgvaPOS.UserManagement.Mappers;
+using OmgvaPOS.UserManagement.Validators;
 
 namespace OmgvaPOS.UserManagement.Service
 {
-    public class UserService(IUserRepository userRepository, IAuthenticationRepository authenticationRepository) : IUserService
+    public class UserService(IUserRepository userRepository) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
-        private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
-        public UserResponse CreateUser(SignUpRequest userRequest)
+        
+        public UserResponse CreateUser(CreateUserRequest userRequest)
         {
-            if (userRequest == null)
-                throw new ArgumentNullException(nameof(userRequest));
+            UserValidator.ValidateCreateUserRequest(userRequest);
+            ValidateUserSignUpConflicts(userRequest);
 
-            var user = UserMapper.FromSignUpRequest(userRequest);
-
-            var createdUser = _authenticationRepository.SignUpUser(user);
-
-            if (createdUser == null)
-                throw new ArgumentNullException(nameof(userRequest));
-
-            return UserMapper.FromUser(createdUser);
+            var user = userRequest.ToUser();
+            var createdUser = _userRepository.CreateUser(user);
+            
+            return createdUser.ToUserResponse();
         }
         public List<UserResponse> GetAllUsers()
         {
@@ -32,20 +29,22 @@ namespace OmgvaPOS.UserManagement.Service
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                usersResponse.Add(UserMapper.FromUser(user));
+                usersResponse.Add(user.ToUserResponse());
             }
             return usersResponse;
         }
         public UserResponse GetUser(long id)
         {
             var user = _userRepository.GetUser(id);
-           
-            return UserMapper.FromUser(user);
+            if (user == null)
+                throw new NotFoundException();
+            
+            return user.ToUserResponse();
         }
         public void UpdateUser(long id, UpdateUserRequest user)
         {
-            if (user.Username != null && _authenticationRepository.AnyUserUsernameDuplicate(user.Username))
-                throw new ArgumentException(nameof(user.Username));
+            if (user.Username != null && _userRepository.AnyUserUsernameDuplicate(user.Username))
+                throw new ConflictException(nameof(user.Username));
 
             user.Password = !string.IsNullOrEmpty(user.Password)
                     ? BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password, 13)
@@ -62,7 +61,7 @@ namespace OmgvaPOS.UserManagement.Service
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                usersResponse.Add(UserMapper.FromUser(user));
+                usersResponse.Add(user.ToUserResponse());
             }
             return usersResponse;
         }
@@ -73,6 +72,43 @@ namespace OmgvaPOS.UserManagement.Service
         public List<Order> GetUserOrders(long id)
         {
             return _userRepository.GetUserOrders(id);
+        }
+        
+        public void ValidateUserBelongsToBusiness(long? userId, long businessId)
+        {
+            if (userId == null) 
+                return;
+            
+            var user = _userRepository.GetUser((long) userId);
+                
+            if (user == null)
+                throw new NotFoundException("Could not find user");
+
+            if (businessId != user.BusinessId)
+                throw new ForbiddenException("There is no such user that works in this business.");
+        }
+        
+        private void ValidateUserSignUpConflicts(CreateUserRequest createUserRequest)
+        {
+            if (IsEmailUsed(createUserRequest.Email))
+            {
+                throw new ConflictException("This email is already in use.");
+            }
+
+            if (IsUsernameUsed(createUserRequest.Username))
+            {
+                throw new ConflictException("This username is already in use.");
+            }
+        }
+        
+        private bool IsEmailUsed(string email)
+        {
+            return _userRepository.AnyUserEmailDuplicate(email);
+        }
+
+        private bool IsUsernameUsed(string username)
+        {
+            return _userRepository.AnyUserUsernameDuplicate(username);
         }
     }
 }

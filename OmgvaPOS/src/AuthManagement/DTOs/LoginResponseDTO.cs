@@ -1,6 +1,6 @@
 ﻿namespace OmgvaPOS.AuthManagement.DTOs
 {
-    public class LoginDTO(bool isSuccess, string message, string? token = null)
+    public class LoginResponseDTO(bool isSuccess, string message, string? token = null)
     {
         public bool IsSuccess { get; set; } = isSuccess;
         public string Message { get; set; } = message;

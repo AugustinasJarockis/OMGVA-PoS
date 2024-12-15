@@ -19,8 +19,8 @@ const TaxDataForm: React.FC<TaxDataFormProps> = (props: TaxDataFormProps) => {
         }
 
         const taxInfo: TaxUpdateRequest = {
-            taxType: formElements.taxType.value === '' ? undefined : formElements.taxType.value,
-            percent: formElements.percent.value === '' ? undefined : formElements.percent.value,
+            TaxType: formElements.taxType.value === '' ? undefined : formElements.taxType.value,
+            Percent: formElements.percent.value === '' ? undefined : formElements.percent.value,
         };
 
         props.onSubmit(taxInfo);
@@ -31,13 +31,13 @@ const TaxDataForm: React.FC<TaxDataFormProps> = (props: TaxDataFormProps) => {
             <>
                 <form onSubmit={handleSubmission}>
                     <label htmlFor="taxType">Tax type</label>
-                    <input type="text" id="taxType" name="taxType" placeholder={props.tax?.taxType} required={props.required} /><br /><br />
+                    <input type="text" id="taxType" name="taxType" placeholder={props.tax?.TaxType} required={props.required} /><br /><br />
                     <label htmlFor="percent">Percentage</label>
                     <input type="text"
                         id="percent"
                         name="percent"
                         pattern="[1-9][0-9]{0,3}"
-                        placeholder={props.tax?.percent}
+                        placeholder={props.tax?.Percent}
                         required={props.required}
                         onInvalid={e => e.currentTarget.setCustomValidity('Please enter a percentage.')}
                         onInput={e => e.currentTarget.setCustomValidity('')}

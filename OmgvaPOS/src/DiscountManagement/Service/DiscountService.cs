@@ -3,6 +3,7 @@ using OmgvaPOS.DiscountManagement.Models;
 using OmgvaPOS.DiscountManagement.DTOs;
 using OmgvaPOS.DiscountManagement.Mappers;
 using OmgvaPOS.DiscountManagement.Repository;
+using OmgvaPOS.Exceptions;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Mappers;
 using OmgvaPOS.ItemManagement.Services;
@@ -28,20 +29,14 @@ public class DiscountService : IDiscountService
     }
 
     public DiscountDTO CreateDiscount(CreateDiscountRequest request) {
-        try {
-            DiscountValidator.ValidateDateCreate(request.TimeValidUntil);
-            DiscountValidator.ValidateDiscountAmount(request.Amount);
-            DiscountValidator.ValidateDiscountType(request);
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "Error while validating create discount request.");
-            throw;
-        }
+        DiscountValidator.ValidateDateCreate(request.TimeValidUntil);
+        DiscountValidator.ValidateDiscountAmount(request.Amount);
+        DiscountValidator.ValidateDiscountType(request);
 
         var discount = DiscountMapper.FromCreateDiscountRequest(request);
         _discountRepository.AddDiscount(discount);
         
-        //TODO:
+        //TODO: order discount. 
         if (request.Type == DiscountType.Order) {
             throw new NotImplementedException("Order is not implemented yet");
             //var order = _orderService.GetOrderById(request.OrderId);
@@ -49,7 +44,7 @@ public class DiscountService : IDiscountService
             //_orderService.UpdateOrder(order);
         }
 
-        return DiscountMapper.ToDTO(discount);
+        return discount.ToDTO();
     }
 
 
@@ -58,42 +53,40 @@ public class DiscountService : IDiscountService
         return discounts.Select(DiscountMapper.ToDTO).ToList();
     }
 
-    public DiscountDTO GetDiscountById(long id) {
-        Discount discount = _discountRepository.GetDiscount(id);
-        if (discount == null) 
-            throw new Exception("Discount not found.");
-        return DiscountMapper.ToDTO(discount);
+    public DiscountDTO? GetDiscountById(long id) {
+        var discount = _discountRepository.GetDiscount(id);
+        return discount?.ToDTO();
     }
 
-    public Discount GetDiscountNoException(long id) {
-        try {
-            return _discountRepository.GetDiscount(id);
-        }
-        catch (Exception ex) {
-            _logger.LogError("Unexpected error occurred when trying to get item: " + ex);
-            return null;
-        }
-    }
+    public long GetDiscountBusinessId(long discountId) => GetDiscountOrThrow(discountId).BusinessId;
 
+    public Discount GetDiscountOrThrow(long id) {
+        var discount = _discountRepository.GetDiscount(id);
+        if (discount == null)
+            throw new NotFoundException("Discount not found.");
+
+        return discount;
+    }
+    
+    // TODO there is really nothing else you can update in a discount
+    // since we care about historical data:
+    // changing discount% or discount type would require creating a new discount all together
     public void UpdateDiscountValidUntil(long id, DateTime newValidUntil) {
         DiscountValidator.ValidateDateUpdate(newValidUntil);
 
-        Discount discount = _discountRepository.GetDiscount(id);
-        if (discount == null)
-            throw new Exception("Discount not found.");
+        var discount = GetDiscountOrThrow(id);
+        
         if (discount.IsArchived)
-            throw new Exception("Cannot update Valid Until date for an archived discount");
+            throw new ApplicationException("Cannot update Valid Until date for an archived discount");
 
         discount.TimeValidUntil = newValidUntil;
         _discountRepository.UpdateDiscountValidUntil(discount);
     }
 
     public void ArchiveDiscount(long id) {
-        Discount discount = _discountRepository.GetDiscount(id);
-        if (discount == null)
-            throw new Exception("Discount not found.");
+        var discount = GetDiscountOrThrow(id);
         if (discount.IsArchived)
-            throw new Exception("Already archived.");
+            throw new ApplicationException("Already archived.");
 
         discount.IsArchived = true;
         _discountRepository.ArchiveDiscount(discount);
@@ -104,22 +97,20 @@ public class DiscountService : IDiscountService
         foreach (var item in items) {
             item.DiscountId = null;
             var itemDTO = item.ToItemDTO();
-            _itemService.UpdateItem(itemDTO);
+            _itemService.UpdateItem(itemDTO, item.Id);
         }
     }
 
     public void UpdateDiscountOfItem(long discountId, long itemId) {
-        Discount discount = _discountRepository.GetDiscount(discountId);
-        if (discount == null)
-            throw new Exception("Discount not found.");
+        var discount = GetDiscountOrThrow(discountId);
         if (discount.IsArchived)
-            throw new Exception("Cannot assign archived discount to item.");
+            throw new ApplicationException("Cannot assign archived discount to item.");
         
         var item = _itemRepository.GetItem(itemId);
         if (item == null)
-            throw new Exception("Item not found.");
+            throw new NotFoundException("Item not found.");
         if (item.IsArchived)
-            throw new Exception("Cannot assign discount to an archived item.");
+            throw new ApplicationException("Cannot assign discount to an archived item.");
 
         if (item.DiscountId == discountId)
             item.DiscountId = null;
@@ -127,7 +118,7 @@ public class DiscountService : IDiscountService
             item.DiscountId = discountId;
 
         var itemDTO = item.ToItemDTO();
-        _itemService.UpdateItem(itemDTO);
+        _itemService.UpdateItem(itemDTO, item.Id);
     }
 
     public DiscountDTO GetItemDiscount(long discountId) {
@@ -137,8 +128,5 @@ public class DiscountService : IDiscountService
     public DiscountDTO GetOrderDiscount(long orderId) {
         throw new NotImplementedException();
     }
-
-
-
 
 }

@@ -30,10 +30,10 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
             }
 
             if (authToken) {
-                const { token } = await loginWithNewToken(authToken, id);
-                newToken = token;
-                if (token) {
-                    setAuthToken(token);
+                const { Token } = await loginWithNewToken(authToken, id);
+                newToken = Token;
+                if (Token) {
+                    setAuthToken(Token);
                 }
             }
 
@@ -70,6 +70,10 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
         }
     };
 
+    const goToGiftcardsList = async () => {
+        navigate('/giftcard');
+    }
+
     useEffect(() => {
         if (state && state.business) {
             setBusiness(state.business);
@@ -94,7 +98,11 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
             {role === 'Admin' && (
                 <header>
                     <button onClick={goToBusinessSelection}>Select another business</button>
+                    <br /><br />
                     <button onClick={goToBusinessUsersList}>See all business users</button>
+                    <br /><br />
+                    <button onClick={goToGiftcardsList}>Business giftcards</button>
+                    <br /><br />
                     <button onClick={goToUser}>Me</button>
                 </header>
             )}

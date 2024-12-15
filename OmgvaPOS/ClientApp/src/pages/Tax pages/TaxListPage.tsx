@@ -51,10 +51,10 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
             else {
                 setListItems(result.map(tax =>
                     <DeletableUpdatableListItem
-                        key={tax.id}
-                        id={tax.id}
-                        text={tax.taxType + ": " + (tax.percent ? (tax.percent + "%") : "NaN")}
-                        updateUrl={"/tax/update/" + tax.id}
+                        key={tax.Id}
+                        id={tax.Id}
+                        text={tax.TaxType + ": " + (tax.Percent ? (tax.Percent + "%") : "NaN")}
+                        updateUrl={"/tax/update/" + tax.Id}
                         deleteFunction={onDelete}
                         object={ tax }
                     />));
