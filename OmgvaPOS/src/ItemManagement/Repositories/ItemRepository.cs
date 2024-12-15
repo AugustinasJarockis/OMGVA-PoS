@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Models;
+using OmgvaPOS.ItemManagement.Validators;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Repository;
@@ -64,6 +65,17 @@ namespace OmgvaPOS.ItemManagement.Repositories
             }
         }
 
+        public void UpdateItemInventoryQuantity(Item item) {
+            try {
+                _database.Items.Update(item);
+                _database.SaveChanges();
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, $"An error occurred while updating item with ID {item.Id}.");
+                throw new ApplicationException("Error updating item.");
+            }
+        }
+
         public void DeleteItem(long id) {
             try {
                 var item = _database.Items.Find(id);
@@ -76,20 +88,6 @@ namespace OmgvaPOS.ItemManagement.Repositories
             catch (Exception ex) {
                 _logger.LogError(ex, $"An error occurred while deleting an item with ID {id}.");
                 throw new ApplicationException("Error deleting item.");
-            }
-        }
-
-        public void UpdateItemQuantity(Item item) {
-            try {
-                if (item.IsArchived)
-                    throw new Exception("Cannot update item quantity - archived.");
-
-                _database.Items.Update(item);
-                _database.SaveChanges();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, $"An error occurred while updating item with ID {item.Id}.");
-                throw new ApplicationException("Error updating item.");
             }
         }
     }

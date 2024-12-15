@@ -18,7 +18,7 @@ namespace OmgvaPOS.OrderManagement.DTOs
         public long ItemId { get; set; }
         public short Quantity { get; set; }
         public long? DiscountId { get; set; }
-        public OrderItemVariationDTO? OrderItemVariation { get; set; }
+        public ICollection<OrderItemVariationDTO>? OrderItemVariations { get; set; }
     }
 
     public class OrderItemVariationDTO

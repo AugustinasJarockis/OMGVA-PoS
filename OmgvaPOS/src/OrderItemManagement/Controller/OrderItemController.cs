@@ -2,33 +2,36 @@
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
+using OmgvaPOS.OrderItemManagement.Service;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Service;
+using OmgvaPOS.OrderItemManagement.DTOs;
 
 namespace OmgvaPOS.OrderManagement.Controller;
 
 [ApiController]
-[Route("order")]
-public class OrderUpdateController(IOrderService orderService, ILogger<DiscountController> logger) : ControllerBase
+[Route("order/{orderId}/item")]
+public class OrderItemController(IOrderService orderService, IOrderItemService orderItemService, ILogger<DiscountController> logger) : ControllerBase
 {
     private readonly IOrderService _orderService = orderService;
+    private readonly IOrderItemService _orderItemService = orderItemService;
     private readonly ILogger<DiscountController> _logger = logger;
 
-    [HttpDelete("{orderId}/item/{itemId}")]
+    [HttpPost]
     [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult DeleteOrderItem(long orderId, long itemId) {
+    public ActionResult<OrderItemDTO> AddOrderItem([FromBody] CreateOrderItemRequest request, long orderId) {
         if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
         try {
-            _orderService.DeleteOrderItem(orderId, itemId);
-            return NoContent();
+            var orderItemDTO = _orderItemService.AddOrderItem(orderId, request);
+            return Ok(orderItemDTO);
         }
         catch (Exception ex) {
             _logger.LogError(ex, "An unexpected internal server error occured while deleting order item.");
@@ -36,70 +39,51 @@ public class OrderUpdateController(IOrderService orderService, ILogger<DiscountC
         }
     }
 
-    [HttpPost("{orderId}/item")]
+    [HttpGet("{orderItemId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<OrderItemDTO>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult AddOrderItem([FromBody] CreateOrderItemRequest request, long orderId) {
+    public IActionResult GetOrderItem(long orderId, long orderItemId) {
         if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        try {
-            _orderService.AddOrderItem(orderId, request);
-            return NoContent();
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while deleting order item.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        return Ok(_orderItemService.GetOrderItem(orderItemId));
     }
 
-    [HttpPatch("{orderId}/item/{itemId}")]
+    [HttpPatch("{orderItemId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult UpdateOrderItem([FromBody] UpdateOrderItemRequest request, long orderId, long itemId) {
+    public IActionResult UpdateOrderItem([FromBody] UpdateOrderItemRequest request, long orderId, long orderItemId) {
         if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        try {
-            _orderService.UpdateOrderItem(itemId, request);
-            return NoContent();
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while deleting order item.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        _orderItemService.UpdateOrderItem(orderItemId, request);
+        return NoContent();
     }
 
-    [HttpPatch("tip/{orderId}")]
+
+    [HttpDelete("{orderItemId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult UpdateOrderTip(short tip, long orderId) {
+    public IActionResult DeleteOrderItem(long orderId, long orderItemId) {
         if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        try {
-            _orderService.UpdateOrderTip(tip, orderId);
-            return NoContent();
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while deleting order item.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        _orderItemService.DeleteOrderItem(orderItemId);
+        return NoContent();
     }
-
 }

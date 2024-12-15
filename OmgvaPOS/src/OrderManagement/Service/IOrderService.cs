@@ -6,14 +6,11 @@ namespace OmgvaPOS.OrderManagement.Service;
 
 public interface IOrderService
 {
-    public OrderDTO CreateOrder(CreateOrderRequest request);
+    public OrderDTO CreateOrder(long businessId, long userId);
     public IEnumerable<OrderDTO> GetAllBusinessOrders(long businessId);
     public IEnumerable<OrderDTO> GetAllActiveOrders(long businessId);
     public OrderDTO GetOrder(long id);
     public long GetOrderBusinessId(long id);
     public void DeleteOrder(long id);
-    public void AddOrderItem(long orderId, CreateOrderItemRequest request);
-    public void UpdateOrderItem(long itemId, UpdateOrderItemRequest request);
-    public void DeleteOrderItem(long orderId, long itemId);
     public void UpdateOrderTip(short tip, long orderId);
 }

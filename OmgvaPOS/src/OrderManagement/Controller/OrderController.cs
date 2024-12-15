@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.DTOs;
+using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.OrderManagement.Controller;
@@ -24,26 +25,18 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<OrderDTO> CreateOrder([FromBody] CreateOrderRequest request) {
+    public ActionResult<OrderDTO> CreateOrder() {
         long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
         long? userId = JwtTokenHandler.GetTokenUserId(HttpContext.Request.Headers.Authorization!);
         if (businessId == null || userId == null)
             return Forbid();
 
-        request.BusinessId = businessId;
-        request.UserId = userId;
+        var orderDTO = _orderService.CreateOrder((long)businessId, (long)userId);
 
-        try {
-            var orderDTO = _orderService.CreateOrder(request);
-            return CreatedAtAction(nameof(GetOrderById), new { orderDTO.Id }, orderDTO);
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while trying to create an order.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        return CreatedAtAction(nameof(GetOrderById), new { orderDTO.Id }, orderDTO);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{orderId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -51,18 +44,12 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<OrderDTO> GetOrderById(long id) {
-        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
+    public ActionResult<OrderDTO> GetOrderById(long orderId) {
+        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        try {
-            OrderDTO orderDTO = _orderService.GetOrder(id);
-            return Ok(orderDTO);
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while trying to get an order.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        OrderDTO orderDTO = _orderService.GetOrder(orderId);
+        return Ok(orderDTO);
     }
 
     [HttpGet]
@@ -77,15 +64,10 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
         if (businessId == null) return Forbid();
 
-        try {
-            var orderDTOs = _orderService.GetAllBusinessOrders((long)businessId);
 
-            return Ok(orderDTOs);
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while getting all orders.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        var orderDTOs = _orderService.GetAllBusinessOrders((long)businessId);
+
+        return Ok(orderDTOs);
     }
 
     [HttpGet("active")]
@@ -129,6 +111,28 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         }
         catch (Exception ex) {
             _logger.LogError(ex, "An unexpected internal server error occured while deleting the order.");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPatch("tip/{orderId}")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult UpdateOrderTip(short tip, long orderId) {
+        if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+            return Forbid();
+
+        try {
+            _orderService.UpdateOrderTip(tip, orderId);
+            return NoContent();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "An unexpected internal server error occured while deleting order item.");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

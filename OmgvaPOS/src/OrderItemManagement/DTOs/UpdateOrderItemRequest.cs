@@ -1,4 +1,4 @@
-﻿namespace OmgvaPOS.OrderManagement.DTOs;
+﻿namespace OmgvaPOS.OrderItemManagement.DTOs;
 
 public class UpdateOrderItemRequest
 {

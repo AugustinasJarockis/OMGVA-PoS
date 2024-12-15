@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemVariationManagement.Models;
+using OmgvaPOS.ItemVariationManagement.Validators;
+using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.ItemVariationManagement.Repositories
 {
@@ -54,6 +56,19 @@ namespace OmgvaPOS.ItemVariationManagement.Repositories
                 throw new ApplicationException("Error updating item variation.");
             }
         }
+
+        public void UpdateItemVariationInventoryQuantity(ItemVariation itemVariation) {
+            try {
+                ItemVariationValidator.IsNotArchived(itemVariation);
+                _database.ItemVariations.Update(itemVariation);
+                _database.SaveChanges();
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, $"An error occurred while updating inventory quantity for item variation {itemVariation.Name}.");
+                throw new ApplicationException("Error updating item.");
+            }
+        }
+
         public void DeleteItemVariation(long itemVariationId) {
             try {
                 var itemVariation = _database.ItemVariations.Find(itemVariationId);
