@@ -33,16 +33,6 @@ const App: React.FC = () => {
 
     useEffect(() => {
         checkTokenValidity();
-
-        const handleUnload = () => {
-            localStorage.removeItem('authToken');
-        };
-
-        window.addEventListener('beforeunload', handleUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleUnload);
-        };
     }, []);
 
     const handleLoginSuccess = () => {
