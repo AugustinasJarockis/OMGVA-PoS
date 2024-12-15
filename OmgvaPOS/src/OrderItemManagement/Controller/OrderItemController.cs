@@ -23,20 +23,13 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<OrderItemDTO> AddOrderItem([FromBody] CreateOrderItemRequest request, long orderId) {
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        try {
-            var orderItemDTO = _orderItemService.AddOrderItem(orderId, request);
-            return Ok(orderItemDTO);
-        }
-        catch (Exception ex) {
-            _logger.LogError(ex, "An unexpected internal server error occured while deleting order item.");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
+        var orderItemDTO = _orderItemService.AddOrderItem(orderId, request);
+        return Ok(orderItemDTO);
     }
 
     [HttpGet("{orderItemId}")]
@@ -45,7 +38,6 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult GetOrderItem(long orderId, long orderItemId) {
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
@@ -60,7 +52,6 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult UpdateOrderItem([FromBody] UpdateOrderItemRequest request, long orderId, long orderItemId) {
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
@@ -77,7 +68,6 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult DeleteOrderItem(long orderId, long orderItemId) {
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
