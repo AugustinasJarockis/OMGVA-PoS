@@ -31,7 +31,7 @@ const loginWithNewToken = async (token: string | null, businessId: string): Prom
             headers: { Authorization: `Bearer ${token}` }
         });
         if (response.status === 200) {
-            return { IsSuccess: true, Message: response.data.message, Token: response.data.token };
+            return { IsSuccess: true, Message: response.data.message, Token: response.data.Token };
         } else {
             return { IsSuccess: false, Message: response.data.message };
         }
