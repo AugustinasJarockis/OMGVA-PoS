@@ -12,7 +12,7 @@ public static class MockBusinessesDataHelper
         logger.LogDebug("Adding mock businesses...");
         var omgvaBusiness = new Business
         {
-            StripeAccId = "null_stripe_acc_id",
+            StripeSecretKey = "null_stripe_acc_id",
             Name = "Omgva Business",
             Address = "Address 1",
             Phone = "123456789",
@@ -20,7 +20,7 @@ public static class MockBusinessesDataHelper
         };
         var diffBusiness = new Business
         {
-            StripeAccId = "null_stripe_acc_id",
+            StripeSecretKey = "null_stripe_acc_id",
             Name = "Diff Business",
             Address = "Address 2",
             Phone = "987654321",
