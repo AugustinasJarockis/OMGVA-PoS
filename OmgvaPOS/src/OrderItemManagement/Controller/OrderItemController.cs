@@ -2,16 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
+using OmgvaPOS.OrderItemManagement.DTOs;
 using OmgvaPOS.OrderItemManagement.Service;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Service;
-using OmgvaPOS.OrderItemManagement.DTOs;
 
-namespace OmgvaPOS.OrderManagement.Controller;
+namespace OmgvaPOS.OrderItemManagement.Controller;
 
 [ApiController]
 [Route("order/{orderId}/item")]
-public class OrderItemController(IOrderService orderService, IOrderItemService orderItemService, ILogger<DiscountController> logger) : ControllerBase
+public class OrderItemController(IOrderService orderService, IOrderItemService orderItemService, ILogger<DiscountController> logger) : Microsoft.AspNetCore.Mvc.Controller
 {
     private readonly IOrderService _orderService = orderService;
     private readonly IOrderItemService _orderItemService = orderItemService;

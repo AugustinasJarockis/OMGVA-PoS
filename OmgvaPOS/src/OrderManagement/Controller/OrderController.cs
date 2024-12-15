@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.DTOs;
-using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.OrderManagement.Controller;
@@ -11,7 +10,7 @@ namespace OmgvaPOS.OrderManagement.Controller;
 
 [ApiController]
 [Route("order")]
-public class OrderController(IOrderService orderService, ILogger<DiscountController> logger) : ControllerBase
+public class OrderController(IOrderService orderService, ILogger<DiscountController> logger) : Microsoft.AspNetCore.Mvc.Controller
 {
 
     private readonly IOrderService _orderService = orderService;

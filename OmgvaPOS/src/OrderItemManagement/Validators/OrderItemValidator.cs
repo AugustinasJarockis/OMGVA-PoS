@@ -1,8 +1,5 @@
-﻿using Azure.Core;
-using OmgvaPOS.Exceptions;
-using OmgvaPOS.ItemManagement.Models;
+﻿using OmgvaPOS.Exceptions;
 using OmgvaPOS.OrderItemManagement.Models;
-using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Models;
 
 namespace OmgvaPOS.OrderItemManagement.Validators;
