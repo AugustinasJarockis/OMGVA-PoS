@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using OmgvaPOS.AuthManagement.Repository;
 using OmgvaPOS.BusinessManagement.Repository;
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.Middleware;
@@ -84,7 +83,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
@@ -104,6 +102,8 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+builder.Services.AddScoped<DiscountValidatorService, DiscountValidatorService>();
 
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true

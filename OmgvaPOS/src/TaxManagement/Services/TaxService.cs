@@ -23,7 +23,7 @@ namespace OmgvaPOS.TaxManagement.Services
             _taxRepository.SaveTax(tax);
         }
 
-        public Tax GetTaxById(long id) {
+        public Tax? GetTaxById(long id) {
             return _taxRepository.GetTaxById(id);
         }
 

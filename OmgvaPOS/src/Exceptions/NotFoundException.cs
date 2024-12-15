@@ -1,3 +1,3 @@
 ﻿namespace OmgvaPOS.Exceptions;
 
-public class NotFoundException(string message) : Exception(message);
+public class NotFoundException(string message = "Resource not found") : Exception(message);

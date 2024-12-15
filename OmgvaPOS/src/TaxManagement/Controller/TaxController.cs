@@ -48,9 +48,7 @@ namespace OmgvaPOS.TaxManagement.Controller
         {
             var tax = _taxService.GetTaxById(id);
             if (tax == null)
-            {
                 return NotFound(TaxNotFoundMessage);
-            }
             
             tax = TaxMapper.FromUpdateTaxRequest(updateTaxRequest, tax);
             var returnTax = _taxService.UpdateTax(tax);
@@ -78,9 +76,7 @@ namespace OmgvaPOS.TaxManagement.Controller
         {
             var tax = _taxService.GetTaxById(id);
             if (tax == null)
-            {
                 return NotFound(TaxNotFoundMessage);
-            }
 
             return Ok(TaxMapper.ToDTO(tax));
         }
@@ -95,9 +91,8 @@ namespace OmgvaPOS.TaxManagement.Controller
         {
             var tax = _taxService.GetTaxById(id);
             if (tax == null)
-            {
                 return NotFound(TaxNotFoundMessage);
-            }
+            
             _taxService.DeleteTax(id);
             return NoContent();
         }

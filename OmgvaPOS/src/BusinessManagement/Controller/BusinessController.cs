@@ -21,14 +21,10 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllBusinesses() {
-            try {
-                return Ok(_businessService.GetBusinesses());
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving all businesses.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+        public IActionResult GetAllBusinesses()
+        {
+            var businessDTOs = _businessService.GetBusinesses();
+            return Ok(businessDTOs);
         }
 
 
@@ -40,21 +36,15 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetBusiness(long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
 
-            try {
-                BusinessDTO business = _businessService.GetBusiness(id);
+            var business = _businessService.GetBusiness(id);
 
-                if (business == null)
-                    return NotFound();
-                else
-                    return Ok(business);
-            }
-            catch (Exception ex){
-                _logger.LogError(ex, "An unexpected internal server error occured while retrieving a business.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            if (business == null)
+                return NotFound();
+            
+            return Ok(business);
         }
 
         [HttpPost]
@@ -70,18 +60,8 @@ namespace OmgvaPOS.BusinessManagement.Controller
             if (!createBusinessRequest.Phone.IsValidPhone())
                 return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
 
-            try {
-                BusinessDTO business = _businessService.CreateBusiness(createBusinessRequest);
-                if (business == null) {
-                    _logger.LogError("An unexpected internal server error occured while creating the business.");
-                    return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-                }
-                return Created($"/business/{business.Id}", business);
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while creating the business.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            var business = _businessService.CreateBusiness(createBusinessRequest);
+            return Created($"/business/{business.Id}", business);
         }
 
         [HttpPatch("{id}")]
@@ -92,26 +72,14 @@ namespace OmgvaPOS.BusinessManagement.Controller
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateBusiness([FromBody] BusinessDTO business, long id) {
-            if (!JwtTokenHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
+        public IActionResult UpdateBusiness([FromBody] BusinessDTO businessDTO, long id) {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
-
-            if (!business.Email?.IsValidEmail() ?? false)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Email is not valid");
-            if (!business.Phone?.IsValidPhone() ?? false)
-                return StatusCode((int)HttpStatusCode.BadRequest, "Phone is not valid");
-
-            try {
-                business.Id = id;
-                if (_businessService.UpdateBusiness(business))
-                    return Ok();
-                else
-                    return NotFound();
-            }
-            catch (Exception ex) {
-                _logger.LogError(ex, "An unexpected internal server error occured while updating the business.");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error.");
-            }
+            
+            if (_businessService.UpdateBusiness(businessDTO, id))
+                return Ok();
+            
+            return NotFound();
         }
     }
 }

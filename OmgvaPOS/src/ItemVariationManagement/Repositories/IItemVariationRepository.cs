@@ -5,7 +5,7 @@ namespace OmgvaPOS.ItemVariationManagement.Repositories
     public interface IItemVariationRepository
     {
         public List<ItemVariation> GetItemVariations(long itemId);
-        public ItemVariation GetItemVariation(long itemVariationId);
+        public ItemVariation? GetItemVariation(long itemVariationId);
         public ItemVariation CreateItemVariation(ItemVariation itemVariation);
         public ItemVariation UpdateItemVariation(ItemVariation itemVariation);
         public void DeleteItemVariation(long itemVariationId);
