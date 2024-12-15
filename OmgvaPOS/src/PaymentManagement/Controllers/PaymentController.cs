@@ -25,9 +25,8 @@ namespace OMGVA_PoS.Business_layer.Controllers
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
             if (businessId == null)
-            {
-                return Unauthorized(new { error = "Unauthorized" });
-            }
+                return Forbid();
+            
             var business = _context.Businesses.Find(businessId);
             StripeConfiguration.ApiKey = business.StripeSecretKey;
             try
@@ -96,9 +95,8 @@ namespace OMGVA_PoS.Business_layer.Controllers
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
             if (businessId == null)
-            {
-                return Unauthorized(new { error = "Unauthorized" });
-            }
+                return Forbid();
+            
             var business = _context.Businesses.Find(businessId);
             var payment = new Payment
             {
