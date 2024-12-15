@@ -33,7 +33,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
 
         var orderDTO = _orderService.CreateOrder((long)businessId, (long)userId);
 
-        return CreatedAtAction(nameof(GetOrderById), new { orderDTO.Id }, orderDTO);
+        return CreatedAtAction(nameof(GetOrderById), new { orderId = orderDTO.Id }, orderDTO);
     }
 
     [HttpGet("{orderId}")]

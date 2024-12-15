@@ -79,7 +79,7 @@ public class OrderItemService : IOrderItemService
             }
         }
 
-        OrderItemValidator.OrderItemNotInOrderYet(order, newOrderItem);
+        // OrderItemValidator.OrderItemNotInOrderYet(order, newOrderItem);
 
         // database updates:
         // this need a transaction, 
