@@ -3,7 +3,7 @@ using OmgvaPOS.DiscountManagement.DTOs;
 
 namespace OmgvaPOS.DiscountManagement.Mappers
 {
-    public class DiscountMapper
+    public static class DiscountMapper
     {
         public static Discount FromCreateDiscountRequest(CreateDiscountRequest createDiscountRequest) {
             return new Discount() {
@@ -15,11 +15,8 @@ namespace OmgvaPOS.DiscountManagement.Mappers
             };
         }
 
-        public static DiscountDTO? ToDTO(Discount? discount)
+        public static DiscountDTO ToDTO(this Discount discount)
         {
-            if (discount == null)
-                return null;
-            
             return new DiscountDTO() {
                 Id = discount.Id,
                 Amount = discount.Amount,

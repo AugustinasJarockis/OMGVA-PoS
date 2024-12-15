@@ -16,6 +16,7 @@ namespace OmgvaPOS.AuthManagement.Service
         private const string UsernameOrPasswordIncorrect = "Username or password is incorrect";
         private const string AccountDeactivated = "This account is deactivated";
         private const string LoginSuccessful = "Login Successful";
+        private const string DefaultBusinessId = "-1";
 
         public LoginResponseDTO Login(LoginRequest loginRequest)
         {
@@ -33,7 +34,7 @@ namespace OmgvaPOS.AuthManagement.Service
                 return new LoginResponseDTO(false, UsernameOrPasswordIncorrect);
 
             var token = GenerateJWT(user.Id.ToString(), user.Role.ToString(), 
-                                         user.Name, user.BusinessId?.ToString() ?? string.Empty);
+                                         user.Name, user.BusinessId?.ToString() ?? DefaultBusinessId);
             return new LoginResponseDTO(true, LoginSuccessful, token);
         }
         
@@ -45,7 +46,7 @@ namespace OmgvaPOS.AuthManagement.Service
                 name: tokenDetails.UserName,
                 businessId: newBusinessId.ToString());
 
-            return new LoginResponseDTO(true, newToken);
+            return new LoginResponseDTO(true, LoginSuccessful, newToken);
         }
         
         private string GenerateJWT(string userId, string role, string name, string businessId)

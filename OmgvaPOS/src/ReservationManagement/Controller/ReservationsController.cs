@@ -34,7 +34,6 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        // TODO: add forbidden once we link reservation to business
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<ReservationDto> GetReservation(long reservationId)
@@ -50,13 +49,13 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        // TODO: add forbidden once we link reservation to business
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         // TODO: if reservation status is done, don't let to update it for historical reasons
         public ActionResult<ReservationDto> UpdateReservation(long reservationId, [FromBody] UpdateReservationRequest updateRequest)
         {
-            var reservation = _reservationService.Update(reservationId, updateRequest);
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            var reservation = _reservationService.Update(reservationId, updateRequest, businessId);
             return Ok(reservation);
         }
 
@@ -64,7 +63,6 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<ReservationDto>(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        // TODO: add forbidden once we link reservation to business
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult DeleteReservation(long reservationId)
@@ -73,7 +71,6 @@ namespace OmgvaPOS.ReservationManagement.Controller
             return NoContent();
         }
 
-        // TODO: take businessId not from url, but from token
         [HttpGet("business/{businessId}")]
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
@@ -82,7 +79,7 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<ReservationDto>> GetBusinessReservations(long businessId)
         {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, businessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, businessId))
                 throw new ForbiddenException(GetForbiddenReservationErrorMessage(businessId));
             
             var reservations = _reservationService.GetAll();

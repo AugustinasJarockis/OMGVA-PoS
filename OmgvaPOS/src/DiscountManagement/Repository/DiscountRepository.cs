@@ -26,8 +26,9 @@ public class DiscountRepository : IDiscountRepository
             .Where(d => d.IsArchived == false)];
     }
 
-    public Discount GetDiscount(long id) {
-        return _context.Discounts.Where(d => d.Id == id).FirstOrDefault();
+    public Discount? GetDiscount(long id) {
+        return _context.Discounts
+            .FirstOrDefault(d => d.Id == id);
     }
 
     public void UpdateDiscountValidUntil(Discount? discount) {

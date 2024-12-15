@@ -2,6 +2,7 @@ using OmgvaPOS.CustomerManagement.Service;
 using OmgvaPOS.Exceptions;
 using OmgvaPOS.ReservationManagement.DTOs;
 using OmgvaPOS.ReservationManagement.Mappers;
+using OmgvaPOS.ReservationManagement.Models;
 using OmgvaPOS.ReservationManagement.Repository;
 using OmgvaPOS.ReservationManagement.Validators;
 using OmgvaPOS.UserManagement.Service;
@@ -54,13 +55,12 @@ namespace OmgvaPOS.ReservationManagement.Service
 
         // TODO: think about historic data for reservation UPDATE
         // for example cannot update if reservation is complete
-        public ReservationDto Update(long id, UpdateReservationRequest updateRequest)
+        public ReservationDto Update(long id, UpdateReservationRequest updateRequest, long businessId)
         {
-            var existingReservation = _repository.GetById(id);
-            if (existingReservation == null)
-                throw new NotFoundException(GetReservationNotFoundMessage(id));
+            var existingReservation = GetReservationOrThrow(id);
 
-            // TODO add check that user and employee are present
+            _userService.ValidateUserBelongsToBusiness(updateRequest.EmployeeId, businessId);
+            // TODO: add check that customer is present
             
             existingReservation.UpdateEntity(updateRequest);
             
@@ -68,14 +68,20 @@ namespace OmgvaPOS.ReservationManagement.Service
             return updatedReservation.ToDto();
         }
     
-        // TODO: think about historic data for reservation DELETE
         public void Delete(long id)
         {
-            var reservation = _repository.GetById(id);
-            if (reservation == null)
-                throw new NotFoundException(GetReservationNotFoundMessage(id));
+            var reservation = GetReservationOrThrow(id);
 
-            _repository.Delete(id);
+            _repository.Delete(reservation.Id);
+        }
+
+        private Reservation GetReservationOrThrow(long reservationId)
+        {
+            var reservation = _repository.GetById(reservationId);
+            if (reservation == null)
+                throw new NotFoundException(GetReservationNotFoundMessage(reservationId));
+
+            return reservation;
         }
 
     }

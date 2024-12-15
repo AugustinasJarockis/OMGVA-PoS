@@ -36,6 +36,9 @@ namespace OmgvaPOS.UserManagement.Service
         public UserResponse GetUser(long id)
         {
             var user = _userRepository.GetUser(id);
+            if (user == null)
+                throw new NotFoundException();
+            
             return user.ToUserResponse();
         }
         public void UpdateUser(long id, UpdateUserRequest user)
@@ -58,7 +61,7 @@ namespace OmgvaPOS.UserManagement.Service
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                usersResponse.Add(UserMapper.ToUserResponse(user));
+                usersResponse.Add(user.ToUserResponse());
             }
             return usersResponse;
         }
@@ -71,7 +74,21 @@ namespace OmgvaPOS.UserManagement.Service
             return _userRepository.GetUserOrders(id);
         }
         
-        public void ValidateUserSignUpConflicts(CreateUserRequest createUserRequest)
+        public void ValidateUserBelongsToBusiness(long? userId, long businessId)
+        {
+            if (userId == null) 
+                return;
+            
+            var user = _userRepository.GetUser((long) userId);
+                
+            if (user == null)
+                throw new NotFoundException("Could not find user");
+
+            if (businessId != user.BusinessId)
+                throw new ForbiddenException("There is no such user that works in this business.");
+        }
+        
+        private void ValidateUserSignUpConflicts(CreateUserRequest createUserRequest)
         {
             if (IsEmailUsed(createUserRequest.Email))
             {
@@ -84,12 +101,12 @@ namespace OmgvaPOS.UserManagement.Service
             }
         }
         
-        public bool IsEmailUsed(string email)
+        private bool IsEmailUsed(string email)
         {
             return _userRepository.AnyUserEmailDuplicate(email);
         }
 
-        public bool IsUsernameUsed(string username)
+        private bool IsUsernameUsed(string username)
         {
             return _userRepository.AnyUserUsernameDuplicate(username);
         }

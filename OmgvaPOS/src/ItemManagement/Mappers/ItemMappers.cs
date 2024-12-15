@@ -35,7 +35,7 @@ namespace OmgvaPOS.ItemManagement.Mappers
             };
         }
 
-        public static Item FromUpdateRequestToItem(this ItemDTO updateItemDTO, Item baseItem) {
+        public static Item ToItem(this ItemDTO updateItemDTO, Item baseItem) {
             baseItem.Id = baseItem.Id;
             baseItem.Name = updateItemDTO.Name ?? baseItem.Name;
             baseItem.InventoryQuantity = updateItemDTO.InventoryQuantity ?? baseItem.InventoryQuantity;

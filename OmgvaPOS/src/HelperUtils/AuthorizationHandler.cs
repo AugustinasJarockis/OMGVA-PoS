@@ -37,29 +37,22 @@ namespace OmgvaPOS.HelperUtils
             return false;
         }
 
-        public static bool CanDeleteUser(string? tokenString, long businessId, long userId)
+        public static bool CanDeleteUser(string? tokenString, long businessId, long userIdToDelete)
         {
             var token = JwtTokenHandler.GetTokenDetails(tokenString);
 
+            if (token.UserId == userIdToDelete)
+                return false;
+            
+            if (token.UserRole == UserRole.Employee)
+                return false;
+            
             if (token.UserRole == UserRole.Admin)
                 return true;
 
             if (token.UserRole == UserRole.Owner && token.BusinessId == businessId)
                 return true;
             
-            if (token.UserRole == UserRole.Employee && token.UserId == userId)
-                return true;
-            
-            // previously.
-            // TODO: Not sure what '(token.UserRoleEquals(UserRole.Owner) || token.UserRoleEquals(UserRole.Admin)) && token.UserIdEquals(userId)' is for
-            // var token = GetJwtToken(tokenString);
-            // if (token == null
-            //     || token.UserRoleEquals(UserRole.Owner) && !token.UserBusinessEquals(businessId)
-            //     || (token.UserRoleEquals(UserRole.Owner) || token.UserRoleEquals(UserRole.Admin)) && token.UserIdEquals(userId)
-            //    )
-            //     return false;
-            // return true;
-
             return false;
         }
         

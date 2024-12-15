@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.Exceptions;
 using OmgvaPOS.ItemVariationManagement.Models;
 
 namespace OmgvaPOS.ItemVariationManagement.Repositories
@@ -34,11 +35,13 @@ namespace OmgvaPOS.ItemVariationManagement.Repositories
         }
         public void DeleteItemVariation(long itemVariationId) {
             var itemVariation = _database.ItemVariations.Find(itemVariationId);
-            if (itemVariation != null) {
-                itemVariation.IsArchived = true;
-                _database.ItemVariations.Update(itemVariation);
-                _database.SaveChanges();
-            }
+            
+            if (itemVariation == null) 
+                throw new NotFoundException();
+            
+            itemVariation.IsArchived = true;
+            _database.ItemVariations.Update(itemVariation);
+            _database.SaveChanges();
         }
         public void DuplicateItemVariations(IEnumerable<ItemVariation> itemVariations, long itemId) {
             List<ItemVariation> copyList = [.. _database.ItemVariations

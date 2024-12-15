@@ -8,11 +8,8 @@ namespace OmgvaPOS.UserManagement.Mappers
 {
     public static class UserMapper
     {
-        public static UserResponse ToUserResponse(this User? user)
+        public static UserResponse ToUserResponse(this User user)
         {
-            if (user == null) 
-                return null;
-            
             return new UserResponse()
             {
                 Id = user.Id,

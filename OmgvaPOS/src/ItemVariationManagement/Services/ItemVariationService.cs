@@ -1,4 +1,5 @@
-﻿using OmgvaPOS.ItemManagement.Repositories;
+﻿using OmgvaPOS.Exceptions;
+using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemVariationManagement.Mappers;
 using OmgvaPOS.ItemVariationManagement.Models;
@@ -8,12 +9,12 @@ namespace OmgvaPOS.ItemVariationManagement.Services
 {
     public class ItemVariationService(
         IItemVariationRepository itemVariationRepository,
-        IItemRepository itemRepository,
+        IItemService itemService,
         ILogger<ItemVariationService> logger
         ) : IItemVariationService
     {
         private readonly IItemVariationRepository _itemVariationRepository = itemVariationRepository;
-        private readonly IItemRepository _itemRepository = itemRepository;
+        private readonly IItemService _itemService = itemService;
         private readonly ILogger<ItemVariationService> _logger = logger;
 
         public List<ItemVariationDTO> GetItemVariations(long itemId) {
@@ -23,12 +24,14 @@ namespace OmgvaPOS.ItemVariationManagement.Services
         }
         public ItemVariationDTO? GetItemVariation(long id) {
             var itemVariation = _itemVariationRepository.GetItemVariation(id);
-            return itemVariation.ToItemVariationDTO();
+            return itemVariation?.ToItemVariationDTO();
         }
 
-        public long GetItemVariationBusinessNoException(long id) {
-            // TODO: item variantion may be null. 
-            return _itemRepository.GetItem(_itemVariationRepository.GetItemVariation(id).ItemId).BusinessId;
+        public long GetItemVariationBusinessId(long id)
+        {
+            var itemVariation = GetItemVariationOrThrow(id);
+
+            return _itemService.GetItemBusinessId(itemVariation.ItemId);
         }
         public ItemVariationDTO CreateItemVariation(ItemVariationCreationRequest itemVariationCreationRequest, long itemId) {
             ItemVariation itemVariation = itemVariationCreationRequest.ToItemVariation();
@@ -36,13 +39,25 @@ namespace OmgvaPOS.ItemVariationManagement.Services
             var newItemVariation = _itemVariationRepository.CreateItemVariation(itemVariation);
             return newItemVariation.ToItemVariationDTO();
         }
-        public ItemVariationDTO UpdateItemVariation(ItemVariationUpdateRequest itemVariationUpdateRequest, long id) {
-            var itemVariation = _itemVariationRepository.GetItemVariation(id);
+        public ItemVariationDTO UpdateItemVariation(ItemVariationUpdateRequest itemVariationUpdateRequest, long id)
+        {
+            var itemVariation = GetItemVariationOrThrow(id);
+            
             itemVariation = itemVariationUpdateRequest.ToItemVariation(itemVariation);
             return _itemVariationRepository.UpdateItemVariation(itemVariation).ToItemVariationDTO();
         }
         public void DeleteItemVariation(long id) {
             _itemVariationRepository.DeleteItemVariation(id);
         }
+
+        private ItemVariation GetItemVariationOrThrow(long itemVariationId)
+        {
+            var itemVariation = _itemVariationRepository.GetItemVariation(itemVariationId);
+            if (itemVariation == null)
+                throw new NotFoundException("Item variation not found");
+
+            return itemVariation;
+        }
+        
     }
 }

@@ -25,7 +25,8 @@ namespace OmgvaPOS.BusinessManagement.Mappers
             return businessBase;
         }
 
-        public static BusinessDTO ToBusinessDTO(this Business business) {
+        public static BusinessDTO ToBusinessDTO(this Business business)
+        {
             return new BusinessDTO() {
                 Id = business.Id,
                 Name = business.Name,

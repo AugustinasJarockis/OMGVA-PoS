@@ -15,5 +15,6 @@ namespace OmgvaPOS.UserManagement.Service
         public List<UserResponse> GetBusinessUsers(long businessId);
         public List<EmployeeSchedule> GetUserSchedules(long id);
         public List<Order> GetUserOrders(long id);
+        public void ValidateUserBelongsToBusiness(long? userId, long businessId);
     }
 }

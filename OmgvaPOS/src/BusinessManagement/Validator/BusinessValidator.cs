@@ -6,8 +6,11 @@ namespace OmgvaPOS.BusinessManagement.Validator;
 
 public static class BusinessValidator
 {
-    public static void ValidateBusinessDTO(BusinessDTO businessDTO)
+    public static void ValidateBusinessDTO(BusinessDTO? businessDTO)
     {
+        if (businessDTO == null)
+            throw new BadRequestException();
+        
         if (!businessDTO.Email?.IsValidEmail() ?? false)
             throw new BadRequestException("Email is not valid");
         

@@ -24,8 +24,9 @@ namespace OmgvaPOS.ItemVariationManagement
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllItemsVariations(long itemId) {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(itemId).BusinessId))
+        public IActionResult GetAllItemsVariations(long itemId)
+        {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _itemService.GetItemBusinessId(itemId)))
                 return Forbid();
 
             return Ok(_itemVariationService.GetItemVariations(itemId));
@@ -39,10 +40,10 @@ namespace OmgvaPOS.ItemVariationManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetItemVariation(long id) {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _itemVariationService.GetItemVariationBusinessId(id)))
                 return Forbid();
 
-            ItemVariationDTO itemVariation = _itemVariationService.GetItemVariation(id);
+            var itemVariation = _itemVariationService.GetItemVariation(id);
 
             if (itemVariation == null)
                 return NotFound();
@@ -50,7 +51,7 @@ namespace OmgvaPOS.ItemVariationManagement
                 return Ok(itemVariation);
         }
 
-        [HttpPost("{itemId}")] //TODO: Check for potential additional errors
+        [HttpPost("{itemId}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<ItemVariationDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -58,10 +59,10 @@ namespace OmgvaPOS.ItemVariationManagement
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateItemVariation([FromBody] ItemVariationCreationRequest itemVariationCreationRequest, long itemId) {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemService.GetItemNoException(itemId).BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _itemService.GetItemBusinessId(itemId)))
                 return Forbid();
 
-            ItemVariationDTO itemVariationDTO = _itemVariationService.CreateItemVariation(itemVariationCreationRequest, itemId);
+            var itemVariationDTO = _itemVariationService.CreateItemVariation(itemVariationCreationRequest, itemId);
             return Created($"/item/{itemVariationDTO.Id}", itemVariationDTO);
         }
 
@@ -74,17 +75,14 @@ namespace OmgvaPOS.ItemVariationManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateItemVariation([FromBody] ItemVariationUpdateRequest itemVariationUpdateRequest, long id) {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _itemVariationService.GetItemVariationBusinessId(id)))
                 return Forbid();
 
             var returnedItemVariation = _itemVariationService.UpdateItemVariation(itemVariationUpdateRequest, id);
-            if (returnedItemVariation != null) //TODO: Handle errors, possible null value
-                return Ok(returnedItemVariation);
-            else
-                return NotFound();
+            return Ok(returnedItemVariation);
         }
 
-        [HttpDelete("{id}")] //TODO: Consider error codes
+        [HttpDelete("{id}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -92,14 +90,10 @@ namespace OmgvaPOS.ItemVariationManagement
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteItem(long id) {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _itemVariationService.GetItemVariationBusinessNoException(id)))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _itemVariationService.GetItemVariationBusinessId(id)))
                 return Forbid();
 
-            if (_itemVariationService.GetItemVariation(id) == null) {
-                return NotFound("Item variation not found.");
-            }
-            
-            _itemVariationService.DeleteItemVariation(id); //TODO: Handle errors properly
+            _itemVariationService.DeleteItemVariation(id);
             return NoContent();
         }
     }

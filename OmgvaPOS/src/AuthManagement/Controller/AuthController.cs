@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.AuthManagement.DTOs;
 using OmgvaPOS.AuthManagement.Service;
 using OmgvaPOS.HelperUtils;

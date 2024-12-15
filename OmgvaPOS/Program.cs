@@ -30,7 +30,11 @@ var initDatabaseAction = DbInitializerAction.DoNothing;
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;  // This will keep the original property names
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -100,6 +104,8 @@ builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
+builder.Services.AddScoped<DiscountValidatorService, DiscountValidatorService>();
+
 //in case you want to use cloud database
 //go into appsettings.json and set "UseCloudDatabase": true
 bool useCloudBool = builder.Configuration.GetValue<bool>("UseCloudDatabase"); 
@@ -113,7 +119,6 @@ builder.Services.AddDbContext<OmgvaDbContext>(options => options.UseSqlServer(co
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                       .AddEnvironmentVariables();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

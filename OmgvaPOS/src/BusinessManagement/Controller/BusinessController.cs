@@ -76,8 +76,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, id))
                 return Forbid();
             
-            businessDTO.Id = id;
-            if (_businessService.UpdateBusiness(businessDTO))
+            if (_businessService.UpdateBusiness(businessDTO, id))
                 return Ok();
             
             return NotFound();
