@@ -22,15 +22,6 @@ const CreateBusinessPage: React.FC <CreateBusinessPageProps> = ({ token: authTok
                 return;
             }
 
-            // Workaround because typescript treats variable name cases weirdly
-            const anyResult: any = result;
-            result.Id = anyResult.id;
-            result.Name = anyResult.name;
-            result.Address = anyResult.address;
-            result.Phone = anyResult.phone;
-            result.Email = anyResult.email;
-            // Workaround end
-
             navigate('/business/' + result.Id, { state: { business: result } });
         }
         catch (err: any) {
