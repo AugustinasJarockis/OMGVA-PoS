@@ -11,39 +11,24 @@ namespace OmgvaPOS.OrderItemManagement.Controller;
 
 [ApiController]
 [Route("order/{orderId}/item")]
-public class OrderItemController(IOrderService orderService, IOrderItemService orderItemService, ILogger<DiscountController> logger) : Microsoft.AspNetCore.Mvc.Controller
+public class OrderItemController(IOrderService orderService, IOrderItemService orderItemService) : Microsoft.AspNetCore.Mvc.Controller
 {
     private readonly IOrderService _orderService = orderService;
     private readonly IOrderItemService _orderItemService = orderItemService;
-    private readonly ILogger<DiscountController> _logger = logger;
 
     [HttpPost]
     [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<OrderItemDTO> AddOrderItem([FromBody] CreateOrderItemRequest request, long orderId) {
+    public IActionResult AddOrderItem([FromBody] CreateOrderItemRequest request, long orderId) {
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        var orderItemDTO = _orderItemService.AddOrderItem(orderId, request);
-        return Ok(orderItemDTO);
-    }
-
-    [HttpGet("{orderItemId}")]
-    [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderItemDTO>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult GetOrderItem(long orderId, long orderItemId) {
-        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
-            return Forbid();
-
-        return Ok(_orderItemService.GetOrderItem(orderItemId));
+        _orderItemService.AddOrderItem(orderId, request);
+        return NoContent();
     }
 
     [HttpPatch("{orderItemId}")]
@@ -73,7 +58,7 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        _orderItemService.DeleteOrderItem(orderItemId);
+        _orderItemService.DeleteOrderItem(orderItemId, true);
         return NoContent();
     }
 }

@@ -32,9 +32,9 @@ public class OrderRepository : IOrderRepository
 
     public Order GetOrder(long orderId) {
         var order = _context.Orders
+            .AsNoTracking()
             .Where(o => o.Id == orderId)
             .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.OrderItemVariations)
             .Include(o => o.Payment)
             .Include(o => o.Discount)
             .Include(o => o.User)
@@ -45,10 +45,7 @@ public class OrderRepository : IOrderRepository
     public IEnumerable<Order> GetAllBusinessOrders(long businessId) {
         var orders = _context.Orders
             .Where (o => o.BusinessId == businessId)
-            .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.OrderItemVariations)
-            .Include(o => o.Payment)
-            .Include(o => o.Discount)
+            .Include(o => o.User)
             .ToList();
         return orders;
     }
