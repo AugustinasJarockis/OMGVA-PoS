@@ -70,6 +70,12 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
         }
     };
 
+    const goToBusinessItemList = async () => {
+        if (authToken) {
+            navigate('/item/group');
+        }
+    };
+
     const goToGiftcardsList = async () => {
         navigate('/giftcard');
     }
@@ -95,17 +101,25 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
 
     return (
         <div>
-            {role === 'Admin' && (
-                <header>
+            <header>
+                {role === 'Admin' && (
+                <>
                     <button onClick={goToBusinessSelection}>Select another business</button>
                     <br /><br />
-                    <button onClick={goToBusinessUsersList}>See all business users</button>
+                </>
+                )}
+                {(role === 'Admin' || role === 'Owner') && (
+                    <>
+                    <button onClick={goToBusinessUsersList}>Business users</button>
                     <br /><br />
-                    <button onClick={goToGiftcardsList}>Business giftcards</button>
-                    <br /><br />
-                    <button onClick={goToUser}>Me</button>
-                </header>
-            )}
+                    </>
+                )}
+                <button onClick={goToBusinessItemList}>Business items</button>
+                <br /><br />
+                <button onClick={goToGiftcardsList}>Business giftcards</button>
+                <br /><br />
+                <button onClick={goToUser}>Me</button>
+            </header>
             {business ? (
                 <>
                     <h1>{business.Name}</h1>

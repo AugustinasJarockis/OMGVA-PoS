@@ -1,0 +1,6 @@
+﻿.item-variation-management-container {
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    max-height: 320px;
+    overflow: auto;
+}

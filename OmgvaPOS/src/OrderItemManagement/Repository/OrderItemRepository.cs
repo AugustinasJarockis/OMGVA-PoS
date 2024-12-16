@@ -3,6 +3,7 @@ using OmgvaPOS.Database.Context;
 using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Repository;
+using OmgvaPOS.OrderItemManagement.Validators;
 
 namespace OmgvaPOS.OrderItemManagement.Repository;
 
@@ -15,10 +16,9 @@ public class OrderItemRepository : IOrderItemRepository
         _logger = logger;
     }
 
-    public OrderItem AddOrderItem(OrderItem orderItem) {
+    public void AddOrderItem(OrderItem orderItem) {
         _context.OrderItems.Add(orderItem);
         _context.SaveChanges();
-        return orderItem;
     }
 
     public void DeleteOrderItem(OrderItem orderItem) {
@@ -33,8 +33,22 @@ public class OrderItemRepository : IOrderItemRepository
 
     public OrderItem GetOrderItem(long orderItemId) {
         var orderItem = _context.OrderItems
-            .Include(oi => oi.OrderItemVariations) 
-            .FirstOrDefault(oi => oi.Id == orderItemId);
+            .AsNoTracking()
+            .Where(oi => oi.Id == orderItemId)
+            .Include(oi => oi.OrderItemVariations)
+            .Include(oi => oi.Discount)
+            .FirstOrDefault();
+        return orderItem;
+    }
+
+    public OrderItem GetOrderItemOrThrow(long orderItemId) {
+        var orderItem = _context.OrderItems
+            .AsNoTracking()
+            .Where(oi => oi.Id == orderItemId)
+            .Include(oi => oi.OrderItemVariations)
+            .Include(oi => oi.Discount)
+            .FirstOrDefault();
+        OrderItemValidator.Exists(orderItem);
         return orderItem;
     }
 

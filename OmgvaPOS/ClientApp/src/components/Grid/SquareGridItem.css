@@ -1,0 +1,26 @@
+﻿.square-grid-item {
+    align-content: center;
+    background: #DDCCCC;
+    color: #444444;
+    height: 350px;
+    width: 300px;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 2px solid #999999AA;
+    border-radius: 8px;
+    img {
+        width: 95%;
+    }
+}
+
+.square-grid-item:hover {
+    opacity: 0.7;
+}
+
+.square-grid-container {
+    align-content: center;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}

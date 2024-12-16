@@ -8,6 +8,7 @@ namespace OmgvaPOS.ItemManagement.Services
     {
         public List<ItemDTO> GetItems(long businessId);
         public ItemDTO? GetItem(long id);
+        public Item GetItemOrThrow(long itemId);
         public Item GetItemNoException(long id);
         public ItemDTO CreateItem(CreateItemRequest createItemRequest, long businessId);
         public void DuplicateItems(IEnumerable<Item> items);
