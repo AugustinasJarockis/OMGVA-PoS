@@ -5,8 +5,8 @@ namespace OmgvaPOS.OrderItemManagement.Service;
 
 public interface IOrderItemService
 {
-    OrderItemDTO AddOrderItem(long orderId, CreateOrderItemRequest request);
-    void DeleteOrderItem(long orderItemId);
-    OrderItemDTO GetOrderItem(long orderItemId);
+    void AddOrderItem(long orderId, CreateOrderItemRequest request);
+    OrderItemDTO GetOrderItem(long orderId);
+    void DeleteOrderItem(long orderItemId, bool useTransaction);
     void UpdateOrderItem(long orderItemId, UpdateOrderItemRequest request);
 }

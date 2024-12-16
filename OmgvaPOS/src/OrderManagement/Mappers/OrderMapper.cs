@@ -1,10 +1,8 @@
-﻿using OmgvaPOS.OrderItemManagement.Models;
-using OmgvaPOS.OrderManagement.Enums;
+﻿using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
-using OmgvaPOS.OrderItemVariationManagement.Models;
-using OmgvaPOS.OrderItemManagement.Mappers;
 using OmgvaPOS.UserManagement.Models;
+using OmgvaPOS.DiscountManagement.Models;
 
 namespace OmgvaPOS.OrderManagement.Mappers;
 
@@ -19,17 +17,34 @@ public static class OrderMapper
         };
     }
 
-    public static OrderDTO OrderToDTO(this Order order) {
-        return new OrderDTO {
+
+    public static SimpleUserDTO ToSimpleUserDTO(this User user) {
+        if (user == null) return null;
+        return new SimpleUserDTO {
+            UserId = user.Id,
+            UserName = user.Name
+        };
+    }
+
+    public static SimpleDiscountDTO ToSimpleDiscountDTO(this Discount discount) {
+        if (discount == null) return null;
+        return new SimpleDiscountDTO {
+            DiscountId = discount.Id,
+            DiscountAmount = discount.Amount
+        };
+    }
+
+    public static SimpleOrderDTO ToSimpleOrderDTO(this Order order) {
+        if (order == null) return null;
+
+        return new SimpleOrderDTO {
             Id = order.Id,
             Status = order.Status,
-            Tip = order.Tip,
-            RefundReason = order.RefundReason,
-            UserId = order.UserId,
-            DiscountId = order.DiscountId,
-            OrderItems = order.OrderItems?
-                .Select(OrderItemMapper.OrderItemToDTO)
-                .ToList() ?? []
+            User = order.User.ToSimpleUserDTO()
         };
+    }
+
+    public static IEnumerable<SimpleOrderDTO> ToSimpleOrderDTOList(this IEnumerable<Order> orders) {
+        return orders?.Select(ToSimpleOrderDTO).ToList();
     }
 }
