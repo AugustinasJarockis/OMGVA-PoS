@@ -11,10 +11,8 @@ namespace OmgvaPOS.OrderManagement.Repository;
 public class OrderRepository : IOrderRepository
 {
     private readonly OmgvaDbContext _context;
-    private readonly ILogger<DiscountRepository> _logger;
-    public OrderRepository(OmgvaDbContext context, ILogger<DiscountRepository> logger) {
+    public OrderRepository(OmgvaDbContext context) {
         _context = context;
-        _logger = logger;
     }
 
     public Order AddOrder(Order order) {
@@ -28,6 +26,10 @@ public class OrderRepository : IOrderRepository
         OrderValidator.Exists(order);
 
         return order.BusinessId;
+    }
+
+    public Order GetOrderNoAppendages(long orderId) {
+        return _context.Orders.FirstOrDefault(o => o.Id == orderId);
     }
 
     public Order GetOrder(long orderId) {
@@ -55,7 +57,7 @@ public class OrderRepository : IOrderRepository
         _context.SaveChanges();
     }
 
-    public void UpdateOrderTip(Order order) {
+    public void UpdateOrder(Order order) {
         _context.Orders.Update(order);
         _context.SaveChanges();
     }

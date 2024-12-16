@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.DiscountManagement.Models;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
-using OmgvaPOS.ItemManagement.Validator;
-using OmgvaPOS.OrderItemManagement.Mappers;
 using OmgvaPOS.OrderItemManagement.Service;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
@@ -115,7 +114,6 @@ public class OrderService : IOrderService
         OrderValidator.IsOpen(order);
 
         order.Tip = tip;
-        _orderRepository.UpdateOrderTip(order);
+        _orderRepository.UpdateOrder(order);
     }
-
 }
