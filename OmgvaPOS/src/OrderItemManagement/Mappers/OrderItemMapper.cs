@@ -19,15 +19,4 @@ public static class OrderItemMapper
                 .ToList()
         };
     }
-    public static OrderItemDTO OrderItemToDTO(OrderItem newOrderItem) {
-        return new OrderItemDTO {
-            Id = newOrderItem.Id,
-            ItemId = newOrderItem.ItemId,
-            Quantity = newOrderItem.Quantity,
-            DiscountId = newOrderItem.DiscountId,
-            OrderItemVariations = newOrderItem.OrderItemVariations?
-                .Select(OrderItemVariationMapper.OrderItemVariationToDTO)
-                .ToList()
-        };
-    }
 }

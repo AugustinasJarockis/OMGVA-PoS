@@ -1,0 +1,39 @@
+﻿.gridItem {
+    text-align: center;
+    ul {
+        padding: 0px;
+        li {
+            list-style-type: none;
+        }
+    }
+}
+
+.grid-item-img {
+    aspect-ratio: 3 / 2;
+}
+
+.create-item-button-wrapper .square-grid-item {
+    background: #DDFFDD;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 100px;
+}
+
+.mid-form-input {
+    align-content: center;
+    align-items: center;
+    text-align: center;
+    input {
+        width: fit-content;
+    }
+}
+
+.check-box-list-item {
+    width:auto;
+    display:flex;
+
+    input {
+        width: auto;
+        margin: 5px;
+    }
+}

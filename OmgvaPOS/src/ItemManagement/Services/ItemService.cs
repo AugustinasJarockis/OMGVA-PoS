@@ -46,7 +46,7 @@ namespace OmgvaPOS.ItemManagement.Services
             return _itemRepository.GetItem(id);
         }
 
-        private Item GetItemOrThrow(long itemId)
+        public Item GetItemOrThrow(long itemId)
         {
             var item = _itemRepository.GetItem(itemId);
             if (item == null)
