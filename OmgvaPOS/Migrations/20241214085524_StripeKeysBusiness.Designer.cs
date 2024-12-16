@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OmgvaPOS.Database.Context;
 
@@ -11,9 +12,11 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    partial class OmgvaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241214085524_StripeKeysBusiness")]
+    partial class StripeKeysBusiness
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,9 +89,6 @@ namespace OmgvaPOS.Migrations
 
                     b.Property<short>("Amount")
                         .HasColumnType("smallint");
-
-                    b.Property<long>("BusinessId")
-                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
@@ -293,13 +293,11 @@ namespace OmgvaPOS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("BusinessId")
-                        .HasColumnType("bigint");
-
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("RefundReason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -613,7 +611,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.PaymentManagement.Models.Payment", b =>
                 {
                     b.HasOne("OmgvaPOS.CustomerManagement.Models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -651,7 +649,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.ReservationManagement.Models.Reservation", b =>
                 {
                     b.HasOne("OmgvaPOS.CustomerManagement.Models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -714,6 +712,13 @@ namespace OmgvaPOS.Migrations
                     b.Navigation("StripeReaders");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("OmgvaPOS.CustomerManagement.Models.Customer", b =>
+                {
+                    b.Navigation("Payments");
+
+                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("OmgvaPOS.DiscountManagement.Models.Discount", b =>

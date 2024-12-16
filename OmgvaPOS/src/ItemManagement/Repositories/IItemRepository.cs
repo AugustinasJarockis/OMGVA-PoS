@@ -14,5 +14,6 @@ namespace OmgvaPOS.ItemManagement.Repositories
         public Item UpdateItem(Item item);
 
         public void DeleteItem(long id);
+        public void UpdateItemInventoryQuantity(Item item);
     }
 }

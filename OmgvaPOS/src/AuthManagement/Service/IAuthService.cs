@@ -1,5 +1,4 @@
 ﻿using OmgvaPOS.AuthManagement.DTOs;
-using OmgvaPOS.UserManagement.Models;
 
 namespace OmgvaPOS.AuthManagement.Service
 {
