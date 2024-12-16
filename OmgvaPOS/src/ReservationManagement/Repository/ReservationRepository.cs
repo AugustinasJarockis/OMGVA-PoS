@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.ReservationManagement.Enums;
 using OmgvaPOS.ReservationManagement.Models;
 
 namespace OmgvaPOS.ReservationManagement.Repository;
@@ -28,6 +29,14 @@ public class ReservationRepository : IReservationRepository
             .Include(r => r.Customer)
             .FirstOrDefault(r => r.Id == id);
     }
+    public List<Reservation> GetByItemIdAndDate(long itemId, DateOnly date)
+    {
+        return [.. _context.Reservations.Where(r => r.ItemId == itemId && DateOnly.FromDateTime(r.TimeReserved) == date && r.Status == Enums.ReservationStatus.Open)];
+    }
+    public List<Reservation> GetByEmployeeIdAndDate(long id, DateOnly date)
+    {
+        return [.. _context.Reservations.Where(r => r.EmployeeId == id && DateOnly.FromDateTime(r.TimeReserved) == date && r.Status == Enums.ReservationStatus.Open).OrderBy(r => r.TimeReserved)];
+    }
 
     public Reservation Create(Reservation reservation)
     {
@@ -48,7 +57,7 @@ public class ReservationRepository : IReservationRepository
         var reservation = _context.Reservations.Find(id);
         if (reservation != null)
         {
-            _context.Reservations.Remove(reservation);
+            reservation.Status = ReservationStatus.Cancelled;
             _context.SaveChanges();
         }
     }

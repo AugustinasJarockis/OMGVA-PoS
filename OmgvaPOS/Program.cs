@@ -27,6 +27,8 @@ using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.UserManagement.Service;
+using OmgvaPOS.ScheduleManagement.Service;
+using OmgvaPOS.ScheduleManagement.Repository;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -118,7 +120,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
 builder.Services.AddScoped<DiscountValidatorService, DiscountValidatorService>();
 
