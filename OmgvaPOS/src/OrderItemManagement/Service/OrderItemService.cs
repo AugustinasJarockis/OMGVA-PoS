@@ -113,7 +113,7 @@ public class OrderItemService : IOrderItemService
 
     }
 
-    public void DeleteOrderItem(long orderItemId) {
+    public void DeleteOrderItem(long orderItemId, bool useTransaction) {
         var orderItem = _orderItemRepository.GetOrderItem(orderItemId);
         OrderItemValidator.Exists(orderItem);
 
@@ -140,8 +140,30 @@ public class OrderItemService : IOrderItemService
             }
         }
 
-        using var transaction = _context.Database.BeginTransaction();
-        try {
+        // DeleteOrderItem may be called inside a transaction, 
+        // in that case, using a nested transaction is not only unnecesary,
+        // but also causes major errors
+        if (useTransaction) {
+            using var transaction = _context.Database.BeginTransaction();
+            try {
+                _orderItemRepository.DeleteOrderItem(orderItem);
+
+                _itemRepository.UpdateItemInventoryQuantity(item);
+
+                foreach (var itemVariation in itemVariations) {
+                    _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
+                }
+
+                transaction.Commit();
+            }
+            catch (Exception ex) {
+                transaction.Rollback();
+
+                _logger.LogError(ex, "An error occurred while deleting the order item.");
+                throw new ApplicationException("Error deleting order item. The operation has been rolled back.");
+            }
+        }
+        else {
             _orderItemRepository.DeleteOrderItem(orderItem);
 
             _itemRepository.UpdateItemInventoryQuantity(item);
@@ -149,15 +171,8 @@ public class OrderItemService : IOrderItemService
             foreach (var itemVariation in itemVariations) {
                 _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
             }
-
-            transaction.Commit();
         }
-        catch (Exception ex) {
-            transaction.Rollback();
-
-            _logger.LogError(ex, "An error occurred while deleting the order item.");
-            throw new ApplicationException("Error deleting order item. The operation has been rolled back.");
-        }
+        
     }
 
     public OrderItemDTO GetOrderItem(long orderItemId) {

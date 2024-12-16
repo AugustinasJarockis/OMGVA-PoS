@@ -73,7 +73,7 @@ public class OrderItemController(IOrderService orderService, IOrderItemService o
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        _orderItemService.DeleteOrderItem(orderItemId);
+        _orderItemService.DeleteOrderItem(orderItemId, true);
         return NoContent();
     }
 }

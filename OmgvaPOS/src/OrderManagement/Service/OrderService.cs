@@ -81,7 +81,7 @@ public class OrderService : IOrderService
             // you need to delete order items first
             // it should not be like that
             foreach (var orderItem in order.OrderItems) {
-                _orderItemService.DeleteOrderItem(orderItem.Id);
+                _orderItemService.DeleteOrderItem(orderItem.Id, false);
             }
             _orderRepository.DeleteOrder(order);
 
