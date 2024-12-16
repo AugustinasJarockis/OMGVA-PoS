@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Repositories;
+using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemManagement.Validators;
 using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
@@ -11,9 +12,11 @@ using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Validators;
 using OmgvaPOS.OrderItemVariationManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
+using OmgvaPOS.OrderManagement.Mappers;
 using OmgvaPOS.OrderManagement.Repository;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.OrderManagement.Validators;
+using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.OrderItemManagement.Service;
 
@@ -22,13 +25,16 @@ public class OrderItemService : IOrderItemService
     private readonly OmgvaDbContext _context;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderItemRepository _orderItemRepository;
+    private readonly IItemService _itemService;
     private readonly IItemRepository _itemRepository;
     private readonly IItemVariationRepository _itemVariationRepository;
     private readonly ILogger<OrderService> _logger;
+
     public OrderItemService(
         OmgvaDbContext context,
         IOrderRepository orderRepository,
         IOrderItemRepository orderItemRepository,
+        IItemService itemService,
         IItemRepository itemRepository,
         IItemVariationRepository itemVariationRepository,
         ILogger<OrderService> logger
@@ -36,12 +42,13 @@ public class OrderItemService : IOrderItemService
         _context = context;
         _orderRepository = orderRepository;
         _orderItemRepository = orderItemRepository;
+        _itemService = itemService;
         _itemRepository = itemRepository;
         _itemVariationRepository = itemVariationRepository;
         _logger = logger;
     }
 
-    public OrderItemDTO AddOrderItem(long orderId, CreateOrderItemRequest request) {
+    public void AddOrderItem(long orderId, CreateOrderItemRequest request) {
         var item = _itemRepository.GetItem(request.ItemId);
         ItemValidator.Exists(item);
         ItemValidator.IsNotArchived(item);
@@ -90,7 +97,7 @@ public class OrderItemService : IOrderItemService
         using var transaction = _context.Database.BeginTransaction();
         try {
             // Add the new order item
-            var orderItem = _orderItemRepository.AddOrderItem(newOrderItem); ;
+            _orderItemRepository.AddOrderItem(newOrderItem); ;
 
             // Update item inventory
             _itemRepository.UpdateItemInventoryQuantity(item);
@@ -101,7 +108,6 @@ public class OrderItemService : IOrderItemService
             }
 
             transaction.Commit();
-            return OrderItemMapper.OrderItemToDTO(orderItem);
         }
         catch (Exception ex) {
             transaction.Rollback();
@@ -109,8 +115,6 @@ public class OrderItemService : IOrderItemService
             _logger.LogError(ex, "An error occurred while adding the order item.");
             throw new ApplicationException("Error adding the order item. The operation has been rolled back.");
         }
-
-
     }
 
     public void DeleteOrderItem(long orderItemId, bool useTransaction) {
@@ -175,15 +179,56 @@ public class OrderItemService : IOrderItemService
         
     }
 
+    // only callable from OrderService
     public OrderItemDTO GetOrderItem(long orderItemId) {
-        var orderItem = _orderItemRepository.GetOrderItem(orderItemId);
-        OrderItemValidator.Exists(orderItem);
+        // get OrderItem itself
+        var orderItem = _orderItemRepository.GetOrderItemOrThrow(orderItemId);
 
-        var order = _orderRepository.GetOrder(orderItem.OrderId);
-        OrderValidator.Exists(order);
-        OrderValidator.IsOpen(order);
+        // Get Item for name, prices and taxes.
+        var item = _itemService.GetItemOrThrow(orderItem.ItemId);
 
-        return OrderItemMapper.OrderItemToDTO(orderItem);
+        // Get OrderItem discount for
+        // calculating OrderItem total price
+        // and including in OrderItemDTO 
+        var orderItemDiscountDTO = orderItem.Discount.ToSimpleDiscountDTO();
+
+        // Get OrderItemVariations for
+        // calculating OrderItem total price 
+        // and including in OrderItemDTO
+        List<OrderItemVariationDTO> orderItemVariationDTOs = [];
+        foreach (var orderItemVariation in orderItem.OrderItemVariations) {
+            var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
+            ItemVariationValidator.Exists(itemVariation);
+
+            orderItemVariationDTOs.Add(new OrderItemVariationDTO {
+                Id = orderItemVariation.Id,
+                ItemVariationId = orderItemVariation.ItemVariationId,
+                ItemVariationName = itemVariation.Name,
+                ItemVariationGroup = itemVariation.ItemVariationGroup,
+                PriceChange = itemVariation.PriceChange
+            });
+        }
+
+        // OrderItemPriceCalculation
+        decimal defaultUnitPrice = item.Price;
+        decimal unitPriceWithVariations = defaultUnitPrice + orderItemVariationDTOs.Sum(oIV => oIV.PriceChange);
+        decimal unitPriceWithDiscounts = unitPriceWithVariations - (orderItemDiscountDTO?.DiscountAmount ?? 0);
+        decimal totalTaxPercent = item.TaxItems?.Select(ti => ti.Tax).Sum(iT => iT.Percent) ?? 0;
+        decimal unitPriceWithTaxes = unitPriceWithDiscounts * (100 + totalTaxPercent) / 100;
+        decimal totalPrice = unitPriceWithTaxes * orderItem.Quantity;
+
+        OrderItemDTO orderItemDTO = new OrderItemDTO {
+            Id = orderItem.Id,
+            TotalPrice = totalPrice,
+            UnitPrice = unitPriceWithTaxes,
+            ItemId = orderItem.Id,
+            ItemName = item.Name,
+            Quantity = orderItem.Quantity,
+            Discount = orderItemDiscountDTO,
+            Variations = orderItemVariationDTOs
+        };
+
+        return orderItemDTO;
     }
 
     public void UpdateOrderItem(long orderItemId, UpdateOrderItemRequest request) {

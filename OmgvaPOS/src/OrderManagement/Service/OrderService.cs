@@ -2,6 +2,8 @@
 using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
+using OmgvaPOS.ItemManagement.Validator;
+using OmgvaPOS.OrderItemManagement.Mappers;
 using OmgvaPOS.OrderItemManagement.Service;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
@@ -36,37 +38,52 @@ public class OrderService : IOrderService
         _logger = logger;
     }
 
-    public long GetOrderBusinessId(long id) {
-        return _orderRepository.GetOrderBusinessId(id);
+    public long GetOrderBusinessId(long businessId) {
+        return _orderRepository.GetOrderBusinessId(businessId);
     }
 
-    public OrderDTO CreateOrder(long businessId, long userId) {
+    public SimpleOrderDTO CreateOrder(long businessId, long userId) {
         var order = OrderMapper.RequestToOrder(businessId, userId);
 
         order = _orderRepository.AddOrder(order);
-        return OrderMapper.OrderToDTO(order);
+        return OrderMapper.ToSimpleOrderDTO(order);
     }
 
-    public OrderDTO GetOrder(long id) {
-        var order = _orderRepository.GetOrder(id);
+    public OrderDTO GetOrder(long orderId) {
+        var order = _orderRepository.GetOrder(orderId);
         OrderValidator.Exists(order);
+        
+        List<OrderItemDTO> orderItemDTOs = [];
+        foreach(var orderItem in order.OrderItems) {
+            orderItemDTOs.Add(_orderItemService.GetOrderItem(orderItem.Id));
+        }
 
-        return OrderMapper.OrderToDTO(order);
+        var orderDTO = new OrderDTO {
+            Id = order.Id,
+            Status = order.Status,
+            Tip = order.Tip,
+            RefundReason = order.RefundReason,
+            Discount = order.Discount.ToSimpleDiscountDTO(),
+            User = order.User.ToSimpleUserDTO(),
+            OrderItems = orderItemDTOs
+        };
+
+        return orderDTO;
     }
 
-    public IEnumerable<OrderDTO> GetAllBusinessOrders(long businessId) {
+    public IEnumerable<SimpleOrderDTO> GetAllBusinessOrders(long businessId) {
         var orders = _orderRepository.GetAllBusinessOrders(businessId);
         OrderValidator.Exist(orders);
 
-        return orders.Select(o => o.OrderToDTO()).ToList();
+        return orders.ToSimpleOrderDTOList();
     }
 
-    public IEnumerable<OrderDTO> GetAllActiveOrders(long businessId) {
-        var orders = _orderRepository.GetAllBusinessOrders(businessId);
+    public IEnumerable<SimpleOrderDTO> GetAllActiveOrders(long businessId) {
+        var orders = GetAllBusinessOrders(businessId);
         var activeOrders = orders.Where(o => o.Status == OrderStatus.Open);
         OrderValidator.Exist(activeOrders);
 
-        return activeOrders.Select(o => o.OrderToDTO()).ToList();
+        return activeOrders;
     }
 
     public void DeleteOrder(long id) {
@@ -76,10 +93,6 @@ public class OrderService : IOrderService
 
         using var transaction = _context.Database.BeginTransaction();
         try {
-            // TODO: nested transactions dont work
-            // if order has order items you cannot delete the order
-            // you need to delete order items first
-            // it should not be like that
             foreach (var orderItem in order.OrderItems) {
                 _orderItemService.DeleteOrderItem(orderItem.Id, false);
             }
@@ -96,7 +109,6 @@ public class OrderService : IOrderService
 
     }
     
-
     public void UpdateOrderTip(short tip, long orderId) {
         var order = _orderRepository.GetOrder(orderId);
         OrderValidator.Exists(order);
@@ -105,4 +117,5 @@ public class OrderService : IOrderService
         order.Tip = tip;
         _orderRepository.UpdateOrderTip(order);
     }
+
 }
