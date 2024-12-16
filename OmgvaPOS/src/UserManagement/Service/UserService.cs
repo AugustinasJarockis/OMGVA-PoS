@@ -43,7 +43,7 @@ namespace OmgvaPOS.UserManagement.Service
         }
         public void UpdateUser(long id, UpdateUserRequest user)
         {
-            if (user.Username != null && _userRepository.AnyUserUsernameDuplicate(user.Username))
+            if (user.Username != null && IsUsernameUsed(user.Username))
                 throw new ConflictException(nameof(user.Username));
 
             user.Password = !string.IsNullOrEmpty(user.Password)
