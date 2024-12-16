@@ -79,7 +79,11 @@ namespace OmgvaPOS.ScheduleManagement.Controller
             return Ok(scheduleWithAvailability);
         }
         [HttpGet("employee/{employeeId}")]
-        public ActionResult<List<EmployeeSchedule>> GetAllSchedulesByEmployeeId(long employeeId)
+        [Authorize(Roles = "Admin,Owner,Employee")]
+        [ProducesResponseType<List<EmployeeSchedule>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetAllSchedulesByEmployeeId(long employeeId)
         {
             var schedules = _scheduleService.GetAllSchedulesByEmployeeId(employeeId);
             return Ok(schedules);
