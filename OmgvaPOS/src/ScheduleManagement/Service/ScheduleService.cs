@@ -8,6 +8,7 @@ using OmgvaPOS.ScheduleManagement.Repository;
 using OmgvaPOS.ScheduleManagement.Validators;
 using OmgvaPOS.UserManagement.Repository;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 
 namespace OmgvaPOS.ScheduleManagement.Service
 {
@@ -121,7 +122,22 @@ namespace OmgvaPOS.ScheduleManagement.Service
 
             return schedules;
         }
-
+        public long GetBusinessIdFromEmployeeSchedule(long employeeScheduleId)
+        {
+            var schedule = _scheduleRepository.GetScheduleById(employeeScheduleId);
+            var user = _userRepository.GetUserNoException(schedule.EmployeeId);
+            return user.BusinessId ?? -1;
+        }
+        public long GetBusinessIdFromEmployee(long employeeId)
+        {
+            var user = _userRepository.GetUserNoException(employeeId);
+            return user.BusinessId ?? -1;
+        }
+        public long GetBusinessIdFromItem(long itemId)
+        {
+            var item = _itemRepository.GetItem(itemId);
+            return item.BusinessId;
+        }
         private static List<Timeslot> CalculateAvailableTime(EmployeeSchedule schedule, List<Timeslot> unavailableTimeslots)
         {
             var availableTimeslots = new List<Timeslot>();

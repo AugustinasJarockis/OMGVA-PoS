@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OmgvaPOS.BusinessManagement.Models;
+using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ScheduleManagement.DTOs;
 using OmgvaPOS.ScheduleManagement.Models;
 using OmgvaPOS.ScheduleManagement.Service;
@@ -19,6 +21,9 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateEmployeeSchedule([FromBody] CreateEmployeeScheduleRequest request)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployee(request.EmployeeId)))
+                return Forbid();
+
             var schedule = _scheduleService.CreateEmployeeSchedule(request);
             return CreatedAtAction(nameof(GetEmployeeSchedule), new { id = schedule.Id }, schedule);
         }
@@ -30,6 +35,9 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteEmployeeSchedule(long id)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployeeSchedule(id)))
+                return Forbid();
+
             _scheduleService.DeleteEmployeeSchedule(id);
             return NoContent();
         }
@@ -41,6 +49,9 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateEmployeeSchedule(long id, [FromBody] UpdateEmployeeScheduleRequest request)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployeeSchedule(id)))
+                return Forbid();
+
             var updatedSchedule = _scheduleService.UpdateEmployeeSchedule(id, request);
             return Ok(updatedSchedule);
         }
@@ -52,6 +63,9 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetEmployeeSchedule(long id)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployeeSchedule(id)))
+                return Forbid();
+
             var scheduleWithAvailability = _scheduleService.GetEmployeeSchedule(id);
             return Ok(scheduleWithAvailability);
         }
@@ -63,6 +77,9 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetEmployeesSchedulesByItemAndDate([FromQuery] long itemId, [FromQuery] DateOnly date)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromItem(itemId)))
+                return Forbid();
+
             var schedules = _scheduleService.GetEmployeesSchedulesByItemAndDate(itemId, date);
             return Ok(schedules);
         }
@@ -74,6 +91,8 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetEmployeeScheduleWithAvailability([FromQuery] long employeeId, [FromQuery] DateOnly date)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployee(employeeId)))
+                return Forbid();
 
             var scheduleWithAvailability = _scheduleService.GetEmployeeScheduleWithAvailability(employeeId, date);
             return Ok(scheduleWithAvailability);
@@ -85,6 +104,9 @@ namespace OmgvaPOS.ScheduleManagement.Controller
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllSchedulesByEmployeeId(long employeeId)
         {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployee(employeeId)))
+                return Forbid();
+
             var schedules = _scheduleService.GetAllSchedulesByEmployeeId(employeeId);
             return Ok(schedules);
         }
