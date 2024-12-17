@@ -1,10 +1,12 @@
 using OmgvaPOS.CustomerManagement.Service;
 using OmgvaPOS.Exceptions;
+using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ReservationManagement.DTOs;
 using OmgvaPOS.ReservationManagement.Mappers;
 using OmgvaPOS.ReservationManagement.Models;
 using OmgvaPOS.ReservationManagement.Repository;
 using OmgvaPOS.ReservationManagement.Validators;
+using OmgvaPOS.ScheduleManagement.Service;
 using OmgvaPOS.UserManagement.Service;
 using static OmgvaPOS.Exceptions.ExceptionErrors;
 
@@ -15,12 +17,16 @@ namespace OmgvaPOS.ReservationManagement.Service
         private readonly IReservationRepository _repository;
         private readonly ICustomerService _customerService;
         private readonly IUserService _userService;
+        private readonly IScheduleService _scheduleService;
+        private readonly IItemService _itemService;
 
-        public ReservationService(IReservationRepository repository, ICustomerService customerService, IUserService userService)
+        public ReservationService(IReservationRepository repository, ICustomerService customerService, IUserService userService, IScheduleService scheduleService, IItemService itemService)
         {
             _repository = repository;
             _customerService = customerService;
             _userService = userService;
+            _scheduleService = scheduleService;
+            _itemService = itemService;
         }
 
         public IEnumerable<ReservationDto> GetAll()
@@ -44,14 +50,40 @@ namespace OmgvaPOS.ReservationManagement.Service
             var customer = _customerService.GetById(createRequest.CustomerId);
             if (customer == null)
                 throw new NotFoundException($"Cannot find customer with ID {createRequest.CustomerId}");
-            
+
             var employee = _userService.GetUser(createRequest.EmployeeId);
             if (employee == null)
                 throw new NotFoundException($"Cannot find employee with ID {createRequest.EmployeeId}");
-            
+
+            var item = _itemService.GetItem(createRequest.ItemId);
+            if (item == null)
+                throw new NotFoundException($"Cannot find item with ID {createRequest.ItemId}");
+
+            var employeeSchedule = _scheduleService.GetEmployeeScheduleWithAvailability(createRequest.EmployeeId, DateOnly.FromDateTime(createRequest.TimeReserved));
+
+            var requestedStartTime = TimeOnly.FromDateTime(createRequest.TimeReserved).ToTimeSpan();
+            var requestedEndTime = requestedStartTime + item.Duration;
+
+            var isAvailable = employeeSchedule.ScheduleWithAvailabilities
+                .Any(es => requestedStartTime >= es.StartTime && requestedEndTime <= es.EndTime);
+
+            if (!isAvailable)
+            {
+                throw new ConflictException("Employee is unavailable during the requested time.");
+            }
+
+            var existingReservations = _repository.GetByEmployeeIdAndDate(createRequest.EmployeeId, DateOnly.FromDateTime(createRequest.TimeReserved));
+            if (existingReservations.Any(r =>
+                TimeOnly.FromDateTime(r.TimeReserved).ToTimeSpan() < requestedEndTime &&
+                TimeOnly.FromDateTime(r.TimeReserved).ToTimeSpan() + item.Duration > requestedStartTime))
+            {
+                throw new ConflictException("The requested reservation time overlaps with an existing reservation.");
+            }
+
             var createdReservation = _repository.Create(reservation);
             return createdReservation.ToDto();
         }
+
 
         // TODO: think about historic data for reservation UPDATE
         // for example cannot update if reservation is complete

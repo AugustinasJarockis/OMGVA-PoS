@@ -7,6 +7,5 @@ public class DiscountDTO {
     public short Amount { get; set; }
     public DateTime TimeValidUntil { get; set; }
     public DiscountType Type { get; set; }
-    public bool IsArchived { get; set; }
 
 }

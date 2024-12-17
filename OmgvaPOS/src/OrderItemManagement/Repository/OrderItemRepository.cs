@@ -22,18 +22,20 @@ public class OrderItemRepository : IOrderItemRepository
     }
 
     public void DeleteOrderItem(OrderItem orderItem) {
-        var orderItemVariations = _context.OrderItemVariations
-        .Where(v => v.OrderItemId == orderItem.Id)
-        .ToList();
+        var orderItemFromDb = _context.OrderItems
+            .Include(o => o.OrderItemVariations)
+            .FirstOrDefault(o => o.Id == orderItem.Id);
 
-        _context.OrderItemVariations.RemoveRange(orderItemVariations);
-        _context.OrderItems.Remove(orderItem);
-        _context.SaveChanges();
+        if (orderItemFromDb != null) {
+            var variations = orderItemFromDb.OrderItemVariations.ToList();
+            _context.OrderItemVariations.RemoveRange(variations);
+            _context.OrderItems.Remove(orderItemFromDb);
+            _context.SaveChanges();
+        }
     }
 
     public OrderItem GetOrderItem(long orderItemId) {
         var orderItem = _context.OrderItems
-            .AsNoTracking()
             .Where(oi => oi.Id == orderItemId)
             .Include(oi => oi.OrderItemVariations)
             .Include(oi => oi.Discount)
@@ -43,7 +45,6 @@ public class OrderItemRepository : IOrderItemRepository
 
     public OrderItem GetOrderItemOrThrow(long orderItemId) {
         var orderItem = _context.OrderItems
-            .AsNoTracking()
             .Where(oi => oi.Id == orderItemId)
             .Include(oi => oi.OrderItemVariations)
             .Include(oi => oi.Discount)
