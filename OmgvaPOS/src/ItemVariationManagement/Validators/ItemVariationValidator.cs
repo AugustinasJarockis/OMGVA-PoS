@@ -52,4 +52,11 @@ public static class ItemVariationValidator
             );
         }
     }
+
+    public static void ValidateItemVariationBelongsToItem(ItemVariation itemVariation, Item item)
+    {
+        if (itemVariation.ItemId != item.Id)
+            throw new ValidationException($"Variation {itemVariation.Name} does not belong to item {item.Name}");
+    }
+    
 }

@@ -79,6 +79,7 @@ public class OrderItemService : IOrderItemService
                 ItemVariationValidator.Exists(itemVariation);
                 ItemVariationValidator.IsNotArchived(itemVariation);
                 ItemVariationValidator.EnoughInventoryQuantity(itemVariation, request.Quantity);
+                ItemVariationValidator.ValidateItemVariationBelongsToItem(itemVariation, item);
                 itemVariation.InventoryQuantity -= request.Quantity;
 
                 itemVariations.Add(itemVariation);
