@@ -48,7 +48,7 @@ const getGiftcard = async (token: string | null, id: string): Promise<{ result?:
     }
 };
 
-const updateUser = async (token: string | null, giftcard: UpdateGiftcard): Promise<string | undefined> => {
+const updateGiftcard = async (token: string | null, giftcard: UpdateGiftcard): Promise<string | undefined> => {
     try {
         const response = await axios.patch(`/api/giftcard`, giftcard, {
             headers: { Authorization: `Bearer ${token}` },
@@ -78,4 +78,4 @@ const getBusinessGiftcards = async (token: string | null): Promise<{ result?: Ar
     }
 };
 
-export { createGiftcard, getGiftcard, updateUser, getBusinessGiftcards }
+export { createGiftcard, getGiftcard, updateGiftcard, getBusinessGiftcards }
