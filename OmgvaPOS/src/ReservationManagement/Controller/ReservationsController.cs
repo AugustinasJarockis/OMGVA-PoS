@@ -4,6 +4,7 @@ using OmgvaPOS.Exceptions;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ReservationManagement.DTOs;
 using OmgvaPOS.ReservationManagement.Service;
+using OmgvaPOS.UserManagement.Repository;
 using static OmgvaPOS.Exceptions.ExceptionErrors;
 
 namespace OmgvaPOS.ReservationManagement.Controller
@@ -13,10 +14,12 @@ namespace OmgvaPOS.ReservationManagement.Controller
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationService;
+        private readonly IUserRepository _userRepository;
 
-        public ReservationController(IReservationService reservationService)
+        public ReservationController(IReservationService reservationService, IUserRepository userRepository)
         {
             _reservationService = reservationService;
+            _userRepository = userRepository;
         }
 
         [HttpPost]
@@ -85,6 +88,19 @@ namespace OmgvaPOS.ReservationManagement.Controller
             var reservations = _reservationService.GetAll();
             return Ok(reservations);
         }
+        [HttpGet("employee/{employeeId}")]
+        [Authorize(Roles = "Admin,Owner,Employee")]
+        [ProducesResponseType<ReservationDto>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<IEnumerable<ReservationDto>> GetEmployeeReservations(long employeeId)
+        {
+            if (!AuthorizationHandler.CanManageUser(HttpContext.Request.Headers.Authorization, (long)_userRepository.GetUserNoException(employeeId)?.BusinessId, employeeId))
+                throw new ForbiddenException("");
 
+            var reservations = _reservationService.GetEmployeeReservations(employeeId);
+            return Ok(reservations);
+        }
     }
 }

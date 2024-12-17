@@ -134,7 +134,7 @@ const UserDataForm: React.FC<UserDataFormProps> = (props: UserDataFormProps) => 
         }
     };
 
-    const shouldHide = getTokenRole(props.token) !== "Employee" && (getTokenRole(props.token) !== "Admin" && getTokenUserId(props.token) !== props.user?.Id);
+    const shouldHide = getTokenRole(props.token) !== "Employee" || (getTokenRole(props.token) !== "Admin" && getTokenUserId(props.token) !== props.user?.Id);
 
     return (
         <div>
