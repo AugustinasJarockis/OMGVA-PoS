@@ -47,12 +47,17 @@ namespace OmgvaPOS.ScheduleManagement.Service
         {
             var employeeSchedule = _scheduleRepository.GetScheduleById(id);
             var reservations = _reservationRepository.GetByEmployeeIdAndDate(employeeSchedule.EmployeeId, employeeSchedule.Date);
-            var item = _itemRepository.GetItem(reservations.Last().ItemId);
-            
-            if(updateEmployeeScheduleRequest.StartTime != null)
-                EmployeeScheduleValidator.IsValidStartTime(TimeOnly.FromDateTime(reservations.First().TimeReserved).ToTimeSpan(), updateEmployeeScheduleRequest.StartTime ?? TimeSpan.Zero);
-            if (updateEmployeeScheduleRequest.EndTime != null && item != null)
-                EmployeeScheduleValidator.IsValidEndTime(TimeOnly.FromDateTime(reservations.Last().TimeReserved).ToTimeSpan() + (item.Duration ?? TimeSpan.Zero), updateEmployeeScheduleRequest.EndTime ?? TimeSpan.Zero);
+
+            if( reservations.Count > 0)
+            {
+                var item = _itemRepository.GetItem(reservations.Last().ItemId);
+
+                if (updateEmployeeScheduleRequest.EndTime != null && item != null)
+                    EmployeeScheduleValidator.IsValidEndTime(TimeOnly.FromDateTime(reservations.Last().TimeReserved).ToTimeSpan() + (item.Duration ?? TimeSpan.Zero), updateEmployeeScheduleRequest.EndTime ?? TimeSpan.Zero);
+
+                if (updateEmployeeScheduleRequest.StartTime != null)
+                    EmployeeScheduleValidator.IsValidStartTime(TimeOnly.FromDateTime(reservations.First().TimeReserved).ToTimeSpan(), updateEmployeeScheduleRequest.StartTime ?? TimeSpan.Zero);
+            }
 
             var updatedSchedule = _scheduleRepository.Update(id, updateEmployeeScheduleRequest);
 
