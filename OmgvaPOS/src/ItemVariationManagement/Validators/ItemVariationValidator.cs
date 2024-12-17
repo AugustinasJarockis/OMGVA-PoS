@@ -13,7 +13,7 @@ public static class ItemVariationValidator
         }
     }
 
-    public static void Exists(ItemVariation itemVariation) {
+    public static void Exists(ItemVariation? itemVariation) {
         if (itemVariation == null) {
             throw new NotFoundException("Item variation not found");
         }
@@ -28,5 +28,28 @@ public static class ItemVariationValidator
     public static void EnoughInventoryQuantity(ItemVariation itemVariation, int amount) {
         if (itemVariation.InventoryQuantity < amount)
             throw new ValidationException($"Not enough {itemVariation.Name} left. Inventory has: {itemVariation.InventoryQuantity}, requested: {amount}.");
+    }
+    
+    public static void ValidateNoItemVariationsFromSameGroup(List<ItemVariation>? itemVariations) {
+        if (itemVariations == null || itemVariations.Count < 2)
+            return;
+        
+        var variationGroups = itemVariations
+            .Select(oiv => oiv.ItemVariationGroup)
+            .GroupBy(group => group)
+            .ToList();
+
+        // If any group appears more than once, throw an exception
+        var duplicateGroups = variationGroups
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key)
+            .ToList();
+
+        if (duplicateGroups.Count != 0)
+        {
+            throw new ValidationException(
+                $"Multiple variations from the same group(s) are not allowed: {string.Join(", ", duplicateGroups)}"
+            );
+        }
     }
 }
