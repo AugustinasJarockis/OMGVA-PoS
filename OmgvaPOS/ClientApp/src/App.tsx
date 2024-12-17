@@ -24,6 +24,9 @@ import SelectItemTaxPage from './pages/Item pages/SelectItemTaxPage';
 import CreateItemVariationPage from './pages/Item variation pages/CreateItemVariationPage';
 import UpdateItemVariationPage from './pages/Item variation pages/UpdateItemVariationPage';
 import CreateItemPage from './pages/Item pages/CreateItemPage';
+import DiscountListPage from './pages/Discount pages/DiscountListPage';
+import CreateDiscountPage from './pages/Discount pages/CreateDiscountPage';
+import UpdateDiscountPage from './pages/Discount pages/UpdateDiscountPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -71,6 +74,9 @@ const App: React.FC = () => {
                             <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/create" element={<CreateBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/update/:id" element={<UpdateBusinessPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/discount" element={<DiscountListPage />} />
+                            <Route path="/discount/create" element={<CreateDiscountPage />} />
+                            <Route path="/discount/update/:id" element={<UpdateDiscountPage />} />
                             <Route path="/item" element={<ItemListPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/item/create" element={<CreateItemPage />} />
                             <Route path="/item/group" element={<ItemCategoryPage/>} />
