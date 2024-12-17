@@ -51,17 +51,36 @@ public class OrderService : IOrderService
     public OrderDTO GetOrder(long orderId) {
         var order = _orderRepository.GetOrder(orderId);
         OrderValidator.Exists(order);
-        
+
+        decimal finalPrice = 0;
+        decimal finalTaxesPaid = 0;
+
         List<OrderItemDTO> orderItemDTOs = [];
-        foreach(var orderItem in order.OrderItems) {
-            orderItemDTOs.Add(_orderItemService.GetOrderItem(orderItem.Id));
+        foreach (var orderItem in order.OrderItems) {
+            var orderItemDTO = _orderItemService.GetOrderItem(orderItem.Id);
+            orderItemDTOs.Add(orderItemDTO);
+
+            // order discount applies to order item only
+            // in so far as it doesnt exceed existing OderItem discount
+            var maxDiscountPercent = Math.Max(
+                orderItemDTO.Discount?.DiscountAmount ?? 0,
+                order.Discount?.Amount ?? 0
+            );
+
+            var itemFinalPrice = (orderItemDTO.UnitPriceNoDiscount * orderItemDTO.Quantity) * (100 - maxDiscountPercent) / 100;
+            finalPrice += itemFinalPrice;
+            finalTaxesPaid += itemFinalPrice * orderItemDTO.TaxPercent / (100 + orderItemDTO.TaxPercent);
         }
+
+
 
         var orderDTO = new OrderDTO {
             Id = order.Id,
             Status = order.Status,
             Tip = order.Tip,
             RefundReason = order.RefundReason,
+            FinalPrice = finalPrice,
+            TaxesPaid = finalTaxesPaid,
             Discount = order.Discount.ToSimpleDiscountDTO(),
             User = order.User.ToSimpleUserDTO(),
             OrderItems = orderItemDTOs
@@ -107,7 +126,7 @@ public class OrderService : IOrderService
         }
 
     }
-    
+
     public void UpdateOrderTip(short tip, long orderId) {
         var order = _orderRepository.GetOrder(orderId);
         OrderValidator.Exists(order);

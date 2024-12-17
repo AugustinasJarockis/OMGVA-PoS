@@ -127,7 +127,6 @@ public class OrderItemService : IOrderItemService
 
         var item = _itemRepository.GetItem(orderItem.ItemId);
         ItemValidator.Exists(item);
-        ItemValidator.IsNotArchived(item);
         item.InventoryQuantity += orderItem.Quantity;
 
         List<ItemVariation> itemVariations = [];
@@ -137,7 +136,6 @@ public class OrderItemService : IOrderItemService
             foreach (var orderItemVariation in orderItem.OrderItemVariations) {
                 var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
                 ItemVariationValidator.Exists(itemVariation);
-                ItemVariationValidator.IsNotArchived(itemVariation);
                 itemVariation.InventoryQuantity += orderItem.Quantity;
 
                 itemVariations.Add(itemVariation);
@@ -208,20 +206,26 @@ public class OrderItemService : IOrderItemService
                 PriceChange = itemVariation.PriceChange
             });
         }
-
+        
+        var itemTaxes = _itemService.GetItemTaxes(item.Id);
         // OrderItemPriceCalculation
+        short totalTaxPercent = (short)(itemTaxes?.Sum(dto => dto.Percent) ?? 0);
+
+        // item prices are already with tax included almost everywhere
         decimal defaultUnitPrice = item.Price;
         decimal unitPriceWithVariations = defaultUnitPrice + orderItemVariationDTOs.Sum(oIV => oIV.PriceChange);
-        decimal unitPriceWithDiscounts = unitPriceWithVariations - (orderItemDiscountDTO?.DiscountAmount ?? 0);
-        decimal totalTaxPercent = item.TaxItems?.Select(ti => ti.Tax).Sum(iT => iT.Percent) ?? 0;
-        decimal unitPriceWithTaxes = unitPriceWithDiscounts * (100 + totalTaxPercent) / 100;
-        decimal totalPrice = unitPriceWithTaxes * orderItem.Quantity;
+
+        decimal discountPercent = (orderItemDiscountDTO?.DiscountAmount ?? 0);
+        // discounts are also tax-inclusive, in a different way tho.
+        decimal unitPriceWithDiscounts = unitPriceWithVariations * (100 - discountPercent) / 100; 
+        decimal totalPrice = unitPriceWithDiscounts * orderItem.Quantity;
 
         OrderItemDTO orderItemDTO = new OrderItemDTO {
             Id = orderItem.Id,
             TotalPrice = totalPrice,
-            UnitPrice = unitPriceWithTaxes,
-            ItemId = orderItem.Id,
+            UnitPriceNoDiscount = unitPriceWithVariations,
+            TaxPercent = totalTaxPercent,
+            ItemId = item.Id,
             ItemName = item.Name,
             Quantity = orderItem.Quantity,
             Discount = orderItemDiscountDTO,
