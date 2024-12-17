@@ -158,7 +158,24 @@ public class OrderService : IOrderService
         var updatedOrder = updateRequest.ToUpdatedOrder(order);
         _orderRepository.UpdateOrder(order);
 
+        if (updateRequest.Status != null)
+        {
+            updatedOrder = UpdateOrderStatus(orderId, updateRequest.Status.Value);
+        }
+        
+
         return updatedOrder.ToSimpleOrderDTO();
+    }
+
+    public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus)
+    {
+        var order = GetOrderOrThrow(orderId);
+        
+        // TODO: any extra logic that might be needed when changing order status. 
+        order.Status = orderStatus;
+        _orderRepository.UpdateOrder(order);
+
+        return order;
     }
     
 }

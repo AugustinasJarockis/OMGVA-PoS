@@ -52,7 +52,6 @@ public static class OrderMapper
 
     public static Order ToUpdatedOrder(this UpdateOrderRequest updateRequest, Order currentOrder)
     {
-        currentOrder.Status = updateRequest.Status ?? currentOrder.Status;
         currentOrder.Tip = updateRequest.Tip ?? currentOrder.Tip;
         currentOrder.UserId = updateRequest.UserId ?? currentOrder.UserId;
         currentOrder.RefundReason = updateRequest.RefundReason ?? currentOrder.RefundReason;
