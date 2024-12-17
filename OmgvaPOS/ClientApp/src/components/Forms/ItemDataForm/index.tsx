@@ -2,6 +2,7 @@
 import { ChangeableItemFields, Item } from '../../../services/itemService';
 import '../../../pages/Item pages/ItemPages.css';
 import UserSelector from '../../Selectors/UserSelector';
+import DiscountSelector from '../../Selectors/DiscountSelector';
 
 interface ItemDataFormProps {
     item?: Item;
@@ -37,7 +38,7 @@ const ItemDataForm: React.FC<ItemDataFormProps> = (props: ItemDataFormProps) => 
             Currency: formElements.currency.value === '' ? undefined : formElements.currency.value,
             ItemGroup: props.itemGroup ? props.itemGroup : (formElements.itemGroup.value === '' ? undefined : formElements.itemGroup.value),
             ImgPath: formElements.imgPath.value === '' ? undefined : formElements.imgPath.value,
-            DiscountId: formElements.discount.value === '' ? undefined : formElements.discount.value,
+            DiscountId: formElements.discount.value === '' ? undefined : formElements.discount.value.replace(' ', 'T'),
             Duration: !formElements.duration || formElements.duration.value === '' ? undefined : ('0' + formElements.duration.value + ':00'),
             UserId: !formElements.userId || formElements.userId.value === '' ? undefined : formElements.userId.value,
         };
@@ -119,13 +120,9 @@ const ItemDataForm: React.FC<ItemDataFormProps> = (props: ItemDataFormProps) => 
                         placeholder={props.item?.ImgPath}
                         required={props.required}
                     /><br /><br />
-                    <label htmlFor="discount">Discount</label>
-                    <input
-                        type="text"
-                        id="discount"
-                        name="discount"
-                        placeholder={props.item?.DiscountId}
-                    /><br /><br />
+                    <label>Discount</label>
+                    <DiscountSelector required={props.required} current={ props.item?.DiscountId } />
+                    <br /><br />
                     <div className="mid-form-input">
                         Is service:
                         <input type="checkbox" onClick={changeItemType} checked={ isService } readOnly />

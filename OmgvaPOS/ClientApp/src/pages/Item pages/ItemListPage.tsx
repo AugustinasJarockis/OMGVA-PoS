@@ -33,6 +33,8 @@ const ItemListPage: React.FC<ItemListPageProps> = ({ token: authToken, itemGroup
                     result = result.filter(i => i.ItemGroup === state.group);
                 }
 
+                result.sort((a, b) => a.Name < b.Name ? -1 : (a.Name > b.Name ? 1 : 0));
+
                 setGridItems(result.map(item =>
                     <SquareGridItem key={item.Id} onclick={() => { openItem(item.Id); } }>
                         <div className="gridItem">
