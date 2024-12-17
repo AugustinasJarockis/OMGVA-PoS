@@ -1,4 +1,5 @@
-﻿using OmgvaPOS.OrderManagement.DTOs;
+﻿using OmgvaPOS.DiscountManagement.Models;
+using OmgvaPOS.OrderManagement.DTOs;
 
 namespace OmgvaPOS.OrderManagement.Service;
 

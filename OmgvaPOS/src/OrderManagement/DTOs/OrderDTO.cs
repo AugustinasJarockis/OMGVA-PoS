@@ -10,6 +10,8 @@ namespace OmgvaPOS.OrderManagement.DTOs
         public OrderStatus Status { get; set; }
         public decimal Tip { get; set; }
         public string? RefundReason { get; set; }
+        public decimal FinalPrice { get; set; }
+        public decimal TaxesPaid { get; set; }
         public SimpleDiscountDTO? Discount { get; set; }
         public SimpleUserDTO User { get; set; }
         public IEnumerable<OrderItemDTO> OrderItems { get; set; }
@@ -18,7 +20,8 @@ namespace OmgvaPOS.OrderManagement.DTOs
     {
         public long Id { get; set; }
         public decimal TotalPrice { get; set; }
-        public decimal UnitPrice { get; set; }
+        public decimal UnitPriceNoDiscount { get; set; }
+        public short TaxPercent { get; set; }
         public long ItemId { get; set; }
         public string ItemName { get; set; }
         public short Quantity { get; set; }

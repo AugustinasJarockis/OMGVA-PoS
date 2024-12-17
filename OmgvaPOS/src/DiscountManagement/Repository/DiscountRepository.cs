@@ -13,6 +13,7 @@ public class DiscountRepository : IDiscountRepository
         _context = context;
         _logger = logger;
     }
+
     public Discount AddDiscount(Discount discount) {
         _context.Discounts.Add(discount);
         _context.SaveChanges();
@@ -31,16 +32,8 @@ public class DiscountRepository : IDiscountRepository
             .FirstOrDefault(d => d.Id == id);
     }
 
-    public void UpdateDiscountValidUntil(Discount? discount) {
-        var existingDiscount = _context.Discounts.FirstOrDefault(d => d.Id == discount.Id);
-        // thats all we can update
-        existingDiscount.TimeValidUntil = discount.TimeValidUntil;
-        _context.SaveChanges();
-    }
-
-    public void ArchiveDiscount(Discount discount) {
-        var existingDiscount = _context.Discounts.FirstOrDefault(d => d.Id == discount.Id);
-        existingDiscount.IsArchived = true;
+    public void UpdateDiscount(Discount discount) {
+        _context.Discounts.Update(discount);
         _context.SaveChanges();
     }
 }
