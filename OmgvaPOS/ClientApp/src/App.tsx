@@ -17,6 +17,13 @@ import CreateUserPage from './pages/UserPages/CreateUserPage';
 import UserListPage from './pages/UserPages/UserListPage';
 import GiftcardListPage from './pages/GiftcardPage/GiftcardListPage';
 import CreateGiftcardPage from './pages/GiftcardPage/CreateGiftcardPage';
+import ItemListPage from './pages/Item pages/ItemListPage';
+import ItemCategoryPage from './pages/Item pages/ItemCategoryPage';
+import UpdateItemPage from './pages/Item pages/UpdateItemPage';
+import SelectItemTaxPage from './pages/Item pages/SelectItemTaxPage';
+import CreateItemVariationPage from './pages/Item variation pages/CreateItemVariationPage';
+import UpdateItemVariationPage from './pages/Item variation pages/UpdateItemVariationPage';
+import CreateItemPage from './pages/Item pages/CreateItemPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -64,6 +71,13 @@ const App: React.FC = () => {
                             <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/create" element={<CreateBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/update/:id" element={<UpdateBusinessPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/item" element={<ItemListPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/item/create" element={<CreateItemPage />} />
+                            <Route path="/item/group" element={<ItemCategoryPage/>} />
+                            <Route path="/item/:id" element={<UpdateItemPage/>} />
+                            <Route path="/item/:id/taxes" element={<SelectItemTaxPage/>} />
+                            <Route path="/item/:id/item-variation/create" element={<CreateItemVariationPage/>} />
+                            <Route path="/item/:itemId/item-variation/update/:id" element={<UpdateItemVariationPage/>} />
                             <Route path="/tax" element={<TaxListPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/create" element={<CreateTaxPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/update/:id" element={<UpdateTaxPage token={localStorage.getItem('authToken')} />} />
