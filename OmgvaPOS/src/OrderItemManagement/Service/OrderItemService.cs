@@ -50,6 +50,7 @@ public class OrderItemService : IOrderItemService
     }
 
     public void AddOrderItem(long orderId, CreateOrderItemRequest request) {
+        OrderItemValidator.ValidateCreateOrderItemRequest(request);
         var item = _itemRepository.GetItem(request.ItemId);
         ItemValidator.Exists(item);
         ItemValidator.IsNotArchived(item);
@@ -181,6 +182,7 @@ public class OrderItemService : IOrderItemService
     }
 
     public void UpdateOrderItem(long orderItemId, UpdateOrderItemRequest request) {
+        OrderItemValidator.ValidateUpdateOrderItemRequest(request);
         var orderItem = _orderItemRepository.GetOrderItem(orderItemId);
         OrderItemValidator.Exists(orderItem);
 
