@@ -99,6 +99,7 @@ const ReservationUpdatePage: React.FC = () => {
                             <option value="2">Done</option>
                         </select>
                         <br></br>
+                        <br></br>
                     </div>
                     <div>
                         <button type="submit">Update Reservation</button>
