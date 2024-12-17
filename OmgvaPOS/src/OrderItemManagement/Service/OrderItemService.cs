@@ -6,7 +6,6 @@ using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Validators;
 using OmgvaPOS.OrderItemManagement.DTOs;
-using OmgvaPOS.OrderItemManagement.Mappers;
 using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Validators;
@@ -16,7 +15,6 @@ using OmgvaPOS.OrderManagement.Mappers;
 using OmgvaPOS.OrderManagement.Repository;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.OrderManagement.Validators;
-using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.OrderItemManagement.Service;
 
@@ -25,6 +23,7 @@ public class OrderItemService : IOrderItemService
     private readonly OmgvaDbContext _context;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderItemRepository _orderItemRepository;
+    private readonly IOrderItemDeletionService _orderItemDeletionService;
     private readonly IItemService _itemService;
     private readonly IItemRepository _itemRepository;
     private readonly IItemVariationRepository _itemVariationRepository;
@@ -34,6 +33,7 @@ public class OrderItemService : IOrderItemService
         OmgvaDbContext context,
         IOrderRepository orderRepository,
         IOrderItemRepository orderItemRepository,
+        IOrderItemDeletionService orderItemDeletionService,
         IItemService itemService,
         IItemRepository itemRepository,
         IItemVariationRepository itemVariationRepository,
@@ -42,6 +42,7 @@ public class OrderItemService : IOrderItemService
         _context = context;
         _orderRepository = orderRepository;
         _orderItemRepository = orderItemRepository;
+        _orderItemDeletionService = orderItemDeletionService;
         _itemService = itemService;
         _itemRepository = itemRepository;
         _itemVariationRepository = itemVariationRepository;
@@ -117,64 +118,8 @@ public class OrderItemService : IOrderItemService
         }
     }
 
-    public void DeleteOrderItem(long orderItemId, bool useTransaction) {
-        var orderItem = _orderItemRepository.GetOrderItem(orderItemId);
-        OrderItemValidator.Exists(orderItem);
-
-        var order = _orderRepository.GetOrder(orderItem.OrderId);
-        OrderValidator.Exists(order);
-        OrderValidator.IsOpen(order);
-
-        var item = _itemRepository.GetItem(orderItem.ItemId);
-        ItemValidator.Exists(item);
-        item.InventoryQuantity += orderItem.Quantity;
-
-        List<ItemVariation> itemVariations = [];
-        // if order item has variations
-        if (orderItem.OrderItemVariations != null && orderItem.OrderItemVariations.Count != 0) {
-
-            foreach (var orderItemVariation in orderItem.OrderItemVariations) {
-                var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
-                ItemVariationValidator.Exists(itemVariation);
-                itemVariation.InventoryQuantity += orderItem.Quantity;
-
-                itemVariations.Add(itemVariation);
-            }
-        }
-
-        // DeleteOrderItem may be called inside a transaction, 
-        // in that case, using a nested transaction is not only unnecesary,
-        // but also causes major errors
-        if (useTransaction) {
-            using var transaction = _context.Database.BeginTransaction();
-            try {
-                _orderItemRepository.DeleteOrderItem(orderItem);
-
-                _itemRepository.UpdateItemInventoryQuantity(item);
-
-                foreach (var itemVariation in itemVariations) {
-                    _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
-                }
-
-                transaction.Commit();
-            }
-            catch (Exception ex) {
-                transaction.Rollback();
-
-                _logger.LogError(ex, "An error occurred while deleting the order item.");
-                throw new ApplicationException("Error deleting order item. The operation has been rolled back.");
-            }
-        }
-        else {
-            _orderItemRepository.DeleteOrderItem(orderItem);
-
-            _itemRepository.UpdateItemInventoryQuantity(item);
-
-            foreach (var itemVariation in itemVariations) {
-                _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
-            }
-        }
-        
+    public void DeleteOrderItem(long orderItemId, bool useTransaction = false) {
+        _orderItemDeletionService.DeleteOrderItem(orderItemId, useTransaction);
     }
 
     // only callable from OrderService
