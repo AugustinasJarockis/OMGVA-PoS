@@ -4,6 +4,7 @@ using OmgvaPOS.DiscountManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Validators;
+using OmgvaPOS.OrderManagement.Enums;
 
 namespace OmgvaPOS.OrderItemManagement.Repository;
 
@@ -53,6 +54,13 @@ public class OrderItemRepository : IOrderItemRepository
         return orderItem;
     }
 
+    public List<OrderItem> GetOrderItemsByItemId(long itemId) {
+        return [.. _context.OrderItems
+            .Where(oi => oi.ItemId == itemId)
+            .Include(oi => oi.Order)
+            .Where(oi => oi.Order.Status == OrderStatus.Open)
+            .Include(oi => oi.OrderItemVariations)];
+    }
     public void UpdateOrderItemQuantity(OrderItem orderItem) {
         _context.OrderItems.Update(orderItem);
         _context.SaveChanges();
