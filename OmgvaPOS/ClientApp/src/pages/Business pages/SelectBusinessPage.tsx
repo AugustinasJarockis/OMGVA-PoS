@@ -5,12 +5,14 @@ import ClickableListItem from '../../components/List/ClickableListItem';
 import '../../index.css';
 import '../../components/List/ClickableListItem.css';
 import { getTokenRole } from '../../utils/tokenUtils';
+import '../../pages/Homepage.css';
 
 interface SelectBusinessPageProps {
-    token : string | null
+    token: string | null;
+    onLogout: () => void;
 }
 
-const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken}) => {
+const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken, onLogout}) => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -54,8 +56,18 @@ const SelectBusinessPage: React.FC<SelectBusinessPageProps> = ({token: authToken
     return (
         <div>
             <header>
-                <button onClick={goToTaxesList}>Taxes</button>
+              <nav className="nav-bar">
+                <ul className="nav-list">
+                  <li>
+                    <button onClick={goToTaxesList}>Taxes</button>
+                  </li>
+                  <li>
+                    <button onClick={onLogout}>Logout</button>
+                  </li>
+                </ul>
+              </nav>
             </header>
+
             <h1>Select the business to open</h1>
             <div className="business-list-container">
                 {listItems}

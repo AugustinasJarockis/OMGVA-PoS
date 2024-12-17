@@ -1,7 +1,9 @@
 using OmgvaPOS.CustomerManagement.Service;
 using OmgvaPOS.Exceptions;
+using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ReservationManagement.DTOs;
+using OmgvaPOS.ReservationManagement.Enums;
 using OmgvaPOS.ReservationManagement.Mappers;
 using OmgvaPOS.ReservationManagement.Models;
 using OmgvaPOS.ReservationManagement.Repository;
@@ -40,8 +42,11 @@ namespace OmgvaPOS.ReservationManagement.Service
             var reservation = _repository.GetById(id);
             return reservation?.ToDto();
         }
-
-        // TODO: make sure employee is available at that time (check schedule)
+        public IEnumerable<ReservationDto> GetEmployeeReservations(long employeeId)
+        {
+            var reservations = _repository.GetByEmployeeId(employeeId);
+            return reservations.ToDtoList();
+        }
         public ReservationDto Create(CreateReservationRequest createRequest)
         {
             ReservationValidator.ValidateCreateReservationRequest(createRequest);
@@ -92,8 +97,54 @@ namespace OmgvaPOS.ReservationManagement.Service
             var existingReservation = GetReservationOrThrow(id);
 
             _userService.ValidateUserBelongsToBusiness(updateRequest.EmployeeId, businessId);
-            // TODO: add check that customer is present
+
+            if(updateRequest.CustomerId != null)
+            {
+                var customer = _customerService.GetById(updateRequest.CustomerId ?? -1);
+                if (customer == null)
+                    throw new NotFoundException($"Cannot find customer with ID {updateRequest.CustomerId}");
+            }
+
+            if(updateRequest.EmployeeId != null)
+            {
+                var employee = _userService.GetUser(updateRequest.EmployeeId ?? -1);
+                if (employee == null)
+                    throw new NotFoundException($"Cannot find employee with ID {updateRequest.EmployeeId}");
+
+                
             
+                if(updateRequest.TimeReserved != null)
+                {
+                    var employeeSchedule = _scheduleService.GetEmployeeScheduleWithAvailability(updateRequest.EmployeeId ?? -1, DateOnly.FromDateTime(updateRequest.TimeReserved ?? DateTime.UtcNow));
+
+                    var item = _itemService.GetItem(existingReservation.ItemId);
+
+                    var requestedStartTime = TimeOnly.FromDateTime(updateRequest.TimeReserved ?? DateTime.UtcNow).ToTimeSpan();
+                    var requestedEndTime = requestedStartTime + item.Duration;
+
+                    var isAvailable = employeeSchedule.ScheduleWithAvailabilities
+                        .Any(es => requestedStartTime >= es.StartTime && requestedEndTime <= es.EndTime);
+
+                    if (!isAvailable)
+                    {
+                        throw new ConflictException("Employee is unavailable during the requested time.");
+                    }
+
+                    var existingReservations = _repository.GetByEmployeeIdAndDate(updateRequest.EmployeeId ?? -1, DateOnly.FromDateTime(updateRequest.TimeReserved ?? DateTime.UtcNow));
+                    existingReservations = existingReservations.Where(r => r.Id != existingReservation.Id).ToList();
+
+                    if (existingReservations.Any(r =>
+                        TimeOnly.FromDateTime(r.TimeReserved).ToTimeSpan() < requestedEndTime &&
+                        TimeOnly.FromDateTime(r.TimeReserved).ToTimeSpan() + item.Duration > requestedStartTime))
+                    {
+                        throw new ConflictException("The requested reservation time overlaps with an existing reservation.");
+                    }
+                }
+            }
+
+            if (existingReservation.Status == ReservationStatus.Done || existingReservation.Status == ReservationStatus.Cancelled)
+                throw new ConflictException("Cancelled or done reservation cannot be updated.");
+
             existingReservation.UpdateEntity(updateRequest);
             
             var updatedReservation = _repository.Update(existingReservation);
