@@ -52,4 +52,19 @@ const getAllActiveOrders = async (token: string | null): Promise<{ result?: Arra
     }
 };
 
-export { getAllActiveOrders, getAllOrders };
+const createOrder = async (token: string | null): Promise<{ error?: string, result?: Order }> => {
+    try {
+        const response = await axios.post(`/api/order`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 201) {
+            return { result: response.data };
+        } else {
+            return { error: response.data.message };
+        }
+    } catch (error: any) {
+        return { error: error.message || 'An unexpected error occurred.' };
+    }
+};
+
+export { getAllActiveOrders, getAllOrders, createOrder };

@@ -5,9 +5,9 @@ import './OrderPages.css';
 import '../../components/List/ClickableListItem.css';
 import { getTokenBusinessId } from '../../utils/tokenUtils';
 import { useAuth } from '../../contexts/AuthContext';
-import { OrderStatus, getAllActiveOrders, getAllOrders } from '../../services/orderService';
+import { OrderStatus, createOrder, getAllActiveOrders, getAllOrders } from '../../services/orderService';
 import ClickableOrderListItem from '../../components/List/ClickableOrderListItem';
-import ClickableListItem from '../../components/List/ClickableListItem';
+import CallbackListItem from '../../components/List/CallbackListItem';
 
 const OrderListPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -52,6 +52,23 @@ const OrderListPage: React.FC = () => {
         }
     }
 
+    const createNewOrder = async () => {
+        setError(null);
+
+        try {
+            const { result, error } = await createOrder(authToken);
+
+            if (!result) {
+                setError('Problem creating order: ' + error);
+            }
+            else {
+                navigate('/order/' + result.Id);
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
+    }
+
     const changeShowOnlyOpen = async () => {
         setShowOnlyOpen(showOnlyOpen ? false : true);
         if (showOnlyOpen) {
@@ -89,7 +106,7 @@ const OrderListPage: React.FC = () => {
             <div className="business-list-container">
                 {listItems}
                 <div className="create-button-wrapper">
-                    <ClickableListItem key="create" text="Create a new order" url={'/order/create'} />
+                    <CallbackListItem key="create" text="Create a new order" onClickHandle={createNewOrder} />
                 </div>
             </div>
             {error && <p className="error-message">{error}</p>}
