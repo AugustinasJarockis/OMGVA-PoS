@@ -6,6 +6,11 @@ export interface Discount {
     TimeValidUntil: string,
     Type: DiscountType
 }
+
+export interface SimpleDiscount {
+    DiscountId: string,
+    DiscountAmount: number
+}
 export interface DiscountCreateRequest {
     Amount: number,
     TimeValidUntil: string,
