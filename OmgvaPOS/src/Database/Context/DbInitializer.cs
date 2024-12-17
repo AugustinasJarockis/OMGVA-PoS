@@ -58,6 +58,9 @@ public class DbInitializer
         _logger.LogInformation("Initializing mock data...");
         MockBusinessesDataHelper.InitializeMockBusinesses(_context, _logger);
         MockUserDataHelper.InitializeMockUsers(_context, _logger);
+        MockEmployeeScheduleDataHelper.InitializeMockSchedules(_context, _logger);
+        MockCustomerDataHelper.InitializeMockCustomers(_context, _logger);
+        MockReservationDataHelper.InitializeMockReservations(_context, _logger);
         MockTaxesDataHelper.InitializeMockTaxes(_context, _logger);
         MockItemDataHelper.InitializeMockItems(_context, _logger);
         _logger.LogInformation("Mock data initialized");
@@ -68,6 +71,9 @@ public class DbInitializer
         _logger.LogInformation("Removing all data from the database...");
         MockTaxesDataHelper.RemoveAllTax(_context, _logger);
         MockItemDataHelper.RemoveAllItems(_context, _logger);
+        MockReservationDataHelper.RemoveAllReservations(_context, _logger);
+        MockCustomerDataHelper.RemoveAllCustomers(_context, _logger);
+        MockEmployeeScheduleDataHelper.RemoveAllSchedules(_context, _logger);
         MockUserDataHelper.RemoveAllUsers(_context, _logger);
         MockBusinessesDataHelper.RemoveAllBusinesses(_context, _logger);
         _logger.LogInformation("All data removed");
