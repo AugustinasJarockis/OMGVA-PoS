@@ -3,7 +3,6 @@ using OmgvaPOS.Database.Context;
 using OmgvaPOS.Exceptions;
 using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Validators;
-using OmgvaPOS.TaxManagement.Models;
 
 namespace OmgvaPOS.ItemVariationManagement.Repositories
 {

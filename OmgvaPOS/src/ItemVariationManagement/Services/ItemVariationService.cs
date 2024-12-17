@@ -4,17 +4,25 @@ using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemVariationManagement.Mappers;
 using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
+using OmgvaPOS.OrderItemManagement.Repository;
+using OmgvaPOS.OrderItemManagement.Service;
+using OmgvaPOS.OrderManagement.Repository;
+using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.ItemVariationManagement.Services
 {
     public class ItemVariationService(
         IItemVariationRepository itemVariationRepository,
         IItemService itemService,
+        IOrderItemRepository orderItemRepository,
+        IOrderItemDeletionService orderItemDeletionService,
         ILogger<ItemVariationService> logger
         ) : IItemVariationService
     {
         private readonly IItemVariationRepository _itemVariationRepository = itemVariationRepository;
         private readonly IItemService _itemService = itemService;
+        private readonly IOrderItemRepository _orderItemRepository = orderItemRepository;
+        private readonly IOrderItemDeletionService _orderItemDeletionService = orderItemDeletionService;
         private readonly ILogger<ItemVariationService> _logger = logger;
 
         public List<ItemVariationDTO> GetItemVariations(long itemId) {
@@ -42,11 +50,23 @@ namespace OmgvaPOS.ItemVariationManagement.Services
         public ItemVariationDTO UpdateItemVariation(ItemVariationUpdateRequest itemVariationUpdateRequest, long id)
         {
             var itemVariation = GetItemVariationOrThrow(id);
+
+            var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(itemVariation.ItemId);
+            foreach (var orderItem in relatedOrderItems) {
+                _orderItemDeletionService.DeleteOrderItem(orderItem.Id, true);
+            }
             
             itemVariation = itemVariationUpdateRequest.ToItemVariation(itemVariation);
             return _itemVariationRepository.UpdateItemVariation(itemVariation).ToItemVariationDTO();
         }
         public void DeleteItemVariation(long id) {
+            var itemVariation = GetItemVariationOrThrow(id);
+
+            var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(itemVariation.ItemId);
+            foreach (var orderItem in relatedOrderItems) {
+                _orderItemDeletionService.DeleteOrderItem(orderItem.Id, true);
+            }
+
             _itemVariationRepository.DeleteItemVariation(id);
         }
 
