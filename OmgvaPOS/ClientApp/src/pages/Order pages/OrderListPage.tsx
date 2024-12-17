@@ -102,8 +102,8 @@ const OrderListPage: React.FC = () => {
             </header>
             <br/><br/>
             <button onClick={changeShowOnlyOpen}>{ showOnlyOpen ? "Show only open orders" : "Show all orders" }</button>
-            <h1>Current open orders</h1>
-            <div className="business-list-container">
+            <h1>{showOnlyOpen ? "Current open orders" : "All orders"}</h1>
+            <div className="order-list-container">
                 {listItems}
                 <div className="create-button-wrapper">
                     <CallbackListItem key="create" text="Create a new order" onClickHandle={createNewOrder} />

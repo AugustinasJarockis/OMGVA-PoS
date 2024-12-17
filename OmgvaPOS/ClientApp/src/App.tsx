@@ -31,6 +31,7 @@ import ReservationsListPage from './pages/Reservation pages/ReservationsListPage
 import ReservationUpdatePage from './pages/Reservation pages/ReservationUpdatePage';
 import ReservationDetailsPage from './pages/Reservation pages/ReservationDetailsPage';
 import OrderListPage from './pages/Order pages/OrderListPage';
+import OrderPage from './pages/Order pages/OrderPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -89,6 +90,7 @@ const App: React.FC = () => {
                             <Route path="/item/:id/item-variation/create" element={<CreateItemVariationPage/>} />
                             <Route path="/item/:itemId/item-variation/update/:id" element={<UpdateItemVariationPage/>} />
                             <Route path="/order" element={<OrderListPage />} />
+                            <Route path="/order/:id" element={<OrderPage />} />
                             <Route path="/tax" element={<TaxListPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/create" element={<CreateTaxPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/update/:id" element={<UpdateTaxPage token={localStorage.getItem('authToken')} />} />
