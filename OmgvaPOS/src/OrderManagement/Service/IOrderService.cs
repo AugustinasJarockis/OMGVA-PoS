@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.DiscountManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
+using OmgvaPOS.OrderManagement.Models;
 
 namespace OmgvaPOS.OrderManagement.Service;
 
@@ -11,5 +12,6 @@ public interface IOrderService
     public OrderDTO GetOrder(long id);
     public long GetOrderBusinessId(long id);
     public void DeleteOrder(long id);
-    public void UpdateOrderTip(short tip, long orderId);
+    public SimpleOrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId);
+    public Order GetOrderOrThrow(long orderId);
 }
