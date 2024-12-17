@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OmgvaPOS.Database.Context;
 
@@ -11,9 +12,11 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    partial class OmgvaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241216230428_sync-with-all")]
+    partial class syncwithall
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
