@@ -21,8 +21,7 @@ namespace OmgvaPOS.DiscountManagement.Mappers
                 Id = discount.Id,
                 Amount = discount.Amount,
                 TimeValidUntil = discount.TimeValidUntil,
-                Type = discount.Type,
-                IsArchived = discount.IsArchived
+                Type = discount.Type
             };
         }
     }

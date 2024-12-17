@@ -1,6 +1,7 @@
 ﻿using OmgvaPOS.DiscountManagement.Enums;
 using OmgvaPOS.DiscountManagement.DTOs;
-using System.ComponentModel.DataAnnotations;
+using OmgvaPOS.Exceptions;
+using OmgvaPOS.DiscountManagement.Models;
 
 namespace OmgvaPOS.DiscountManagement.Service;
 
@@ -31,5 +32,28 @@ public static class DiscountValidator
         else if (request.Type == DiscountType.Order && request.OrderId == null) {
             throw new ValidationException("Cannot create a discount for an order without OrderId.");
         }
+    }
+
+    public static void Exists(object discount) {
+        if (discount == null) {
+            throw new NotFoundException("Discount not found");
+        }
+    }
+
+    public static void IsNotArchived(Discount discount) {
+        if (discount.IsArchived) {
+            throw new ValidationException("Discount is archived");
+        }
+    }
+
+    public static void IsItemDiscount(Discount discount) {
+        if (discount.Type == DiscountType.Order) {
+            throw new ValidationException("Cannot archive an order discount");
+        }
+    }
+
+    internal static void Exist(List<Discount> discounts) {
+        if (discounts == null || !discounts.Any())
+            throw new NotFoundException("No discounts found");
     }
 }
