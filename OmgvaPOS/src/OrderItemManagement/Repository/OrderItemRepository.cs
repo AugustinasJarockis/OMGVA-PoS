@@ -36,7 +36,6 @@ public class OrderItemRepository : IOrderItemRepository
 
     public OrderItem GetOrderItem(long orderItemId) {
         var orderItem = _context.OrderItems
-            .AsNoTracking()
             .Where(oi => oi.Id == orderItemId)
             .Include(oi => oi.OrderItemVariations)
             .Include(oi => oi.Discount)
@@ -46,7 +45,6 @@ public class OrderItemRepository : IOrderItemRepository
 
     public OrderItem GetOrderItemOrThrow(long orderItemId) {
         var orderItem = _context.OrderItems
-            .AsNoTracking()
             .Where(oi => oi.Id == orderItemId)
             .Include(oi => oi.OrderItemVariations)
             .Include(oi => oi.Discount)

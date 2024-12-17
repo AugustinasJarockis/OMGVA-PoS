@@ -72,7 +72,7 @@ public class OrderService : IOrderService
             finalTaxesPaid += itemFinalPrice * orderItemDTO.TaxPercent / (100 + orderItemDTO.TaxPercent);
         }
 
-
+        finalPrice += order.Tip;
 
         var orderDTO = new OrderDTO {
             Id = order.Id,

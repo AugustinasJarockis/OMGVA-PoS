@@ -34,7 +34,6 @@ public class OrderRepository : IOrderRepository
 
     public Order GetOrder(long orderId) {
         var order = _context.Orders
-            .AsNoTracking()
             .Where(o => o.Id == orderId)
             .Include(o => o.OrderItems)
             .Include(o => o.Payment)
