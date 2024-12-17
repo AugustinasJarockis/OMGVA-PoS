@@ -73,8 +73,8 @@ const App: React.FC = () => {
                         <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
                     ) : (
                         <>
-                            <Route path="/business" element={<SelectBusinessPage token={localStorage.getItem('authToken')} />} />
-                            <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/business" element={<SelectBusinessPage token={localStorage.getItem('authToken')} onLogout={handleLogout} />} />
+                            <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} onLogout={handleLogout} />} />
                             <Route path="/business/create" element={<CreateBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/update/:id" element={<UpdateBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/discount" element={<DiscountListPage />} />
