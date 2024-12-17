@@ -30,7 +30,7 @@ namespace OmgvaPOS.ItemManagement.Repositories
             return item;
         }
 
-        public Item UpdateItem(Item item) // TODO: Proper error handling
+        public Item UpdateItem(Item item)
         {
             var newItem = (Item)item.Clone();
             _database.Add(newItem);

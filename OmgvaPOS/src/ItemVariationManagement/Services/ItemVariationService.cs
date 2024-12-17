@@ -4,6 +4,7 @@ using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemVariationManagement.Mappers;
 using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
+using OmgvaPOS.ItemVariationManagement.Validators;
 using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Service;
 using OmgvaPOS.OrderManagement.Repository;
@@ -50,6 +51,7 @@ namespace OmgvaPOS.ItemVariationManagement.Services
         public ItemVariationDTO UpdateItemVariation(ItemVariationUpdateRequest itemVariationUpdateRequest, long id)
         {
             var itemVariation = GetItemVariationOrThrow(id);
+            ItemVariationValidator.IsNotArchived(itemVariation);
 
             var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(itemVariation.ItemId);
             foreach (var orderItem in relatedOrderItems) {
