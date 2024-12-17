@@ -60,9 +60,9 @@ public class DbInitializer
         MockUserDataHelper.InitializeMockUsers(_context, _logger);
         MockEmployeeScheduleDataHelper.InitializeMockSchedules(_context, _logger);
         MockCustomerDataHelper.InitializeMockCustomers(_context, _logger);
-        MockReservationDataHelper.InitializeMockReservations(_context, _logger);
         MockTaxesDataHelper.InitializeMockTaxes(_context, _logger);
         MockItemDataHelper.InitializeMockItems(_context, _logger);
+        MockReservationDataHelper.InitializeMockReservations(_context, _logger);
         _logger.LogInformation("Mock data initialized");
     }
 
