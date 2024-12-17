@@ -56,6 +56,16 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 else if (paymentIntent.Status == "succeeded")
                 {
                     // Payment succeeded
+                    var payment = new Payment
+                    {
+                        Id = paymentIntent.Id,
+                        Method = PaymentMethod.Card,
+                        CustomerId = request.CustomerId,
+                        OrderId = request.OrderId,
+                        Amount = request.Amount
+                    };
+                    _context.Payments.Add(payment);
+                    _context.SaveChanges();
                     return Ok(new
                     {
                         success = true,
@@ -102,9 +112,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
             {
                 Id = Guid.NewGuid().ToString(),
                 Method = PaymentMethod.Cash,
-                CustomerId = 0,
-                OrderId = 0
+                CustomerId = request.CustomerId,
+                OrderId = request.OrderId,
+                Amount = request.Amount
             };
+            
+            _context.Payments.Add(payment);
+            _context.SaveChanges();
             return Ok(new { success = true, payment });
         }
     }

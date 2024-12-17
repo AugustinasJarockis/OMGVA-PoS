@@ -115,6 +115,13 @@ namespace OmgvaPOS.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
 
@@ -323,13 +330,16 @@ namespace OmgvaPOS.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("GiftCardPaymentId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("GiftcardPaymentEntityId")
+                    b.Property<long?>("GiftcardPaymentEntityId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Method")
@@ -611,7 +621,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.PaymentManagement.Models.Payment", b =>
                 {
                     b.HasOne("OmgvaPOS.CustomerManagement.Models.Customer", "Customer")
-                        .WithMany("Payments")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -619,8 +629,7 @@ namespace OmgvaPOS.Migrations
                     b.HasOne("OmgvaPOS.GiftcardPaymentManagement.Models.GiftcardPaymentEntity", "GiftcardPaymentEntity")
                         .WithMany()
                         .HasForeignKey("GiftcardPaymentEntityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("OmgvaPOS.OrderManagement.Models.Order", "Order")
                         .WithOne("Payment")
@@ -649,7 +658,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.ReservationManagement.Models.Reservation", b =>
                 {
                     b.HasOne("OmgvaPOS.CustomerManagement.Models.Customer", "Customer")
-                        .WithMany("Reservations")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -712,13 +721,6 @@ namespace OmgvaPOS.Migrations
                     b.Navigation("StripeReaders");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("OmgvaPOS.CustomerManagement.Models.Customer", b =>
-                {
-                    b.Navigation("Payments");
-
-                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("OmgvaPOS.DiscountManagement.Models.Discount", b =>
