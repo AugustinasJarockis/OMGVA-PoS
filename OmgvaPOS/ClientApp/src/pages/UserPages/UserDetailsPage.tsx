@@ -32,12 +32,6 @@ const UserPage: React.FC = () => {
         }
     };
 
-    const roleMap: { [key: string]: string } = {
-        2: 'Admin',
-        1: 'Owner',
-        0: 'Employee',
-    };
-
     const handleUpdateUserOnclick = async () => {
         navigate("/user/update/" + id, { state: { user: user } });
     };
@@ -76,7 +70,7 @@ const UserPage: React.FC = () => {
                     <section>
                         <p>Username: {user.Username}</p>
                         <p>Email: {user.Email}</p>
-                        <p>Role: {user && user.Role && roleMap[user.Role] ? roleMap[user.Role] : 'Unknown Role'}</p>
+                        <p>Role: {user.Role}</p>
                     </section>
                     <button onClick={handleUpdateUserOnclick}>Update information</button>
                 </>

@@ -42,6 +42,11 @@ namespace OmgvaPOS.ReservationManagement.Service
             var reservation = _repository.GetById(id);
             return reservation?.ToDto();
         }
+        public IEnumerable<ReservationDto> GetEmployeeReservations(long employeeId)
+        {
+            var reservations = _repository.GetByEmployeeId(employeeId);
+            return reservations.ToDtoList();
+        }
         public ReservationDto Create(CreateReservationRequest createRequest)
         {
             ReservationValidator.ValidateCreateReservationRequest(createRequest);

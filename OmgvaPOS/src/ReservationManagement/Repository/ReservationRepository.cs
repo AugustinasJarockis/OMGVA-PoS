@@ -28,6 +28,13 @@ public class ReservationRepository : IReservationRepository
             .Include(r => r.User)
             .Include(r => r.Customer)
             .FirstOrDefault(r => r.Id == id);
+    }    
+    public IEnumerable<Reservation> GetByEmployeeId(long employeeId)
+    {
+        return _context.Reservations
+            .Include(r => r.User)
+            .Include(r => r.Customer)
+            .Where(r => r.EmployeeId == employeeId);
     }
     public List<Reservation> GetByItemIdAndDate(long itemId, DateOnly date)
     {

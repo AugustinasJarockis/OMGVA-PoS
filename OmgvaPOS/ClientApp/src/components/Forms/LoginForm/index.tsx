@@ -1,5 +1,7 @@
 ﻿import React, { useState } from 'react';
-import { login } from '../../../services/authService';
+import { login, loginWithNewToken } from '../../../services/authService';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getTokenRole, getTokenUserId } from '../../../utils/tokenUtils';
 
 interface LoginFormProps {
     onLoginSuccess: () => void;
@@ -10,6 +12,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { setAuthToken, authToken } = useAuth();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,8 +24,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
         try {
             const response = await login(loginRequest);
             if (response.IsSuccess && response.Token != null) {
-                localStorage.setItem('authToken', response.Token);
+                setAuthToken(response.Token);
+
+                if (getTokenRole(response.Token) === "Admin") {
+                    const id = getTokenUserId(authToken ?? "");
+                    const { Token } = await loginWithNewToken(authToken, id);
+
+                    if (Token) {
+                        setAuthToken(Token);
+                    }
+                }
                 onLoginSuccess();
+
             } else {
                 setError(response.Message);
             }
