@@ -13,7 +13,7 @@ public static class MockBusinessesDataHelper
         var omgvaBusiness = new Business
         {
             StripeSecretKey = "null_stripe_acc_id",
-            StripePublishKey = "null_stripe_acc_id",
+            StripePublishKey = "null_stripe_publish_id",
             Name = "Omgva Business",
             Address = "Address 1",
             Phone = "123456789",
@@ -22,7 +22,7 @@ public static class MockBusinessesDataHelper
         var diffBusiness = new Business
         {
             StripeSecretKey = "null_stripe_acc_id",
-            StripePublishKey = "null_stripe_acc_id",
+            StripePublishKey = "null_stripe_publish_id",
             Name = "Diff Business",
             Address = "Address 2",
             Phone = "987654321",
