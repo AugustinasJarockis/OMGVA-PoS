@@ -1,9 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getEmployeeReservations } from '../../services/reservationService';
+import { deleteReservation, getEmployeeReservations } from '../../services/reservationService';
 import { useAuth } from '../../contexts/AuthContext';
-import DeletableUpdatableSchedulesListItem from '../../components/List/DeletableUpdatableSchedulesListItem';
 import { getTokenRole } from '../../utils/tokenUtils';
+import DeletableUpdatableReservationListItem from '../../components/List/DeletableUpdatableReservationListItem';
 
 const EmployeeReservationsPage: React.FC = () => {
     const [reservations, setReservations] = useState<Array<JSX.Element>>([]);
@@ -21,7 +21,7 @@ const EmployeeReservationsPage: React.FC = () => {
                 setError('Error fetching reservations: ' + error);
             } else if (result) {
                 setReservations(result.map(reservation => (
-                    <DeletableUpdatableSchedulesListItem
+                    <DeletableUpdatableReservationListItem
                         key={reservation.Id}
                         id={reservation.Id.toString()}
                         customerName={reservation.CustomerName ?? ""}
@@ -39,8 +39,26 @@ const EmployeeReservationsPage: React.FC = () => {
     };
 
     const handleDelete = async (id: string) => {
-        // Implement the delete logic here (call the API or update state)
-        console.log(`Delete reservation with id: ${id}`);
+        try {
+            const error = await deleteReservation(authToken, id);
+
+            if (error) {
+                setError("An error occurred while deleting reservation: " + error);
+                return;
+            }
+
+            if (!reservations) {
+                fetchReservations();
+            }
+
+            if (reservations) {
+                const newList = reservations.filter((reservation) => reservation.key != id);
+                setReservations(newList);
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
     };
 
     const returnToHome = async () => {
@@ -49,6 +67,13 @@ const EmployeeReservationsPage: React.FC = () => {
             navigate(`/user/${id}`);
 
         navigate(`/home`);
+    };
+
+    const goToCreate = async () => {
+        if(authToken == null)
+            navigate(`/`);
+        
+        navigate(`/schedules/create/${id}`);
     };
 
     useEffect(() => {
@@ -61,8 +86,9 @@ const EmployeeReservationsPage: React.FC = () => {
 
     return (
         <div>
-            <h1>Employee Reservations</h1>
-            <div>{reservations}</div>
+            <h1>Employee Schedules</h1>
+            {reservations}
+            <button onClick={goToCreate}>Add new schedule</button>
             <button onClick={returnToHome}>Return</button>
             {error && <p className="error-message">{error}</p>}
         </div>

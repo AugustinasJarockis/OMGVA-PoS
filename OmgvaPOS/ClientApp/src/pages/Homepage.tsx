@@ -20,6 +20,11 @@ const HomePage: React.FC<HomePageProps> = ({ onLogout }) => {
         navigate(`/reservation/employee/${id}`);
     };
 
+    const goToSchedule = () => {
+        const id = getTokenUserId(authToken ?? "");
+        navigate(`/schedules/${id}`);
+    };
+
 
     return (
         <div>
@@ -27,6 +32,9 @@ const HomePage: React.FC<HomePageProps> = ({ onLogout }) => {
                 <ul className="nav-list">
                     <li>
                         <button onClick={goToReservations}>My Reservations</button>
+                    </li>
+                    <li>
+                        <button onClick={goToSchedule}>My Schedule</button>
                     </li>
                     <li>
                         <button onClick={onLogout}>Logout</button>

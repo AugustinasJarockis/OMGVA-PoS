@@ -30,6 +30,8 @@ import HomePage from './pages/Homepage';
 import ReservationsListPage from './pages/Reservation pages/ReservationsListPage';
 import ReservationUpdatePage from './pages/Reservation pages/ReservationUpdatePage';
 import ReservationDetailsPage from './pages/Reservation pages/ReservationDetailsPage';
+import EmployeeSchedulesPage from './pages/Schedule pages/EmployeeSchedulesPage';
+import CreateSchedulePage from './pages/Schedule pages/CreateSchedulePage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -99,6 +101,8 @@ const App: React.FC = () => {
                             <Route path="/reservation/employee/:id" element={<ReservationsListPage />} />
                             <Route path="/reservation/:id" element={<ReservationDetailsPage />} />
                             <Route path="/reservation/update/:id" element={<ReservationUpdatePage />} />
+                            <Route path="/schedules/:id" element={<EmployeeSchedulesPage />} />
+                            <Route path="/schedules/create/:id" element={<CreateSchedulePage />} />
                             <Route path="/home" element={<HomePage onLogout={handleLogout} />} />
                             {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
                                 ? (<Route path="*" element={<Navigate to="/business" />} />)

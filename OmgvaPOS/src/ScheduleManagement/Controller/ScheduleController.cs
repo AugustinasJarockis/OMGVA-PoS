@@ -46,14 +46,14 @@ namespace OmgvaPOS.ScheduleManagement.Controller
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<EmployeeSchedule>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateEmployeeSchedule(long id, [FromBody] UpdateEmployeeScheduleRequest request)
+        public IActionResult UpdateEmployeeSchedule([FromBody] UpdateEmployeeScheduleRequest request, long id)
         {
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromEmployeeSchedule(id)))
                 return Forbid();
