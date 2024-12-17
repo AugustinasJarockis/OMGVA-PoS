@@ -22,6 +22,21 @@ export enum OrderStatus {
     Refunded
 }
 
+const getAllOrders = async (token: string | null): Promise<{ result?: Array<Order>, error?: string }> => {
+    try {
+        const response = await axios.get('/api/order', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.status === 200) {
+            return { result: response.data };
+        } else {
+            return { error: response.data.message };
+        }
+    } catch (error: any) {
+        return { error: error.message || 'An unexpected error occurred.' };
+    }
+};
+
 const getAllActiveOrders = async (token: string | null): Promise<{ result?: Array<Order>, error?: string }> => {
     try {
         const response = await axios.get('/api/order/active', {
@@ -37,4 +52,4 @@ const getAllActiveOrders = async (token: string | null): Promise<{ result?: Arra
     }
 };
 
-export { getAllActiveOrders };
+export { getAllActiveOrders, getAllOrders };

@@ -82,6 +82,15 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
         }
     }
 
+    const goToBusinessOrders = async () => {
+        if (authToken) {
+            navigate('/order');
+        }
+        else {
+            navigate('/');
+        }
+    }
+
     const goToGiftcardsList = async () => {
         navigate('/giftcard');
     }
@@ -125,6 +134,8 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
                 <button onClick={goToBusinessItemList}>Business items</button>
                 <br /><br />
                 <button onClick={goToGiftcardsList}>Business giftcards</button>
+                <br /><br />
+                <button onClick={goToBusinessOrders}>Business orders</button>
                 <br /><br />
                 <button onClick={goToUser}>Me</button>
             </header>
