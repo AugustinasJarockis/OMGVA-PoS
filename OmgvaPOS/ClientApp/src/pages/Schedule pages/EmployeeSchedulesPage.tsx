@@ -26,7 +26,7 @@ const EmployeeSchedulesPage: React.FC = () => {
                         date={`${schedule.Date}`}
                         startTime={schedule.StartTime}
                         endTime={schedule.EndTime}
-                        updateUrl={`/schedule/update/${schedule.Id}`}
+                        updateUrl={`/schedules/update/${schedule.Id}`}
                         deleteFunction={handleDelete}
                         object={schedule}
                     />
@@ -69,6 +69,13 @@ const EmployeeSchedulesPage: React.FC = () => {
         }
     };
 
+    const goToCreate = async () => {
+        if(authToken == null)
+            navigate(`/`);
+        
+        navigate(`/schedules/create/${id}`);
+    };
+
     useEffect(() => {
         if (!authToken) {
             setError("You have to authenticate first!");
@@ -81,6 +88,7 @@ const EmployeeSchedulesPage: React.FC = () => {
         <div>
             <h1>Employee Schedules</h1>
             <div>{schedules}</div>
+            <button onClick={goToCreate}>Add new schedule</button>
             <button onClick={returnToHome}>Return</button>
             {error && <p className="error-message">{error}</p>}
         </div>

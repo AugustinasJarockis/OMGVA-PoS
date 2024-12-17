@@ -26,13 +26,13 @@ export interface Timeslot {
 }
 export interface CreateEmployeeSchedule {
     EmployeeId: number;
-    Date: Date;
-    StartTime: Date;
-    EndTime: Date;
+    Date: string;
+    StartTime: string;
+    EndTime: string;
 }
 export interface UpdateEmployeeSchedule {
-    StartTime?: Date;
-    EndTime?: Date;
+    StartTime?: string;
+    EndTime?: string;
 }
 
 const createEmployeeSchedule = async (token: string | null, schedule: CreateEmployeeSchedule): Promise<{ error?: string, result?: EmployeeSchedule }> => {
@@ -67,7 +67,7 @@ const getEmployeeSchedule = async (token: string | null, id: string): Promise<{ 
 
 const UpdateEmployeeSchedule = async (token: string | null, id: string,  schedule: UpdateEmployeeSchedule): Promise<{ result?: EmployeeSchedule, error?: string }> => {
     try {
-        const response = await axios.patch(`/api/reservation/${id}`, schedule, {
+        const response = await axios.put(`/api/schedules/${id}`, schedule, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {

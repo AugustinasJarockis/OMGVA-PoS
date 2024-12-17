@@ -69,13 +69,6 @@ const EmployeeReservationsPage: React.FC = () => {
         navigate(`/home`);
     };
 
-    const goToCreate = async () => {
-        if(authToken == null)
-            navigate(`/`);
-        
-        navigate(`/schedules/create/${id}`);
-    };
-
     useEffect(() => {
         if (!authToken) {
             setError("You have to authenticate first!");
@@ -88,7 +81,6 @@ const EmployeeReservationsPage: React.FC = () => {
         <div>
             <h1>Employee Schedules</h1>
             {reservations}
-            <button onClick={goToCreate}>Add new schedule</button>
             <button onClick={returnToHome}>Return</button>
             {error && <p className="error-message">{error}</p>}
         </div>
