@@ -15,6 +15,7 @@ public class OrderRepository : IOrderRepository
     public Order AddOrder(Order order) {
         _context.Orders.Add(order);
         _context.SaveChanges();
+        _context.Entry(order).Reference(o => o.User).Load();
         return order;
     }
 
