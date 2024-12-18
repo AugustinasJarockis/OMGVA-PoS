@@ -7,12 +7,14 @@ namespace OmgvaPOS.HelperUtils
         public static bool CanManageBusiness(string? tokenString, long businessId)
         {
             var token = JwtTokenHandler.GetTokenDetails(tokenString);
-            
+
+            if (token.UserRole == UserRole.Admin)
+                return true;
+
             if (token.BusinessId != businessId)
                 return false;
 
-            if (token.UserRole == UserRole.Admin 
-                || token.UserRole == UserRole.Owner 
+            if (token.UserRole == UserRole.Owner 
                 || token.UserRole == UserRole.Employee)
             {
                 return true;

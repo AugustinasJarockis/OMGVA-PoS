@@ -57,7 +57,7 @@ public class OrderService : IOrderService
         var order = OrderMapper.RequestToOrder(businessId, userId);
 
         order = _orderRepository.AddOrder(order);
-        return OrderMapper.ToSimpleOrderDTO(order);
+        return order.ToSimpleOrderDTO();
     }
 
     public OrderDTO GetOrder(long orderId) {
@@ -173,7 +173,7 @@ public class OrderService : IOrderService
         return order;
     }
     
-    public SimpleOrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId)
+    public OrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId)
     {
         OrderValidator.ValidateUpdateOrderRequest(updateRequest);
         var order = GetOrderOrThrow(orderId);
@@ -191,8 +191,7 @@ public class OrderService : IOrderService
             updatedOrder = UpdateOrderStatus(orderId, updateRequest.Status.Value);
         }
         
-
-        return updatedOrder.ToSimpleOrderDTO();
+        return GetOrder(updatedOrder.Id);
     }
 
     public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus)

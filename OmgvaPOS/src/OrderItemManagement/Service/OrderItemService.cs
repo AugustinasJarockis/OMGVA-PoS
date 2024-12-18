@@ -186,12 +186,19 @@ public class OrderItemService : IOrderItemService
             ItemId = item.Id,
             ItemName = item.Name,
             Quantity = orderItem.Quantity,
-            MaxQuantity = (short)(orderItem.Quantity + ((itemVariationQuantities.Count != 0) ? itemVariationQuantities.Min() : 0)),
+            MaxQuantity = GetMaxQuantityForOrderItem(orderItem, item, itemVariationQuantities),
             Discount = orderItemDiscountDTO,
             Variations = orderItemVariationDTOs
         };
 
         return orderItemDTO;
+    }
+
+    private short GetMaxQuantityForOrderItem(OrderItem orderItem, Item item, List<short> itemVariationQuantities)
+    {
+        var maxItemVariationThatCanBeAdded = itemVariationQuantities.Count != 0 ? itemVariationQuantities.Min() : short.MaxValue;
+        var maxItemsThatCanBeAdded = item.InventoryQuantity;
+        return (short) (orderItem.Quantity + Math.Min(maxItemsThatCanBeAdded, maxItemVariationThatCanBeAdded));
     }
 
     public void UpdateOrderItem(long orderItemId, UpdateOrderItemRequest request) {
