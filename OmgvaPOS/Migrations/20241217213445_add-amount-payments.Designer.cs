@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OmgvaPOS.Database.Context;
 
@@ -11,9 +12,11 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    partial class OmgvaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241217213445_add-amount-payments")]
+    partial class addamountpayments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,13 +303,11 @@ namespace OmgvaPOS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("BusinessId")
-                        .HasColumnType("bigint");
-
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("RefundReason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -341,7 +342,7 @@ namespace OmgvaPOS.Migrations
                     b.Property<long?>("GiftCardPaymentId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GiftcardPaymentEntityId")
+                    b.Property<long>("GiftcardPaymentEntityId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Method")
@@ -389,9 +390,6 @@ namespace OmgvaPOS.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("EmployeeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ItemId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")
@@ -634,7 +632,8 @@ namespace OmgvaPOS.Migrations
                     b.HasOne("OmgvaPOS.GiftcardPaymentManagement.Models.GiftcardPaymentEntity", "GiftcardPaymentEntity")
                         .WithMany()
                         .HasForeignKey("GiftcardPaymentEntityId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("OmgvaPOS.OrderManagement.Models.Order", "Order")
                         .WithOne("Payment")

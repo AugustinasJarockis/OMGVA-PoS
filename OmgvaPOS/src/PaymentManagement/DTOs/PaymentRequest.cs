@@ -13,7 +13,10 @@ public class PaymentRequest
 
     [Required]
     public long OrderId { get; set; }
-
+    
+    [Required]
+    public long CustomerId { get; set; }
+    
     public long? GiftCardPaymentId { get; set; } // Optional
 
 }

@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.Database.Context;
-using OmgvaPOS.DiscountManagement.Models;
+﻿using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.OrderItemManagement.Service;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Mappers;
+using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Repository;
 using OmgvaPOS.OrderManagement.Validators;
+using OmgvaPOS.UserManagement.Service;
 
 namespace OmgvaPOS.OrderManagement.Service;
 
@@ -19,6 +19,7 @@ public class OrderService : IOrderService
     private readonly IOrderItemService _orderItemService;
     private readonly IItemService _itemService;
     private readonly IItemRepository _itemRepository;
+    private readonly IUserService _userService;
     private readonly ILogger<OrderService> _logger;
 
     public OrderService(
@@ -27,14 +28,15 @@ public class OrderService : IOrderService
         IOrderItemService orderItemService,
         IItemService itemService,
         IItemRepository itemRepository,
-        ILogger<OrderService> logger
-        ) {
+        ILogger<OrderService> logger, 
+        IUserService userService) {
         _context = context;
         _orderRepository = orderRepository;
         _orderItemService = orderItemService;
         _itemService = itemService;
         _itemRepository = itemRepository;
         _logger = logger;
+        _userService = userService;
     }
 
     public long GetOrderBusinessId(long businessId) {
@@ -131,4 +133,45 @@ public class OrderService : IOrderService
         order.Tip = tip;
         _orderRepository.UpdateOrder(order);
     }
+
+    public Order GetOrderOrThrow(long orderId)
+    {
+        var order = _orderRepository.GetOrder(orderId);
+        OrderValidator.Exists(order);
+        return order;
+    }
+    
+    public SimpleOrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId)
+    {
+        OrderValidator.ValidateUpdateOrderRequest(updateRequest);
+        var order = GetOrderOrThrow(orderId);
+
+        if (updateRequest.UserId != null)
+        {
+            _userService.ValidateUserBelongsToBusiness(updateRequest.UserId, order.BusinessId);
+        }
+        
+        var updatedOrder = updateRequest.ToUpdatedOrder(order);
+        _orderRepository.UpdateOrder(order);
+
+        if (updateRequest.Status != null)
+        {
+            updatedOrder = UpdateOrderStatus(orderId, updateRequest.Status.Value);
+        }
+        
+
+        return updatedOrder.ToSimpleOrderDTO();
+    }
+
+    public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus)
+    {
+        var order = GetOrderOrThrow(orderId);
+        
+        // TODO: any extra logic that might be needed when changing order status. 
+        order.Status = orderStatus;
+        _orderRepository.UpdateOrder(order);
+
+        return order;
+    }
+    
 }

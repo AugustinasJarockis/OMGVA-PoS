@@ -95,18 +95,20 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         return NoContent();
     }
 
-    [HttpPatch("tip/{orderId}")]
+    [HttpPatch("{orderId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
-    [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult UpdateOrderTip(short tip, long orderId) {
-        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+    public ActionResult<OrderDTO> UpdateOrder([FromBody] UpdateOrderRequest updateRequest, long orderId) 
+    {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        _orderService.UpdateOrderTip(tip, orderId);
-        return NoContent();
+        var updatedOrderDTO = _orderService.UpdateOrder(updateRequest, orderId);
+        return Ok(updatedOrderDTO);
     }
 }
