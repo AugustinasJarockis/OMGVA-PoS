@@ -1,0 +1,51 @@
+﻿.closed-order-wrapper .clickable-list-item {
+    opacity: 0.7;
+}
+
+.order-list-container {
+    align-content: center;
+    width: 500px;
+}
+
+.gridOrderItem {
+    text-align: center;
+    h2 {
+        margin: 8px;
+    }
+    ul {
+        padding: 0px;
+        li {
+            list-style-type: none;
+
+            button {
+                z-index: 1000;
+            }
+        }
+    }
+}
+
+.order-item-list-item {
+    align-content: flex-start;
+    background: #777777;
+    border: 1px solid #CCCCCCAA;
+    border-collapse: collapse;
+    border-radius: 8px;
+    color: #111111;
+    height: 70px;
+    text-align: center;
+    width: 1100px;
+    margin: 3px;
+}
+
+.order-item-list-item .last-order-list-item-cell{
+    width: 195px;
+    display:block;
+    float: right;
+    vertical-align: central;
+
+    button {
+        vertical-align: central;
+        float: right;
+        margin-left: 3px;
+    }
+}

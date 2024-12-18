@@ -37,7 +37,6 @@ namespace OmgvaPOS.ItemManagement.Services
         private readonly DiscountValidatorService _discountValidatorService = discountValidatorService;
         private readonly ILogger<ItemService> _logger = logger;
 
-        //TODO: Think how you will add taxes, discounts
         public List<ItemDTO> GetItems(long businessId) {
             var items = _itemRepository.GetItems(businessId);
             var itemDTOs = items.Select(i => i.ToItemDTO()).ToList();
@@ -79,28 +78,31 @@ namespace OmgvaPOS.ItemManagement.Services
             return newItem.ToItemDTO();
         }
         
-        public ItemDTO UpdateItem(ItemDTO updateItemRequest, long itemId) {
-            var currentItem = _itemRepository.GetItem(itemId);
-            if (currentItem == null)
-                throw new NotFoundException();
+        public ItemDTO UpdateItem(ItemDTO updateItemRequest, long itemId)
+        {
+            var currentItem = GetItemOrThrow(itemId);
+            ItemValidator.IsNotArchived(currentItem);
             
             _userService.ValidateUserBelongsToBusiness(updateItemRequest.UserId, currentItem.BusinessId);
             _discountValidatorService.ValidateDiscountBelongsToBusiness(updateItemRequest.DiscountId, currentItem.BusinessId);
             
             currentItem = updateItemRequest.ToItem(currentItem);
-            return UpdateItem(currentItem).ToItemDTO();
+            return UpdateItemInternal(currentItem).ToItemDTO();
         }
 
-        private Item UpdateItem(Item item) {
-            var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
-            var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
+        // Duplicate current item with same item variations and taxItems
+        // Archive the previous item
+        private Item UpdateItemInternal(Item currentItem) {
+            ItemValidator.IsNotArchived(currentItem);
+            var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == currentItem.Id);
+            var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == currentItem.Id);
 
-            var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(item.Id);
+            var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(currentItem.Id);
             foreach (var orderItem in relatedOrderItems) {
                 _orderItemDeletionService.DeleteOrderItem(orderItem.Id, true);
             }
 
-            var recreatedItem = _itemRepository.UpdateItem(item);
+            var recreatedItem = _itemRepository.UpdateItem(currentItem);
             _taxItemRepository.CreateConnectionsForNewItem(taxItemQueriable, recreatedItem.Id);
             _itemVariationRepository.DuplicateItemVariations(itemVariations, recreatedItem.Id);
             
@@ -108,7 +110,8 @@ namespace OmgvaPOS.ItemManagement.Services
         }
 
         public void DuplicateItems(IEnumerable<Item> items) {
-            foreach (Item item in items) {
+            var itemList = items.ToList();
+            foreach (Item item in itemList) {
                 var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
                 var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
 
@@ -140,11 +143,10 @@ namespace OmgvaPOS.ItemManagement.Services
         }
         public ItemDTO ChangeItemTaxes(ChangeItemTaxesRequest changeItemTaxesRequest, long itemId)
         {
-            var currentItem = _itemRepository.GetItem(itemId);
-            if (currentItem == null)
-                throw new NotFoundException();
+            var currentItem = GetItemOrThrow(itemId);
+            ItemValidator.IsNotArchived(currentItem);
             
-            var newItem = UpdateItem(currentItem);
+            var newItem = UpdateItemInternal(currentItem);
             var taxItems = _taxItemRepository.GetAllTaxItemQueriable();
             
             var taxItemIdsToRemove = taxItems

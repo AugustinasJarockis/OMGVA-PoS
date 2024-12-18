@@ -1,4 +1,6 @@
 ﻿using OmgvaPOS.Database.Context;
+using OmgvaPOS.Exceptions;
+using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemManagement.Validators;
@@ -12,6 +14,7 @@ using OmgvaPOS.OrderItemManagement.Validators;
 using OmgvaPOS.OrderItemVariationManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Mappers;
+using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Repository;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.OrderManagement.Validators;
@@ -50,6 +53,7 @@ public class OrderItemService : IOrderItemService
     }
 
     public void AddOrderItem(long orderId, CreateOrderItemRequest request) {
+        OrderItemValidator.ValidateCreateOrderItemRequest(request);
         var item = _itemRepository.GetItem(request.ItemId);
         ItemValidator.Exists(item);
         ItemValidator.IsNotArchived(item);
@@ -60,6 +64,8 @@ public class OrderItemService : IOrderItemService
         OrderValidator.Exists(order);
         OrderValidator.IsOpen(order);
 
+        ValidateItemBelongsToBusiness(item, order);
+        
         var newOrderItem = new OrderItem {
             ItemId = request.ItemId,
             Quantity = request.Quantity,
@@ -78,6 +84,7 @@ public class OrderItemService : IOrderItemService
                 ItemVariationValidator.Exists(itemVariation);
                 ItemVariationValidator.IsNotArchived(itemVariation);
                 ItemVariationValidator.EnoughInventoryQuantity(itemVariation, request.Quantity);
+                ItemVariationValidator.ValidateItemVariationBelongsToItem(itemVariation, item);
                 itemVariation.InventoryQuantity -= request.Quantity;
 
                 itemVariations.Add(itemVariation);
@@ -88,7 +95,7 @@ public class OrderItemService : IOrderItemService
             }
         }
 
-        // OrderItemValidator.OrderItemNotInOrderYet(order, newOrderItem);
+        ItemVariationValidator.ValidateNoItemVariationsFromSameGroup(itemVariations);
 
         // database updates:
         // this need a transaction, 
@@ -139,9 +146,15 @@ public class OrderItemService : IOrderItemService
         // calculating OrderItem total price 
         // and including in OrderItemDTO
         List<OrderItemVariationDTO> orderItemVariationDTOs = [];
+
+        // for returning OrderItemDTO.MaxQuantity - an order item quantity can be increased to 
+        List<short> itemVariationQuantities = [];
+
         foreach (var orderItemVariation in orderItem.OrderItemVariations) {
             var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
             ItemVariationValidator.Exists(itemVariation);
+
+            itemVariationQuantities.Add((short)itemVariation.InventoryQuantity);
 
             orderItemVariationDTOs.Add(new OrderItemVariationDTO {
                 Id = orderItemVariation.Id,
@@ -173,6 +186,7 @@ public class OrderItemService : IOrderItemService
             ItemId = item.Id,
             ItemName = item.Name,
             Quantity = orderItem.Quantity,
+            MaxQuantity = (short)(orderItem.Quantity + itemVariationQuantities.Min()),
             Discount = orderItemDiscountDTO,
             Variations = orderItemVariationDTOs
         };
@@ -181,6 +195,7 @@ public class OrderItemService : IOrderItemService
     }
 
     public void UpdateOrderItem(long orderItemId, UpdateOrderItemRequest request) {
+        OrderItemValidator.ValidateUpdateOrderItemRequest(request);
         var orderItem = _orderItemRepository.GetOrderItem(orderItemId);
         OrderItemValidator.Exists(orderItem);
 
@@ -231,4 +246,15 @@ public class OrderItemService : IOrderItemService
             throw new ApplicationException("Error updating order item. The operation has been rolled back.");
         }
     }
+    
+    private void ValidateItemBelongsToBusiness(Item item, Order order)
+    {
+        if (item.BusinessId != order.BusinessId)
+        {
+            _logger.LogWarning($"Item '{item.Name}' with ID {item.Id} cannot be added to order because it belongs to another business. " +
+                               $"Item business: {item.BusinessId}, Order business: {order.BusinessId}");
+            throw new NotFoundException("Item not found in business");
+        }
+    }
+    
 }

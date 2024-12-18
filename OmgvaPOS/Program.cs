@@ -27,9 +27,12 @@ using OmgvaPOS.TaxManagement.Repository;
 using OmgvaPOS.TaxManagement.Services;
 using OmgvaPOS.UserManagement.Repository;
 using OmgvaPOS.UserManagement.Service;
+using OmgvaPOS.PaymentManagement.Repository;
+using OmgvaPOS.PaymentManagement.Services;
 using OmgvaPOS.ScheduleManagement.Service;
 using OmgvaPOS.ScheduleManagement.Repository;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -116,6 +119,9 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderItemDeletionService, OrderItemDeletionService>();
@@ -123,6 +129,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+
 
 builder.Services.AddScoped<DiscountValidatorService, DiscountValidatorService>();
 

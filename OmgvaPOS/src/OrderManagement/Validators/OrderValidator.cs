@@ -1,4 +1,5 @@
 ﻿using OmgvaPOS.Exceptions;
+using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Models;
 
@@ -19,5 +20,11 @@ public static class OrderValidator
     public static void IsOpen(Order order) {
         if (order.Status != OrderStatus.Open)
             throw new ValidationException($"Order with ID {order.Id} is {order.Status} (not open for editing)");
+    }
+
+    public static void ValidateUpdateOrderRequest(UpdateOrderRequest updateRequest)
+    {
+        if (updateRequest.Tip != null & updateRequest.Tip < 0)
+            throw new BadRequestException("Tip cannot be negative");
     }
 }

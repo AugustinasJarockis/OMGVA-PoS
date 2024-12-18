@@ -121,7 +121,7 @@ const ItemDataForm: React.FC<ItemDataFormProps> = (props: ItemDataFormProps) => 
                         required={props.required}
                     /><br /><br />
                     <label>Discount</label>
-                    <DiscountSelector required={props.required} current={ props.item?.DiscountId } />
+                    <DiscountSelector current={ props.item?.DiscountId } />
                     <br /><br />
                     <div className="mid-form-input">
                         Is service:

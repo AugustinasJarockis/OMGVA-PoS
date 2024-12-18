@@ -34,6 +34,11 @@ import EmployeeSchedulesPage from './pages/Schedule pages/EmployeeSchedulesPage'
 import CreateSchedulePage from './pages/Schedule pages/CreateSchedulePage';
 import UpdateSchedulePage from './pages/Schedule pages/UpdateSchedulePage';
 import ReservationCreatePage from './pages/Reservation pages/ReservationCreatePage';
+import OrderListPage from './pages/Order pages/OrderListPage';
+import OrderPage from './pages/Order pages/OrderPage';
+import OrderItemSelectCategoryListPage from './pages/Order pages/OrderItemSelectionCategoryPage';
+import OrderItemSelectionListPage from './pages/Order pages/OrderItemSelectionPage';
+import SelectOrderItemVariationsPage from './pages/Order pages/SelectOrderItemVariationsPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -91,6 +96,11 @@ const App: React.FC = () => {
                             <Route path="/item/:id/taxes" element={<SelectItemTaxPage/>} />
                             <Route path="/item/:id/item-variation/create" element={<CreateItemVariationPage/>} />
                             <Route path="/item/:itemId/item-variation/update/:id" element={<UpdateItemVariationPage/>} />
+                            <Route path="/order" element={<OrderListPage />} />
+                            <Route path="/order/:id" element={<OrderPage />} />
+                            <Route path="/order/:id/add-items" element={<OrderItemSelectionListPage />} />
+                            <Route path="/order/:id/add-items/group" element={<OrderItemSelectCategoryListPage />} />
+                            <Route path="/order/:id/add-items/:itemId/variations" element={<SelectOrderItemVariationsPage />} />
                             <Route path="/tax" element={<TaxListPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/create" element={<CreateTaxPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/update/:id" element={<UpdateTaxPage token={localStorage.getItem('authToken')} />} />

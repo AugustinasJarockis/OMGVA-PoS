@@ -40,11 +40,22 @@ public static class OrderMapper
         return new SimpleOrderDTO {
             Id = order.Id,
             Status = order.Status,
+            Tip = order.Tip,
+            RefundReason = order.RefundReason,
             User = order.User.ToSimpleUserDTO()
         };
     }
 
     public static IEnumerable<SimpleOrderDTO> ToSimpleOrderDTOList(this IEnumerable<Order> orders) {
         return orders?.Select(ToSimpleOrderDTO).ToList();
+    }
+
+    public static Order ToUpdatedOrder(this UpdateOrderRequest updateRequest, Order currentOrder)
+    {
+        currentOrder.Tip = updateRequest.Tip ?? currentOrder.Tip;
+        currentOrder.UserId = updateRequest.UserId ?? currentOrder.UserId;
+        currentOrder.RefundReason = updateRequest.RefundReason ?? currentOrder.RefundReason;
+
+        return currentOrder;
     }
 }

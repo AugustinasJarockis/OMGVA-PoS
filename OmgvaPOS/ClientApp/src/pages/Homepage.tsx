@@ -15,6 +15,10 @@ const HomePage: React.FC<HomePageProps> = ({ onLogout }) => {
         return getTokenUserName(authToken ?? "");
     };
 
+    const goToBusinessOrders = async () => {
+        navigate('/order');
+    }
+
     const goToReservations = () => {
         const id = getTokenUserId(authToken ?? "");
         navigate(`/reservation/employee/${id}`);
@@ -34,6 +38,9 @@ const HomePage: React.FC<HomePageProps> = ({ onLogout }) => {
                     </li>
                     <li>
                         <button onClick={goToSchedule}>My Schedule</button>
+                    </li>
+                    <li>
+                        <button onClick={goToBusinessOrders}>Business orders</button>
                     </li>
                     <li>
                         <button onClick={onLogout}>Logout</button>

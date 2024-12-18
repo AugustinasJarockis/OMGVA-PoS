@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
-using OmgvaPOS.DiscountManagement.Repository;
-using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Validators;
 

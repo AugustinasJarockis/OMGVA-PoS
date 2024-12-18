@@ -10,6 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\pages\Order pages\OrderItemSelectionPage.tsx" />
+    <None Remove="ClientApp\src\pages\Order pages\SelectOrderItemVariationsPage.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
@@ -23,6 +28,11 @@
     <PackageReference Include="Stripe.net" Version="47.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\pages\Order pages\OrderItemSelectionPage.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\pages\Order pages\SelectOrderItemVariationsPage.tsx" />
   </ItemGroup>
 
 </Project>
