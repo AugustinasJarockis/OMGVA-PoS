@@ -1,23 +1,53 @@
 import { useState } from 'react';
 import './PaymentModal.css';
+import { createPayment, Payment } from '../../services/paymentService';
 
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (paymentMethod: string, customerId: number) => void;
+    authToken: string;
+    orderId: string;
     totalAmount: number;
+    onPaymentSuccess: () => void;
+    onPaymentError: (message: string) => void;
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onSubmit, totalAmount }) => {
+const PaymentModal: React.FC<PaymentModalProps> = ({
+                                                       isOpen,
+                                                       onClose,
+                                                       authToken,
+                                                       orderId,
+                                                       totalAmount,
+                                                       onPaymentSuccess,
+                                                       onPaymentError
+                                                   }) => {
     const [tipsField, setTipsField] = useState<string>('');
     const [discount, setDiscount] = useState<number>(0);
     const [customerId, setCustomerId] = useState<number>(0);
 
     if (!isOpen) return null;
 
-    const handlePayment = (method: string, customerId: number) => {
-        onSubmit(method, customerId);
-        onClose();
+    const handlePayment = async (method: string) => {
+        try {
+            const payment: Payment = {
+                Method: method,
+                OrderId: orderId,
+                Amount: totalAmount * 100, // to cents
+                CustomerId: customerId
+            };
+
+            const { Payment: paymentResult, error } = await createPayment(authToken, payment);
+
+            if (error) {
+                onPaymentError("Payment failed: " + error);
+            } else {
+                onPaymentSuccess();
+            }
+        } catch (err: any) {
+            onPaymentError(err.message || 'An unexpected error occurred during payment.');
+        } finally {
+            onClose();
+        }
     };
 
     return (
@@ -44,7 +74,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onSubmit, 
                             value={discount}
                             onChange={(e) => setDiscount(parseFloat(e.target.value))}
                             placeholder="Unused"
-                            disabled // Currently unused
+                            disabled
                         />
                     </label>
                 </div>
@@ -65,9 +95,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onSubmit, 
                     </label>
                 </div>
                 <div className="payment-buttons">
-                    <button onClick={() => handlePayment('cash', customerId)}>Pay with Cash</button>
-                    <button onClick={() => handlePayment('giftcard', customerId)}>Pay with Giftcard</button>
-                    <button onClick={() => handlePayment('card', customerId)}>Pay with Card</button>
+                    <button onClick={() => handlePayment('cash')}>Pay with Cash</button>
+                    <button onClick={() => handlePayment('giftcard')}>Pay with Giftcard</button>
+                    <button onClick={() => handlePayment('card')}>Pay with Card</button>
                 </div>
                 <div className="modal-actions">
                     <button onClick={onClose}>Cancel</button>

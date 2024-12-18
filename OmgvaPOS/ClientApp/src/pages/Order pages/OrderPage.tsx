@@ -184,9 +184,16 @@ const OrderPage: React.FC = () => {
             <PaymentModal
                 isOpen={showPayment}
                 onClose={() => setShowPayment(false)}
-                onSubmit={handlePaymentSubmit}
+                authToken={authToken as string}
+                orderId={order?.Id.toString() ?? ''}
                 totalAmount={calculateTotalAmount()}
+                onPaymentSuccess={() => {
+                    Swal.fire('Payment successful!', '', 'success');
+                    setShowPayment(false);
+                }}
+                onPaymentError={(errorMessage) => setError(errorMessage)}
             />
+
         </div>
     );
 };
