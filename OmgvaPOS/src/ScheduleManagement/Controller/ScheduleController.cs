@@ -80,7 +80,7 @@ namespace OmgvaPOS.ScheduleManagement.Controller
 
         [HttpGet]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<List<EmployeeSchedulesWithAvailability>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<EmployeeSchedulesWithAvailability>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -90,7 +90,7 @@ namespace OmgvaPOS.ScheduleManagement.Controller
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _scheduleService.GetBusinessIdFromItem(itemId)))
                 return Forbid();
 
-            var schedules = _scheduleService.GetEmployeesSchedulesByItemAndDate(itemId, date);
+            var schedules = _scheduleService.GetEmployeeScheduleByItemAndDate(itemId, date);
             return Ok(schedules);
         }
 

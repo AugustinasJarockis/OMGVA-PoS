@@ -33,6 +33,7 @@ import ReservationDetailsPage from './pages/Reservation pages/ReservationDetails
 import EmployeeSchedulesPage from './pages/Schedule pages/EmployeeSchedulesPage';
 import CreateSchedulePage from './pages/Schedule pages/CreateSchedulePage';
 import UpdateSchedulePage from './pages/Schedule pages/UpdateSchedulePage';
+import ReservationCreatePage from './pages/Reservation pages/ReservationCreatePage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -102,6 +103,7 @@ const App: React.FC = () => {
                             <Route path="/reservation/employee/:id" element={<ReservationsListPage />} />
                             <Route path="/reservation/:id" element={<ReservationDetailsPage />} />
                             <Route path="/reservation/update/:id" element={<ReservationUpdatePage />} />
+                            <Route path="/reservation/create/" element={<ReservationCreatePage />} />
                             <Route path="/schedules/:id" element={<EmployeeSchedulesPage />} />
                             <Route path="/schedules/create/:id" element={<CreateSchedulePage />} />
                             <Route path="/schedules/update/:id" element={<UpdateSchedulePage />} />

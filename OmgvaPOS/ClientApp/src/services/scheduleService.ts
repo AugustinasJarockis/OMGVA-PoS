@@ -15,7 +15,7 @@ export interface EmployeeSchedulesWithAvailability {
 }
 export interface ScheduleWithAvailability {
     EmployeeScheduleId: number;
-    Date: Date;
+    Date: string;
     StartTime: string;
     EndTime: string;
     AvailableTimeslots: Array<Timeslot>;
@@ -95,7 +95,7 @@ const deleteEmployeeSchedule = async (token: string | null, id: string): Promise
     }
 };
 
-const getEmployeeSchedulesByItemAndDate = async (token: string | null, itemId: string, date: string): Promise<{ result?: Array<EmployeeSchedulesWithAvailability>, error?: string }> => {
+const getEmployeeSchedulesByItemAndDate = async (token: string | null, itemId: string, date: string): Promise<{ result?: EmployeeSchedulesWithAvailability, error?: string }> => {
     try {
         const response = await axios.get(`/api/schedules?itemId=${itemId}&date=${date}`, {
             headers: { Authorization: `Bearer ${token}` },
