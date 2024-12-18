@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.PaymentManagement.DTOs;
+using OmgvaPOS.PaymentManagement.Mappers;
 using OmgvaPOS.PaymentManagement.Models;
 using OmgvaPOS.PaymentManagement.Services;
 using Stripe;
@@ -100,15 +101,15 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 else if (paymentIntent.Status == "succeeded")
                 {
                     // Payment succeeded
-                    var payment = new PaymentDTO
+                    var payment = new Payment
                     {
                         Id = paymentIntent.Id,
-                        Method = PaymentMethod.Card.ToString(),
+                        Method = PaymentMethod.Card,
                         CustomerId = request.CustomerId,
                         OrderId = request.OrderId,
                         Amount = request.Amount
                     };
-                    _paymentService.CreatePayment(payment);
+                    _paymentService.CreatePayment(payment.ToPaymentDTO());
                     return Ok(new
                     {
                         success = true,
@@ -154,16 +155,16 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var payment = new PaymentDTO
+            var payment = new Payment
             {
                 Id = Guid.NewGuid().ToString(),
-                Method = PaymentMethod.Cash.ToString(),
+                Method = PaymentMethod.Cash,
                 CustomerId = request.CustomerId,
                 OrderId = request.OrderId,
                 Amount = request.Amount
             };
             
-            _paymentService.CreatePayment(payment);
+            _paymentService.CreatePayment(payment.ToPaymentDTO());
             return Ok(new { success = true, payment });
         }
     }
