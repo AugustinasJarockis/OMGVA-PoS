@@ -41,7 +41,7 @@ const ItemListPage: React.FC<ItemListPageProps> = ({ token: authToken, itemGroup
                             <img className="grid-item-img" src={item.ImgPath} alt="img" />
                             <h2>{item.Name}</h2>
                             <ul>
-                                <li><b>Quantity:</b> {item.InventoryQuantity}</li>
+                                {!item.UserId && <li><b>Quantity:</b> {item.InventoryQuantity}</li>}
                                 <li><b>Price:</b> {item.Price} {item.Currency} </li>
                             </ul>
                         </div>
