@@ -246,7 +246,7 @@ public class OrderItemService : IOrderItemService
         {
             _logger.LogWarning($"Item '{item.Name}' with ID {item.Id} cannot be ad ded to order because it belongs to another business. " +
                                $"Item business: {item.BusinessId}, Order business: {order.BusinessId}");
-            throw new BadRequestException($"Item cannot be added to order because it's from another business");
+            throw new NotFoundException($"Item not found in business");
         }
     }
     
