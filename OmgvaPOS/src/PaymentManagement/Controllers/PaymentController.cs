@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OmgvaPOS.Database.Context;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.PaymentManagement.DTOs;
 using OmgvaPOS.PaymentManagement.Models;
@@ -20,6 +20,12 @@ namespace OMGVA_PoS.Business_layer.Controllers
         }
         
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType<Payment>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetPayments()
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
@@ -29,8 +35,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
             return Ok(_paymentService.GetPayments());
         }
         
-        [HttpGet]
-        [Route("{orderId}")]
+        [HttpGet("{orderId}")]
+        [Authorize(Roles = "Admin,Owner")]
+        [ProducesResponseType<Payment>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetPayment([FromRoute] long orderId)
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
@@ -40,8 +51,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
             return Ok(_paymentService.GetPayment(orderId));
         }
 
-        [HttpPost]
-        [Route("process-card")]
+        [HttpPost("process-card")]
+        [Authorize(Roles = "Admin,Owner,Employee")]
+        [ProducesResponseType<Payment>(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ProcessCardPayment([FromBody] PaymentRequest request)
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
@@ -119,8 +135,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
             }
         }
         
-        [HttpPost]
-        [Route("process-cash")]
+        [HttpPost("process-cash")]
+        [Authorize(Roles = "Admin,Owner,Employee")]
+        [ProducesResponseType<Payment>(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ProcessCashPayment([FromBody] PaymentRequest request)
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
