@@ -12,8 +12,8 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    [Migration("20241217223806_RemoveUniqueConstraintFromOrderId")]
-    partial class RemoveUniqueConstraintFromOrderId
+    [Migration("20241218182354_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -303,11 +303,13 @@ namespace OmgvaPOS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("RefundReason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -390,6 +392,9 @@ namespace OmgvaPOS.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ItemId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")
