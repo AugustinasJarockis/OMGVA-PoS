@@ -35,4 +35,8 @@
     <TypeScriptCompile Include="ClientApp\src\pages\Order pages\SelectOrderItemVariationsPage.tsx" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
