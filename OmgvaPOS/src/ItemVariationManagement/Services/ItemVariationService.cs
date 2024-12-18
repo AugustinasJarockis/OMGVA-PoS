@@ -6,8 +6,6 @@ using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Service;
-using OmgvaPOS.OrderManagement.Repository;
-using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.ItemVariationManagement.Services
 {

@@ -6,3 +6,20 @@
     align-content: center;
     width: 500px;
 }
+
+.gridOrderItem {
+    text-align: center;
+    h2 {
+        margin: 8px;
+    }
+    ul {
+        padding: 0px;
+        li {
+            list-style-type: none;
+
+            button {
+                z-index: 1000;
+            }
+        }
+    }
+}

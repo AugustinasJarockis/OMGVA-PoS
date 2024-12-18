@@ -1,6 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { loginWithNewToken } from '../../services/authService';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
@@ -25,6 +24,7 @@ const OrderPage: React.FC = () => {
                     return;
                 }
                 setOrder(result);
+                console.log(result);
             }
             else {
                 setError("Could not identify the order");
@@ -45,7 +45,7 @@ const OrderPage: React.FC = () => {
 
     const goToAddItems = async () => {
         if (authToken) {
-            navigate(`/order/${id}/add-items`);
+            navigate(`/order/${id}/add-items/group`);
         }
         else {
             navigate('/');

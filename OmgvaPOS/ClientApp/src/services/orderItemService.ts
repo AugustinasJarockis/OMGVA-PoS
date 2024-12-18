@@ -30,3 +30,20 @@ export interface CreateOrderItemRequest {
 export interface UpdateOrderItemRequest {
     Quantity: number
 }
+
+const createOrderItem = async (token: string | null, orderItem: CreateOrderItemRequest, orderId: string): Promise<string | undefined> => {
+    try {
+        const response = await axios.post(`/api/order/${orderId}/item`, orderItem, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 204) {
+            return undefined;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+};
+
+export { createOrderItem };
