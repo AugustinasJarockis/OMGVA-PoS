@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.PaymentManagement.DTOs;
 using OmgvaPOS.PaymentManagement.Models;
@@ -14,9 +15,11 @@ namespace OMGVA_PoS.Business_layer.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
-        public PaymentController(IPaymentService paymentService)
+        private readonly IBusinessService _businessService;
+        public PaymentController(IPaymentService paymentService, IBusinessService businessService)
         {
             _paymentService = paymentService;
+            _businessService = businessService;
         }
         
         [HttpGet]
@@ -64,7 +67,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var business = _paymentService.GetBusinessById(businessId);
+            var business = _businessService.GetBusiness(businessId);
             StripeConfiguration.ApiKey = business.StripeSecretKey;
             try
             {
