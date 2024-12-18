@@ -9,8 +9,5 @@ namespace OmgvaPOS.GiftcardManagement.Models
         public string Code { get; set; }
         public decimal Value { get; set; }
         public decimal Balance { get; set; }
-
-        // navigation properties
-        public ICollection<GiftcardPaymentEntity> GiftcardPayments { get; set; } // Giftcard can be paid with
     }
 }
