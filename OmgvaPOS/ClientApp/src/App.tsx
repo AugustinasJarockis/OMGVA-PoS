@@ -4,7 +4,6 @@ import LoginPage from './pages/LoginPage';
 import BusinessPage from './pages/Business pages/BusinessPage';
 import SelectBusinessPage from './pages/Business pages/SelectBusinessPage';
 import UpdateBusinessPage from './pages/Business pages/UpdateBusinessPage';
-import WeatherPage from './pages/WeatherPage';
 import './App.css';
 import { getTokenRole, isTokenValid } from './utils/tokenUtils';
 import CreateBusinessPage from './pages/Business pages/CreateBusinessPage';
@@ -17,6 +16,20 @@ import CreateUserPage from './pages/UserPages/CreateUserPage';
 import UserListPage from './pages/UserPages/UserListPage';
 import GiftcardListPage from './pages/GiftcardPage/GiftcardListPage';
 import CreateGiftcardPage from './pages/GiftcardPage/CreateGiftcardPage';
+import ItemListPage from './pages/Item pages/ItemListPage';
+import ItemCategoryPage from './pages/Item pages/ItemCategoryPage';
+import UpdateItemPage from './pages/Item pages/UpdateItemPage';
+import SelectItemTaxPage from './pages/Item pages/SelectItemTaxPage';
+import CreateItemVariationPage from './pages/Item variation pages/CreateItemVariationPage';
+import UpdateItemVariationPage from './pages/Item variation pages/UpdateItemVariationPage';
+import CreateItemPage from './pages/Item pages/CreateItemPage';
+import DiscountListPage from './pages/Discount pages/DiscountListPage';
+import CreateDiscountPage from './pages/Discount pages/CreateDiscountPage';
+import UpdateDiscountPage from './pages/Discount pages/UpdateDiscountPage';
+import HomePage from './pages/Homepage';
+import ReservationsListPage from './pages/Reservation pages/ReservationsListPage';
+import ReservationUpdatePage from './pages/Reservation pages/ReservationUpdatePage';
+import ReservationDetailsPage from './pages/Reservation pages/ReservationDetailsPage';
 
 const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -60,10 +73,20 @@ const App: React.FC = () => {
                         <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
                     ) : (
                         <>
-                            <Route path="/business" element={<SelectBusinessPage token={localStorage.getItem('authToken')} />} />
-                            <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/business" element={<SelectBusinessPage token={localStorage.getItem('authToken')} onLogout={handleLogout} />} />
+                            <Route path="/business/:id" element={<BusinessPage token={localStorage.getItem('authToken')} onLogout={handleLogout} />} />
                             <Route path="/business/create" element={<CreateBusinessPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/business/update/:id" element={<UpdateBusinessPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/discount" element={<DiscountListPage />} />
+                            <Route path="/discount/create" element={<CreateDiscountPage />} />
+                            <Route path="/discount/update/:id" element={<UpdateDiscountPage />} />
+                            <Route path="/item" element={<ItemListPage token={localStorage.getItem('authToken')} />} />
+                            <Route path="/item/create" element={<CreateItemPage />} />
+                            <Route path="/item/group" element={<ItemCategoryPage/>} />
+                            <Route path="/item/:id" element={<UpdateItemPage/>} />
+                            <Route path="/item/:id/taxes" element={<SelectItemTaxPage/>} />
+                            <Route path="/item/:id/item-variation/create" element={<CreateItemVariationPage/>} />
+                            <Route path="/item/:itemId/item-variation/update/:id" element={<UpdateItemVariationPage/>} />
                             <Route path="/tax" element={<TaxListPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/create" element={<CreateTaxPage token={localStorage.getItem('authToken')} />} />
                             <Route path="/tax/update/:id" element={<UpdateTaxPage token={localStorage.getItem('authToken')} />} />
@@ -73,10 +96,13 @@ const App: React.FC = () => {
                             <Route path="/user/create" element={<CreateUserPage />} />
                             <Route path="/giftcard" element={<GiftcardListPage />} />
                             <Route path="/giftcard/create" element={<CreateGiftcardPage />} />
-                            <Route path="/weather" element={<WeatherPage onLogout={handleLogout} />} />
+                            <Route path="/reservation/employee/:id" element={<ReservationsListPage />} />
+                            <Route path="/reservation/:id" element={<ReservationDetailsPage />} />
+                            <Route path="/reservation/update/:id" element={<ReservationUpdatePage />} />
+                            <Route path="/home" element={<HomePage onLogout={handleLogout} />} />
                             {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
                                 ? (<Route path="*" element={<Navigate to="/business" />} />)
-                                : (<Route path="*" element={<Navigate to="/weather" />} />)}
+                                : (<Route path="*" element={<Navigate to="/home" />} />)}
                         </>
                     )}
                     {!isAuthenticated && <Route path="*" element={<Navigate to="/" />} />}

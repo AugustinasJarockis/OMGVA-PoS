@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using OmgvaPOS.UserManagement.Models;
 
 namespace OmgvaPOS.ScheduleManagement.Models
@@ -14,6 +15,7 @@ namespace OmgvaPOS.ScheduleManagement.Models
 
         // navigational properties
         // for foreign keys
+        [JsonIgnore]
         [ForeignKey(nameof(EmployeeId))] // explicit since not called UserId
         public User User { get; set; }
     }

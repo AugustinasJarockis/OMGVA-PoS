@@ -5,12 +5,14 @@ import { getTokenBusinessId, getTokenRole, getTokenUserId } from '../../utils/to
 import { loginWithNewToken } from '../../services/authService';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
+import '../../pages/Homepage.css';
 
 interface BusinessPageProps {
     token: string | null;
+    onLogout: () => void;
 }
 
-const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
+const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken, onLogout }) => {
     const [error, setError] = useState<string | null>(null);
     const [role, setRole] = useState<string>('');
     const [business, setBusiness] = useState<Business>();
@@ -70,6 +72,18 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
         }
     };
 
+    const goToBusinessItemList = async () => {
+        if (authToken) {
+            navigate('/item/group');
+        }
+    };
+
+    const goToBusinessDiscountList = async () => {
+        if (authToken) {
+            navigate('/discount');
+        }
+    }
+
     const goToGiftcardsList = async () => {
         navigate('/giftcard');
     }
@@ -95,17 +109,40 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken }) => {
 
     return (
         <div>
-            {role === 'Admin' && (
-                <header>
-                    <button onClick={goToBusinessSelection}>Select another business</button>
-                    <br /><br />
-                    <button onClick={goToBusinessUsersList}>See all business users</button>
-                    <br /><br />
+            <header>
+              <nav className="nav-bar">
+                <ul className="nav-list">
+                  {role === 'Admin' && (
+                    <li>
+                      <button onClick={goToBusinessSelection}>Select another business</button>
+                    </li>
+                  )}
+                  {(role === 'Admin' || role === 'Owner') && (
+                    <>
+                      <li>
+                        <button onClick={goToBusinessUsersList}>Business users</button>
+                      </li>
+                      <li>
+                        <button onClick={goToBusinessDiscountList}>Discounts</button>
+                      </li>
+                    </>
+                  )}
+                  <li>
+                   <button onClick={goToBusinessItemList}>Business items</button>
+                  </li>
+                  <li>
                     <button onClick={goToGiftcardsList}>Business giftcards</button>
-                    <br /><br />
+                  </li>
+                  <li>
                     <button onClick={goToUser}>Me</button>
-                </header>
-            )}
+                  </li>
+                  <li>
+                    <button onClick={onLogout}>Logout</button>
+                  </li>
+                </ul>
+              </nav>
+            </header>
+
             {business ? (
                 <>
                     <h1>{business.Name}</h1>

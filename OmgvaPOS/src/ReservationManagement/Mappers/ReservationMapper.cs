@@ -32,8 +32,8 @@ namespace OmgvaPOS.ReservationManagement.Mappers
             {
                 TimeCreated = DateTime.UtcNow,
                 Status = ReservationStatus.Open,
-                
                 TimeReserved = request.TimeReserved,
+                ItemId = request.ItemId,
                 EmployeeId = request.EmployeeId,
                 CustomerId = request.CustomerId
             };

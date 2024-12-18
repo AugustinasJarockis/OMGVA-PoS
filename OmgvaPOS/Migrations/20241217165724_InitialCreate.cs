@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OmgvaPOS.Migrations
 {
     /// <inheritdoc />
-    public partial class initialmigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +17,8 @@ namespace OmgvaPOS.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StripeAccId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StripeSecretKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StripePublishKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -50,7 +51,8 @@ namespace OmgvaPOS.Migrations
                     Amount = table.Column<short>(type: "smallint", nullable: false),
                     TimeValidUntil = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    IsArchived = table.Column<bool>(type: "bit", nullable: false)
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false),
+                    BusinessId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,6 +65,8 @@ namespace OmgvaPOS.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    BusinessId = table.Column<long>(type: "bigint", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -215,7 +219,8 @@ namespace OmgvaPOS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Tip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    RefundReason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefundReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusinessId = table.Column<long>(type: "bigint", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     DiscountId = table.Column<long>(type: "bigint", nullable: true)
                 },
@@ -246,7 +251,8 @@ namespace OmgvaPOS.Migrations
                     TimeReserved = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     EmployeeId = table.Column<long>(type: "bigint", nullable: false),
-                    CustomerId = table.Column<long>(type: "bigint", nullable: false)
+                    CustomerId = table.Column<long>(type: "bigint", nullable: false),
+                    ItemId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

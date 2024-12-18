@@ -300,11 +300,13 @@ namespace OmgvaPOS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("RefundReason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -387,6 +389,9 @@ namespace OmgvaPOS.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ItemId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")

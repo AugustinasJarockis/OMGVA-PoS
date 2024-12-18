@@ -6,10 +6,12 @@ using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.DTOs;
 using OmgvaPOS.ItemManagement.Mappers;
-using OmgvaPOS.ItemManagement.Validator;
+using OmgvaPOS.ItemManagement.Validators;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Mappers;
 using OmgvaPOS.UserManagement.Service;
+using OmgvaPOS.OrderItemManagement.Repository;
+using OmgvaPOS.OrderItemManagement.Service;
 
 namespace OmgvaPOS.ItemManagement.Services
 {
@@ -18,6 +20,8 @@ namespace OmgvaPOS.ItemManagement.Services
         IItemVariationRepository itemVariationRepository,
         ITaxRepository taxRepository,
         ITaxItemRepository taxItemRepository,
+        IOrderItemDeletionService orderItemDeletionService,
+        IOrderItemRepository orderItemRepository,
         IUserService userService,
         DiscountValidatorService discountValidatorService,
         ILogger<ItemService> logger
@@ -27,6 +31,8 @@ namespace OmgvaPOS.ItemManagement.Services
         private readonly ITaxItemRepository _taxItemRepository = taxItemRepository;
         private readonly IItemRepository _itemRepository = itemRepository;
         private readonly IItemVariationRepository _itemVariationRepository = itemVariationRepository;
+        private readonly IOrderItemDeletionService _orderItemDeletionService = orderItemDeletionService;
+        private readonly IOrderItemRepository _orderItemRepository = orderItemRepository;
         private readonly IUserService _userService = userService;
         private readonly DiscountValidatorService _discountValidatorService = discountValidatorService;
         private readonly ILogger<ItemService> _logger = logger;
@@ -46,7 +52,7 @@ namespace OmgvaPOS.ItemManagement.Services
             return _itemRepository.GetItem(id);
         }
 
-        private Item GetItemOrThrow(long itemId)
+        public Item GetItemOrThrow(long itemId)
         {
             var item = _itemRepository.GetItem(itemId);
             if (item == null)
@@ -73,32 +79,40 @@ namespace OmgvaPOS.ItemManagement.Services
             return newItem.ToItemDTO();
         }
         
-        public ItemDTO UpdateItem(ItemDTO updateItemRequest, long itemId) {
-            var currentItem = _itemRepository.GetItem(itemId);
-            if (currentItem == null)
-                throw new NotFoundException();
+        public ItemDTO UpdateItem(ItemDTO updateItemRequest, long itemId)
+        {
+            var currentItem = GetItemOrThrow(itemId);
+            ItemValidator.IsNotArchived(currentItem);
             
             _userService.ValidateUserBelongsToBusiness(updateItemRequest.UserId, currentItem.BusinessId);
             _discountValidatorService.ValidateDiscountBelongsToBusiness(updateItemRequest.DiscountId, currentItem.BusinessId);
             
             currentItem = updateItemRequest.ToItem(currentItem);
-            return UpdateItem(currentItem).ToItemDTO();
+            return UpdateItemInternal(currentItem).ToItemDTO();
         }
 
-        private Item UpdateItem(Item item) {
-            var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
-            var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
+        // Duplicate current item with same item variations and taxItems
+        // Archive the previous item
+        private Item UpdateItemInternal(Item currentItem) {
+            ItemValidator.IsNotArchived(currentItem);
+            var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == currentItem.Id);
+            var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == currentItem.Id);
 
-            var recreatedItem = _itemRepository.UpdateItem(item);
+            var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(currentItem.Id);
+            foreach (var orderItem in relatedOrderItems) {
+                _orderItemDeletionService.DeleteOrderItem(orderItem.Id, true);
+            }
+
+            var recreatedItem = _itemRepository.UpdateItem(currentItem);
             _taxItemRepository.CreateConnectionsForNewItem(taxItemQueriable, recreatedItem.Id);
             _itemVariationRepository.DuplicateItemVariations(itemVariations, recreatedItem.Id);
-            //TODO: Update open orders
-            //TODO: Think about discounts
+            
             return recreatedItem;
         }
 
         public void DuplicateItems(IEnumerable<Item> items) {
-            foreach (Item item in items) {
+            var itemList = items.ToList();
+            foreach (Item item in itemList) {
                 var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
                 var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
 
@@ -111,13 +125,15 @@ namespace OmgvaPOS.ItemManagement.Services
         {
             if (_itemRepository.GetItem(id) == null)
                 throw new NotFoundException();
-            
+
+            var relatedOrderItems = _orderItemRepository.GetOrderItemsByItemId(id);
+            foreach (var orderItem in relatedOrderItems) {
+                _orderItemDeletionService.DeleteOrderItem(orderItem.Id, true);
+            }
+
             var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == id);
             _itemVariationRepository.DeleteItemVariations(itemVariations.Select(v => v.Id));
             _itemRepository.DeleteItem(id);
-
-            //TODO: Delete from open orders?
-            //TODO: Think about discounts
         }
 
         public List<TaxDto> GetItemTaxes(long id) {
@@ -128,11 +144,10 @@ namespace OmgvaPOS.ItemManagement.Services
         }
         public ItemDTO ChangeItemTaxes(ChangeItemTaxesRequest changeItemTaxesRequest, long itemId)
         {
-            var currentItem = _itemRepository.GetItem(itemId);
-            if (currentItem == null)
-                throw new NotFoundException();
+            var currentItem = GetItemOrThrow(itemId);
+            ItemValidator.IsNotArchived(currentItem);
             
-            var newItem = UpdateItem(currentItem);
+            var newItem = UpdateItemInternal(currentItem);
             var taxItems = _taxItemRepository.GetAllTaxItemQueriable();
             
             var taxItemIdsToRemove = taxItems

@@ -2,29 +2,27 @@
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.DiscountManagement.DTOs;
-using OmgvaPOS.DiscountManagement.Mappers;
 using OmgvaPOS.DiscountManagement.Service;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
+using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.DiscountManagement.Controller
 {
-
     [ApiController]
     [Route("discount")]
 
-    public class DiscountController(IDiscountService discountService, ILogger<DiscountController> logger) : ControllerBase {
+    public class DiscountController(IDiscountService discountService, IOrderService orderService, ILogger<DiscountController> logger) : ControllerBase {
 
         private readonly IDiscountService _discountService = discountService;
+        private readonly IOrderService _orderService = orderService;
         private readonly ILogger<DiscountController> _logger = logger;
-        
+
         [HttpPost]
         [Authorize(Roles = "Admin,Owner")]
         [ProducesResponseType<DiscountDTO>(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateDiscount([FromBody] CreateDiscountRequest createDiscountRequest) {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
@@ -57,23 +55,19 @@ namespace OmgvaPOS.DiscountManagement.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<DiscountDTO> GetDiscountById(long id) {
-            var discount = _discountService.GetDiscountOrThrow(id);
-            
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, discount.BusinessId))
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountBusinessId(id)))
                 return Forbid();
             
-            return Ok(discount.ToDTO());
+            return Ok(_discountService.GetDiscountById(id));
         }
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin,Owner")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateDiscountValidUntil([FromBody] DateTime newValidUntil, long id) {
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountBusinessId(id)))
@@ -83,9 +77,28 @@ namespace OmgvaPOS.DiscountManagement.Controller
             return NoContent();
         }
 
+        [HttpPatch("{discountId}/order/{orderId}")]
+        [Authorize(Roles = "Admin,Owner")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdateOrderDiscountAmount([FromBody] short amount, long discountId, long orderId) {
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountBusinessId(discountId)))
+                return Forbid();
+            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(discountId)))
+                return Forbid();
+
+            _discountService.UpdateOrderDiscountAmount(discountId, orderId, amount);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -96,22 +109,6 @@ namespace OmgvaPOS.DiscountManagement.Controller
 
             // essentially update IsArchived to true
             _discountService.ArchiveDiscount(id);
-            return NoContent();
-        }
-
-        [HttpPost("{discountId}/item/{itemId}")]
-        [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //TODO: does not work error in ItemRepository UpdateItem(Item item)
-        public IActionResult UpdateDiscountOfItem(long discountId, long itemId) {
-            if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _discountService.GetDiscountBusinessId(discountId)))
-                return Forbid();
-
-            _discountService.UpdateDiscountOfItem(discountId, itemId);
             return NoContent();
         }
     }

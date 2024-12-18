@@ -18,7 +18,7 @@ namespace OmgvaPOS.ItemVariationManagement
         private readonly IItemService _itemService = itemService;
         private readonly ILogger<ItemController> _logger = logger;
 
-        [HttpGet("item/{itemId}")] //TODO: Check for potential additional errors
+        [HttpGet("item/{itemId}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<ItemVariationDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

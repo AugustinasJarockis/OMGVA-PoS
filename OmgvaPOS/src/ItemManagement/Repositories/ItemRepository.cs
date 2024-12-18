@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Models;
+using OmgvaPOS.ItemManagement.Validators;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Repository;
@@ -29,7 +30,7 @@ namespace OmgvaPOS.ItemManagement.Repositories
             return item;
         }
 
-        public Item UpdateItem(Item item) // TODO: Proper error handling
+        public Item UpdateItem(Item item)
         {
             var newItem = (Item)item.Clone();
             _database.Add(newItem);
@@ -38,6 +39,17 @@ namespace OmgvaPOS.ItemManagement.Repositories
             _database.Items.Update(item);
             _database.SaveChanges();
             return newItem;
+        }
+
+        public void UpdateItemInventoryQuantity(Item item) {
+            try {
+                _database.Items.Update(item);
+                _database.SaveChanges();
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, $"An error occurred while updating item with ID {item.Id}.");
+                throw new ApplicationException("Error updating item.");
+            }
         }
 
         public void DeleteItem(long id) {

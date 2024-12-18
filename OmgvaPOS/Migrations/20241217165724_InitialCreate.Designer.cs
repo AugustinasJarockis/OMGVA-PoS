@@ -12,8 +12,8 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    [Migration("20241212141905_initial-migration")]
-    partial class initialmigration
+    [Migration("20241217165724_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,11 @@ namespace OmgvaPOS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StripeAccId")
+                    b.Property<string>("StripePublishKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StripeSecretKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -86,6 +90,9 @@ namespace OmgvaPOS.Migrations
                     b.Property<short>("Amount")
                         .HasColumnType("smallint");
 
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
@@ -110,6 +117,13 @@ namespace OmgvaPOS.Migrations
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
@@ -289,11 +303,13 @@ namespace OmgvaPOS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("BusinessId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("DiscountId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("RefundReason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -373,6 +389,9 @@ namespace OmgvaPOS.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ItemId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")
@@ -607,7 +626,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.PaymentManagement.Models.Payment", b =>
                 {
                     b.HasOne("OmgvaPOS.CustomerManagement.Models.Customer", "Customer")
-                        .WithMany("Payments")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -645,7 +664,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.ReservationManagement.Models.Reservation", b =>
                 {
                     b.HasOne("OmgvaPOS.CustomerManagement.Models.Customer", "Customer")
-                        .WithMany("Reservations")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -708,13 +727,6 @@ namespace OmgvaPOS.Migrations
                     b.Navigation("StripeReaders");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("OmgvaPOS.CustomerManagement.Models.Customer", b =>
-                {
-                    b.Navigation("Payments");
-
-                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("OmgvaPOS.DiscountManagement.Models.Discount", b =>

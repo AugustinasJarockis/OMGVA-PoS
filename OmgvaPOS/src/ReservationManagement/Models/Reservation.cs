@@ -15,6 +15,7 @@ namespace OmgvaPOS.ReservationManagement.Models
         public ReservationStatus Status { get; set; }
         public long EmployeeId { get; set; }
         public long CustomerId { get; set; }
+        public long ItemId { get; set; }
 
         // navigational properties
         // for foreign keys
