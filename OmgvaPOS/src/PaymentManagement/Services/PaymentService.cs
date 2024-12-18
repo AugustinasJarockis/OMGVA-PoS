@@ -43,7 +43,7 @@ public class PaymentService(
     {
         var giftcard = giftcardService.GetGiftcard(code: request.GiftCardCode);
         if (giftcard == null)
-            throw new BadRequestException("Incorrect giftcard code");
+            throw new NotFoundException("Incorrect giftcard code");
         
         var updateRequest = new GiftcardUpdateRequest
         {
