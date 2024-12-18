@@ -7,5 +7,5 @@ public class PaymentDTO
     public long CustomerId { get; set; }
     public long OrderId { get; set; }
     public long Amount { get; set; }
-    public long? GiftCardPaymentId { get; set; }
+    public long? GiftCardId { get; set; }
 }

@@ -4,13 +4,12 @@ namespace OmgvaPOS.PaymentManagement.DTOs;
 
 public class PaymentRequest
 {
-    [Required]
-    public string PaymentMethodId { get; set; }
+    public string? PaymentMethodId { get; set; }
     
     [Required]
     public long CustomerId { get; set; }
     
-    public long? GiftCardPaymentId { get; set; }
+    public string? GiftCardCode { get; set; }
     
     [Required]
     public long OrderId { get; set; }
