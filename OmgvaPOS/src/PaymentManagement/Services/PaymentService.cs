@@ -41,6 +41,9 @@ public class PaymentService(
     
     public PaymentDTO ProcessGiftcardPayment(PaymentRequest request)
     {
+        if (giftcardService.GetGiftcard(code: request.GiftCardCode) == null)
+            throw new BadRequestException("Incorrect giftcard code");
+        
         var updateRequest = new GiftcardUpdateRequest
         {
             Code = request.GiftCardCode,

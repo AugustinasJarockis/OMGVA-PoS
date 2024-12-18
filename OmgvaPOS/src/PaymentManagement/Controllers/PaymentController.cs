@@ -171,6 +171,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         [HttpPost("process-giftcard")]
         [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
