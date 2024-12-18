@@ -15,7 +15,7 @@ public interface IOrderService
     public OrderDTO GetOrder(long id);
     public long GetOrderBusinessId(long id);
     public void DeleteOrder(long id);
-    public SimpleOrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId);
+    public OrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId);
     public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus);
     public Order GetOrderOrThrow(long orderId);
     public IEnumerable<SimpleOrderDTO> SplitOrder(long orderId, SplitOrderRequest splitOrderItems);
