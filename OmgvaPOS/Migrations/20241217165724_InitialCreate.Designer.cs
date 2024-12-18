@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OmgvaPOS.Database.Context;
 
@@ -11,9 +12,11 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    partial class OmgvaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241217165724_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,16 +335,13 @@ namespace OmgvaPOS.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<long>("Amount")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("GiftCardPaymentId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GiftcardPaymentEntityId")
+                    b.Property<long>("GiftcardPaymentEntityId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Method")
@@ -634,7 +634,8 @@ namespace OmgvaPOS.Migrations
                     b.HasOne("OmgvaPOS.GiftcardPaymentManagement.Models.GiftcardPaymentEntity", "GiftcardPaymentEntity")
                         .WithMany()
                         .HasForeignKey("GiftcardPaymentEntityId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("OmgvaPOS.OrderManagement.Models.Order", "Order")
                         .WithOne("Payment")
