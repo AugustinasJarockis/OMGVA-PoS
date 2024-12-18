@@ -62,8 +62,8 @@ const EmployeeSchedulesPage: React.FC = () => {
 
     const returnToHome = () => {
         const role = getTokenRole(authToken ?? "");
-        if (role === "Admin") {
-            navigate(`/user/${id}`);
+        if (role === "Admin" || role === "Owner") {
+            navigate(`/user/business`);
         } else {
             navigate(`/home`);
         }

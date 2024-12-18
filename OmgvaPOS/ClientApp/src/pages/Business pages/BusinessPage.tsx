@@ -97,23 +97,37 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken, onLogout 
         navigate('/giftcard');
     }
 
+    const createNewToken = async () => {
+        if (authToken && id) {
+            try {
+                const { Token } = await loginWithNewToken(authToken, id);
+                if (Token) {
+                    setAuthToken(Token);
+                }
+            } catch (err: any) {
+                setError(err.message || 'Failed to create new token.');
+            }
+        }
+    };
+
     useEffect(() => {
         if (state && state.business) {
+            createNewToken();
             setBusiness(state.business);
         } else {
             loadBusiness();
         }
 
-        if (authToken) {
-            const role = getTokenRole(authToken);
-            const businessId = getTokenBusinessId(authToken);
-            if (!(businessId === id || role === "Admin")) {
-                navigate('/');
+            if (authToken) {
+                const role = getTokenRole(authToken);
+                const businessId = getTokenBusinessId(authToken);
+                if (!(businessId === id || role === "Admin")) {
+                    navigate('/');
+                }
+                setRole(role);
+            } else {
+                setError("You have to authenticate first!");
             }
-            setRole(role);
-        } else {
-            setError("You have to authenticate first!");
-        }
     }, [authToken, id, navigate, state, setAuthToken]);
 
     return (
@@ -134,13 +148,13 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ token: authToken, onLogout 
                       <li>
                         <button onClick={goToBusinessDiscountList}>Discounts</button>
                       </li>
+                      <li>
+                        <button onClick={goToGiftcardsList}>Business giftcards</button>
+                      </li>
                     </>
                   )}
                   <li>
                     <button onClick={goToBusinessItemList}>Business items</button>
-                  </li>
-                  <li>
-                    <button onClick={goToGiftcardsList}>Business giftcards</button>
                   </li>
                   <li>
                     <button onClick={goToBusinessOrders}>Business orders</button>

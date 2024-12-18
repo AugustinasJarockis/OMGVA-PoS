@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { deleteUser, getBusinessUsers } from '../../services/userService';
 import { getTokenBusinessId, getTokenRole, getTokenUserId } from '../../utils/tokenUtils';
-import DeletableUpdatableListItem from '../../components/List/DeletableUpdatableListItem';
 import ClickableListItem from '../../components/List/ClickableListItem';
+import DeletableUpdatableWithSchedulesListItem from '../../components/List/DeletableUpdatableWithSchedulesListItem';
 
 const UserListPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -46,10 +46,11 @@ const UserListPage: React.FC = () => {
             }
             else {
                 setListItems(result.map(user =>
-                    <DeletableUpdatableListItem
+                    <DeletableUpdatableWithSchedulesListItem
                         key={user.Id}
                         id={user.Id ?? ''}
                         text={user.Name ?? '-'}
+                        scheduleUrl={"/schedules/" + user.Id}
                         updateUrl={"/user/update/" + user.Id}
                         deleteFunction={onDelete}
                         disableDelete={user.Id === getTokenUserId(authToken ?? '') || user.HasLeft}

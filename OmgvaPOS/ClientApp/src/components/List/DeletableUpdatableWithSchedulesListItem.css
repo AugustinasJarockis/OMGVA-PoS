@@ -1,0 +1,38 @@
+﻿.deletable-updatable-schedule-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #DDCCCC;
+    border: 1px solid #999999AA;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #444444;
+    padding: 15px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+    .deletable-updatable-schedule-list-item p {
+        margin: 0 20px 0 0;
+        font-size: 16px;
+        line-height: 1.5;
+        flex-grow: 1;
+    }
+
+    .deletable-updatable-schedule-list-item button {
+        background: #555555AA;
+        border: 1px solid #ffffff;
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+    .deletable-updatable-schedule-list-item:hover {
+        background: #BBAAAACC;
+    }
+
+    .deletable-updatable-schedule-list-item button:disabled {
+        background: #999999;
+        cursor: not-allowed;
+    }
