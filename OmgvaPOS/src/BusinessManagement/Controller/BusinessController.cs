@@ -29,7 +29,7 @@ namespace OmgvaPOS.BusinessManagement.Controller
 
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Owner")]
+        [Authorize(Roles = "Admin,Owner,Employee")]
         [ProducesResponseType<BusinessDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

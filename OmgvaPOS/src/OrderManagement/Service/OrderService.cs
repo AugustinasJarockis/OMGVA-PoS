@@ -93,16 +93,12 @@ public class OrderService : IOrderService
 
     public IEnumerable<SimpleOrderDTO> GetAllBusinessOrders(long businessId) {
         var orders = _orderRepository.GetAllBusinessOrders(businessId);
-        OrderValidator.Exist(orders);
-
         return orders.ToSimpleOrderDTOList();
     }
 
     public IEnumerable<SimpleOrderDTO> GetAllActiveOrders(long businessId) {
         var orders = GetAllBusinessOrders(businessId);
         var activeOrders = orders.Where(o => o.Status == OrderStatus.Open);
-        OrderValidator.Exist(activeOrders);
-
         return activeOrders;
     }
 

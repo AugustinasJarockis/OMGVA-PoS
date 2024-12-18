@@ -1,0 +1,11 @@
+﻿.closed-order-clickable .clickable-list-item {
+    background: #AA9999;
+}
+
+.cancelled-order-clickable .clickable-list-item {
+    background: #FFCCCC;
+}
+
+.refunded-order-clickable .clickable-list-item {
+    background: #CCCCEE;
+}
