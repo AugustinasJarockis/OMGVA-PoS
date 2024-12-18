@@ -111,7 +111,8 @@ namespace OmgvaPOS.ItemManagement.Services
         }
 
         public void DuplicateItems(IEnumerable<Item> items) {
-            foreach (Item item in items) {
+            var itemList = items.ToList();
+            foreach (Item item in itemList) {
                 var itemVariations = _itemVariationRepository.GetItemVariationQueriable().Where(v => v.ItemId == item.Id);
                 var taxItemQueriable = _taxItemRepository.GetAllTaxItemQueriable().Where(t => t.ItemId == item.Id);
 
