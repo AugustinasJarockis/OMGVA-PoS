@@ -167,5 +167,31 @@ namespace OMGVA_PoS.Business_layer.Controllers
             _paymentService.CreatePayment(payment.ToPaymentDTO());
             return Ok(new { success = true, payment });
         }
+        
+        [HttpPost("process-giftcard")]
+        [Authorize(Roles = "Admin,Owner,Employee")]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ProcessGiftcardPayment([FromBody] PaymentRequest request)
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+                return Forbid();
+            
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid().ToString(),
+                Method = PaymentMethod.Giftcard,
+                CustomerId = request.CustomerId,
+                OrderId = request.OrderId,
+                Amount = request.Amount,
+                GiftCardPaymentId = request.GiftCardPaymentId
+            };
+            
+            _paymentService.CreatePayment(payment.ToPaymentDTO());
+            return Ok(new { success = true, payment });
+        }
     }
 }
