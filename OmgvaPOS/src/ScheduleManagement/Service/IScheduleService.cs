@@ -7,7 +7,7 @@ namespace OmgvaPOS.ScheduleManagement.Service
     {
         public EmployeeSchedule CreateEmployeeSchedule(CreateEmployeeScheduleRequest createEmployeeScheduleRequest);
         public ScheduleWithAvailability GetEmployeeSchedule(long id);
-        public List<EmployeeSchedulesWithAvailability> GetEmployeesSchedulesByItemAndDate(long itemId, DateOnly date);
+        public EmployeeSchedulesWithAvailability GetEmployeeScheduleByItemAndDate(long itemId, DateOnly date);
         public EmployeeSchedulesWithAvailability GetEmployeeScheduleWithAvailability(long employeeId, DateOnly date);
         public List<EmployeeSchedule> GetAllSchedulesByEmployeeId(long employeeId);
         public long GetBusinessIdFromEmployeeSchedule(long employeeScheduleId);

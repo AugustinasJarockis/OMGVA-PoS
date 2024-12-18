@@ -61,7 +61,7 @@ const getReservation = async (token: string | null, id: string): Promise<{ resul
 
 const updateReservation = async (token: string | null, id: string,  reservation: UpdateReservation): Promise<{ result?: Reservation, error?: string }> => {
     try {
-        const response = await axios.patch(`/api/reservation/${id}`, reservation, {
+        const response = await axios.put(`/api/reservation/${id}`, reservation, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {

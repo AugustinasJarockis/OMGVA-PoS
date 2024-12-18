@@ -47,10 +47,12 @@ const ReservationUpdatePage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const { employeeId, customerId, timeReserved, status } = formData;
+        let timeReservedWithSeconds = timeReserved != null ? timeReserved + ':00' : timeReserved;
+
         const updatedReservation = {
             EmployeeId: employeeId,
             CustomerId: customerId,
-            TimeReserved: timeReserved,
+            TimeReserved: timeReservedWithSeconds,
             Status: status
         };
         const { error } = await updateReservation(authToken, id!, updatedReservation);
