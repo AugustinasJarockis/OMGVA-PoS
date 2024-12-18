@@ -244,7 +244,7 @@ public class OrderItemService : IOrderItemService
     {
         if (item.BusinessId != order.BusinessId)
         {
-            _logger.LogWarning($"Item '{item.Name}' with ID {item.Id} cannot be ad ded to order because it belongs to another business. " +
+            _logger.LogWarning($"Item '{item.Name}' with ID {item.Id} cannot be added to order because it belongs to another business. " +
                                $"Item business: {item.BusinessId}, Order business: {order.BusinessId}");
             throw new NotFoundException("Item not found in business");
         }
