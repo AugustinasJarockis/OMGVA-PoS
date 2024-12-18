@@ -9,6 +9,8 @@ public interface IOrderService
 {
     public SimpleOrderDTO CreateOrder(long businessId, long userId);
     public IEnumerable<SimpleOrderDTO> GetAllBusinessOrders(long businessId);
+    public (IEnumerable<SimpleOrderDTO> orders, int totalPages) 
+        GetBusinessOrdersWithRequestCriteria(long businessId, OrdersRequestCriteria requestCriteria);
     public IEnumerable<SimpleOrderDTO> GetAllActiveOrders(long businessId);
     public OrderDTO GetOrder(long id);
     public long GetOrderBusinessId(long id);
