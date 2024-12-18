@@ -16,6 +16,7 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
     const { authToken } = useAuth();
     const [item, setItem] = useState<Item>();
     const [variationString, setVariationString] = useState<string>();
+    const [expanded, setExpanded] = useState<boolean>();
     const [sliderValue, setSliderValue] = useState<number>(1); 
     const [savedSliderValue, setSavedSliderValue] = useState<number>(1); 
 
@@ -40,14 +41,17 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
     }
 
     const updateSliderValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation();
         setSliderValue(+e.currentTarget.value);
     };
 
-    const removeOrderItem = async () => {
+    const removeOrderItem = async (e) => {
+        e.stopPropagation();
         props.onDelete(props.orderItem.Id);
     }
 
-    const saveChangedItemAmount = async () => {
+    const saveChangedItemAmount = async (e) => {
+        e.stopPropagation();
         try {
             const result = await updateOrderItem(authToken, props.orderId, props.orderItem.Id, { Quantity: sliderValue });
             if (typeof result == "string") {
@@ -74,8 +78,6 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
                 newVariationString += variation.ItemVariationName + ', ';
             }
         }
-        console.log(newVariationString);
-        console.log(newVariationString.length);
         if (newVariationString.length >= 32) {
             newVariationString = newVariationString.substring(0, 30);
             newVariationString += '...';

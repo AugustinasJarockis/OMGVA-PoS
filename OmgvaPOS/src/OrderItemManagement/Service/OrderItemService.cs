@@ -186,7 +186,7 @@ public class OrderItemService : IOrderItemService
             ItemId = item.Id,
             ItemName = item.Name,
             Quantity = orderItem.Quantity,
-            MaxQuantity = (short)(orderItem.Quantity + itemVariationQuantities.Min()),
+            MaxQuantity = (short)(orderItem.Quantity + ((itemVariationQuantities.Count != 0) ? itemVariationQuantities.Min() : 0)),
             Discount = orderItemDiscountDTO,
             Variations = orderItemVariationDTOs
         };
