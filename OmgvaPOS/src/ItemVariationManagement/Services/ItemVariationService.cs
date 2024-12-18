@@ -25,12 +25,15 @@ namespace OmgvaPOS.ItemVariationManagement.Services
         private readonly ILogger<ItemVariationService> _logger = logger;
 
         public List<ItemVariationDTO> GetItemVariations(long itemId) {
+            _itemService.GetItemOrThrow(itemId);
+
             var itemVariations = _itemVariationRepository.GetItemVariations(itemId);
             var itemVariationDTOs = itemVariations.Select(i => i.ToItemVariationDTO()).ToList();
             return itemVariationDTOs;
         }
         public ItemVariationDTO? GetItemVariation(long id) {
             var itemVariation = _itemVariationRepository.GetItemVariation(id);
+            ItemVariationValidator.Exists(itemVariation);
             return itemVariation?.ToItemVariationDTO();
         }
 
@@ -41,6 +44,8 @@ namespace OmgvaPOS.ItemVariationManagement.Services
             return _itemService.GetItemBusinessId(itemVariation.ItemId);
         }
         public ItemVariationDTO CreateItemVariation(ItemVariationCreationRequest itemVariationCreationRequest, long itemId) {
+            _itemService.GetItemOrThrow(itemId);
+
             ItemVariation itemVariation = itemVariationCreationRequest.ToItemVariation();
             itemVariation.ItemId = itemId;
             var newItemVariation = _itemVariationRepository.CreateItemVariation(itemVariation);

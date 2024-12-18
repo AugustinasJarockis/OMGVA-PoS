@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.ItemVariationManagement.Services;
-using OmgvaPOS.ItemManagement;
 using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
-using System.Net;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemVariationManagement.DTOs;
 using OmgvaPOS.ItemManagement.Services;
@@ -12,17 +9,17 @@ namespace OmgvaPOS.ItemVariationManagement
 {
     [ApiController]
     [Route("item-variation")]
-    public class ItemVariationController(IItemVariationService itemVariationService, IItemService itemService, ILogger<ItemController> logger) : Controller
+    public class ItemVariationController(IItemVariationService itemVariationService, IItemService itemService) : Controller
     {
         private readonly IItemVariationService _itemVariationService = itemVariationService;
         private readonly IItemService _itemService = itemService;
-        private readonly ILogger<ItemController> _logger = logger;
 
         [HttpGet("item/{itemId}")] //TODO: Check for potential additional errors //Not found is def missing. There is no checking that item exists?
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<ItemVariationDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllItemsVariations(long itemId)
         {
@@ -51,12 +48,13 @@ namespace OmgvaPOS.ItemVariationManagement
                 return Ok(itemVariation);
         }
 
-        [HttpPost("{itemId}")] //TODO: not found here def possible
+        [HttpPost("{itemId}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<ItemVariationDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreateItemVariation([FromBody] ItemVariationCreationRequest itemVariationCreationRequest, long itemId) {
             if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization, _itemService.GetItemBusinessId(itemId)))
@@ -66,7 +64,7 @@ namespace OmgvaPOS.ItemVariationManagement
             return Created($"/item/{itemVariationDTO.Id}", itemVariationDTO);
         }
 
-        [HttpPatch("{id}")] //TODO: Check other status code possibility
+        [HttpPatch("{id}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<ItemVariationDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
