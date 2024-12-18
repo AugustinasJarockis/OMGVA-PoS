@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './DeletableUpdatableSchedulesListItem.css';
 import { statusMap } from '../../services/reservationService';
 
-interface DeletableUpdatableSchedulesListItemProps {
+interface DeletableUpdatableReservationListItemProps {
     id: string;
     customerName: string;
     timeReserved: string;
@@ -14,7 +14,7 @@ interface DeletableUpdatableSchedulesListItemProps {
     object?: any;
 }
 
-const DeletableUpdatableSchedulesListItem: React.FC<DeletableUpdatableSchedulesListItemProps> = (props) => {
+const DeletableUpdatableReservationListItem: React.FC<DeletableUpdatableReservationListItemProps> = (props) => {
     const navigate = useNavigate();
 
     const goToUpdate = () => {
@@ -36,4 +36,4 @@ const DeletableUpdatableSchedulesListItem: React.FC<DeletableUpdatableSchedulesL
     );
 };
 
-export default DeletableUpdatableSchedulesListItem;
+export default DeletableUpdatableReservationListItem;

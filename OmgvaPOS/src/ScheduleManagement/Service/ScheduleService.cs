@@ -47,12 +47,17 @@ namespace OmgvaPOS.ScheduleManagement.Service
         {
             var employeeSchedule = _scheduleRepository.GetScheduleById(id);
             var reservations = _reservationRepository.GetByEmployeeIdAndDate(employeeSchedule.EmployeeId, employeeSchedule.Date);
-            var item = _itemRepository.GetItem(reservations.Last().ItemId);
-            
-            if(updateEmployeeScheduleRequest.StartTime != null)
-                EmployeeScheduleValidator.IsValidStartTime(TimeOnly.FromDateTime(reservations.First().TimeReserved).ToTimeSpan(), updateEmployeeScheduleRequest.StartTime ?? TimeSpan.Zero);
-            if (updateEmployeeScheduleRequest.EndTime != null && item != null)
-                EmployeeScheduleValidator.IsValidEndTime(TimeOnly.FromDateTime(reservations.Last().TimeReserved).ToTimeSpan() + (item.Duration ?? TimeSpan.Zero), updateEmployeeScheduleRequest.EndTime ?? TimeSpan.Zero);
+
+            if( reservations.Count > 0)
+            {
+                var item = _itemRepository.GetItem(reservations.Last().ItemId);
+
+                if (updateEmployeeScheduleRequest.EndTime != null && item != null)
+                    EmployeeScheduleValidator.IsValidEndTime(TimeOnly.FromDateTime(reservations.Last().TimeReserved).ToTimeSpan() + (item.Duration ?? TimeSpan.Zero), updateEmployeeScheduleRequest.EndTime ?? TimeSpan.Zero);
+
+                if (updateEmployeeScheduleRequest.StartTime != null)
+                    EmployeeScheduleValidator.IsValidStartTime(TimeOnly.FromDateTime(reservations.First().TimeReserved).ToTimeSpan(), updateEmployeeScheduleRequest.StartTime ?? TimeSpan.Zero);
+            }
 
             var updatedSchedule = _scheduleRepository.Update(id, updateEmployeeScheduleRequest);
 
@@ -78,27 +83,22 @@ namespace OmgvaPOS.ScheduleManagement.Service
 
             return EmployeeScheduleMapper.ToScheduleWithAvailability(employeeSchedule, availableTimeslots);
         }
-        public List<EmployeeSchedulesWithAvailability> GetEmployeesSchedulesByItemAndDate(long itemId, DateOnly date)
+        public EmployeeSchedulesWithAvailability GetEmployeeScheduleByItemAndDate(long itemId, DateOnly date)
         {
-            var reservations = _reservationRepository.GetByItemIdAndDate(itemId, date);
-            var uniqueEmployeeIds = reservations.Select(r => r.EmployeeId).Distinct().ToList();
-            var employeeSchedulesByItemAndDate = new List<EmployeeSchedulesWithAvailability>();
+            var item = _itemRepository.GetItem(itemId);
+            var schedulesWithAvailability = GetEmployeeScheduleWithAvailability(item.UserId ?? -1, date);
 
-            foreach (var employeeId in uniqueEmployeeIds)
-            {
-                var schedulesWithAvailability = GetEmployeeScheduleWithAvailability(employeeId, date);
-                employeeSchedulesByItemAndDate.Add(schedulesWithAvailability);
-            }
-
-            return employeeSchedulesByItemAndDate;
+            return schedulesWithAvailability;
         }
         public EmployeeSchedulesWithAvailability GetEmployeeScheduleWithAvailability(long employeeId, DateOnly date)
         {
-            var employeeSchedule = _scheduleRepository.GetScheduleByEmployeeIdAndDate(employeeId, date) ?? throw new NotFoundException("Employee schedule was not found");
+            var employeeSchedule = _scheduleRepository.GetScheduleByEmployeeIdAndDate(employeeId, date)
+                ?? throw new NotFoundException("Employee schedule was not found");
+
             var employee = _userRepository.GetUser(employeeId);
             var reservations = _reservationRepository.GetByEmployeeIdAndDate(employeeId, date);
-            var unavailableTimeslots = new List<Timeslot>();
 
+            var unavailableTimeslots = new List<Timeslot>();
             foreach (var reservation in reservations)
             {
                 var item = _itemRepository.GetItem(reservation.ItemId);
@@ -108,7 +108,9 @@ namespace OmgvaPOS.ScheduleManagement.Service
                     unavailableTimeslots.Add(unavailableTimeslot);
                 }
             }
+
             var availableTimeslots = CalculateAvailableTime(employeeSchedule, unavailableTimeslots);
+
             var scheduleWithAvailability = new List<ScheduleWithAvailability>
             {
                 EmployeeScheduleMapper.ToScheduleWithAvailability(employeeSchedule, availableTimeslots)
@@ -116,6 +118,7 @@ namespace OmgvaPOS.ScheduleManagement.Service
 
             return EmployeeScheduleMapper.ToEmployeeSchedulesWithAvailability(employeeId, employee.Name, scheduleWithAvailability);
         }
+
         public List<EmployeeSchedule> GetAllSchedulesByEmployeeId(long employeeId)
         {
             var schedules = _scheduleRepository.GetSchedulesByEmployeeId(employeeId);

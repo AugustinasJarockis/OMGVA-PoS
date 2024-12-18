@@ -46,4 +46,35 @@ const createOrderItem = async (token: string | null, orderItem: CreateOrderItemR
     }
 };
 
-export { createOrderItem };
+const updateOrderItem = async (token: string | null, orderId: string, orderItemId: string, request: UpdateOrderItemRequest): Promise<string | undefined> => {
+    try {
+        const response = await axios.patch(`/api/order/${orderId}/item/${orderItemId}`, request, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 204) {
+            return undefined;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+};
+
+const deleteOrderItem = async (token: string | null, orderId: string, orderItemId: string): Promise<string | undefined> => {
+    try {
+        const response = await axios.delete(`/api/order/${orderId}/item/${orderItemId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 204) {
+            return undefined;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+};
+
+
+export { createOrderItem, updateOrderItem, deleteOrderItem };

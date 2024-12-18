@@ -146,9 +146,15 @@ public class OrderItemService : IOrderItemService
         // calculating OrderItem total price 
         // and including in OrderItemDTO
         List<OrderItemVariationDTO> orderItemVariationDTOs = [];
+
+        // for returning OrderItemDTO.MaxQuantity - an order item quantity can be increased to 
+        List<short> itemVariationQuantities = [];
+
         foreach (var orderItemVariation in orderItem.OrderItemVariations) {
             var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
             ItemVariationValidator.Exists(itemVariation);
+
+            itemVariationQuantities.Add((short)itemVariation.InventoryQuantity);
 
             orderItemVariationDTOs.Add(new OrderItemVariationDTO {
                 Id = orderItemVariation.Id,
@@ -180,6 +186,7 @@ public class OrderItemService : IOrderItemService
             ItemId = item.Id,
             ItemName = item.Name,
             Quantity = orderItem.Quantity,
+            MaxQuantity = (short)(orderItem.Quantity + ((itemVariationQuantities.Count != 0) ? itemVariationQuantities.Min() : 0)),
             Discount = orderItemDiscountDTO,
             Variations = orderItemVariationDTOs
         };
