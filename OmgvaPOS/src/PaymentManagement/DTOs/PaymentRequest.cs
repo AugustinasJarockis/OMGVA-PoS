@@ -11,6 +11,7 @@ public class PaymentRequest
     public long CustomerId { get; set; }
     
     public long? GiftCardPaymentId { get; set; }
+    public string? GiftCardCode { get; set; }
     
     [Required]
     public long OrderId { get; set; }

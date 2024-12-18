@@ -2,14 +2,22 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using OmgvaPOS.BusinessManagement.DTOs;
 using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.BusinessManagement.Services;
+using OmgvaPOS.Exceptions;
+using OmgvaPOS.GiftcardManagement.DTOs;
+using OmgvaPOS.GiftcardManagement.Service;
 using OmgvaPOS.PaymentManagement.DTOs;
+using OmgvaPOS.PaymentManagement.Enums;
 using OmgvaPOS.PaymentManagement.Mappers;
 using OmgvaPOS.PaymentManagement.Models;
 using OmgvaPOS.PaymentManagement.Repository;
 
 namespace OmgvaPOS.PaymentManagement.Services;
 
-public class PaymentService(IPaymentRepository paymentRepository, IBusinessService businessService, ILogger<PaymentService> logger) : IPaymentService
+public class PaymentService(
+    IPaymentRepository paymentRepository,
+    IBusinessService businessService,
+    IGiftcardService giftcardService,
+    ILogger<PaymentService> logger) : IPaymentService
 {
     public List<PaymentDTO> GetPayments()
     {
@@ -28,6 +36,26 @@ public class PaymentService(IPaymentRepository paymentRepository, IBusinessServi
     public PaymentDTO CreatePayment(PaymentDTO request)
     {
         var payment = request.ToPayment();
+        return paymentRepository.CreatePayment(payment).ToPaymentDTO();
+    }
+    
+    public PaymentDTO ProcessGiftcardPayment(PaymentRequest request)
+    {
+        var updateRequest = new GiftcardUpdateRequest
+        {
+            Code = request.GiftCardCode,
+            Amount = request.Amount
+        };
+        giftcardService.UpdateGiftcard(updateRequest);
+        
+        var payment = new Payment
+        {
+            Id = Guid.NewGuid().ToString(),
+            Amount = request.Amount,
+            OrderId = request.OrderId,
+            Method = PaymentMethod.Giftcard,
+            CustomerId = request.CustomerId
+        };
         return paymentRepository.CreatePayment(payment).ToPaymentDTO();
     }
 }

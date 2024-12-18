@@ -180,17 +180,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var payment = new Payment
-            {
-                Id = Guid.NewGuid().ToString(),
-                Method = PaymentMethod.Giftcard,
-                CustomerId = request.CustomerId,
-                OrderId = request.OrderId,
-                Amount = request.Amount,
-                GiftCardPaymentId = request.GiftCardPaymentId
-            };
-            
-            _paymentService.CreatePayment(payment.ToPaymentDTO());
+            var payment = _paymentService.ProcessGiftcardPayment(request);
             return Ok(new { success = true, payment });
         }
     }
