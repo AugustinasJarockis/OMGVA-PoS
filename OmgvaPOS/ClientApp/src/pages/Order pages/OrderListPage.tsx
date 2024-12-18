@@ -101,7 +101,7 @@ const OrderListPage: React.FC = () => {
                 <button onClick={goToBusiness}>Business</button>
             </header>
             <br/><br/>
-            <button onClick={changeShowOnlyOpen}>{ showOnlyOpen ? "Show only open orders" : "Show all orders" }</button>
+            <button onClick={changeShowOnlyOpen}>{showOnlyOpen ? "Show all orders" : "Show only open orders" }</button>
             <h1>{showOnlyOpen ? "Current open orders" : "All orders"}</h1>
             <div className="order-list-container">
                 {listItems}
