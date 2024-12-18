@@ -30,6 +30,10 @@ import HomePage from './pages/Homepage';
 import ReservationsListPage from './pages/Reservation pages/ReservationsListPage';
 import ReservationUpdatePage from './pages/Reservation pages/ReservationUpdatePage';
 import ReservationDetailsPage from './pages/Reservation pages/ReservationDetailsPage';
+import EmployeeSchedulesPage from './pages/Schedule pages/EmployeeSchedulesPage';
+import CreateSchedulePage from './pages/Schedule pages/CreateSchedulePage';
+import UpdateSchedulePage from './pages/Schedule pages/UpdateSchedulePage';
+import ReservationCreatePage from './pages/Reservation pages/ReservationCreatePage';
 import OrderListPage from './pages/Order pages/OrderListPage';
 import OrderPage from './pages/Order pages/OrderPage';
 import OrderItemSelectCategoryListPage from './pages/Order pages/OrderItemSelectionCategoryPage';
@@ -109,6 +113,10 @@ const App: React.FC = () => {
                             <Route path="/reservation/employee/:id" element={<ReservationsListPage />} />
                             <Route path="/reservation/:id" element={<ReservationDetailsPage />} />
                             <Route path="/reservation/update/:id" element={<ReservationUpdatePage />} />
+                            <Route path="/reservation/create/" element={<ReservationCreatePage />} />
+                            <Route path="/schedules/:id" element={<EmployeeSchedulesPage />} />
+                            <Route path="/schedules/create/:id" element={<CreateSchedulePage />} />
+                            <Route path="/schedules/update/:id" element={<UpdateSchedulePage />} />
                             <Route path="/home" element={<HomePage onLogout={handleLogout} />} />
                             {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
                                 ? (<Route path="*" element={<Navigate to="/business" />} />)

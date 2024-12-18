@@ -35,6 +35,7 @@
     text-align: center;
     width: 1100px;
     margin: 3px;
+    z-index: 100;
 }
 
 .order-item-list-item .last-order-list-item-cell{
@@ -47,5 +48,6 @@
         vertical-align: central;
         float: right;
         margin-left: 3px;
+        z-index: 1000;
     }
 }

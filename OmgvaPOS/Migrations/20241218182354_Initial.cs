@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OmgvaPOS.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -358,7 +358,8 @@ namespace OmgvaPOS.Migrations
                     CustomerId = table.Column<long>(type: "bigint", nullable: false),
                     GiftCardPaymentId = table.Column<long>(type: "bigint", nullable: true),
                     OrderId = table.Column<long>(type: "bigint", nullable: false),
-                    GiftcardPaymentEntityId = table.Column<long>(type: "bigint", nullable: false)
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
+                    GiftcardPaymentEntityId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {

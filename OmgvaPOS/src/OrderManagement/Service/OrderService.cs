@@ -72,8 +72,8 @@ public class OrderService : IOrderService
             var orderItemDTO = _orderItemService.GetOrderItem(orderItem.Id);
             orderItemDTOs.Add(orderItemDTO);
 
-            // order discount applies to order item only
-            // in so far as it doesnt exceed existing OderItem discount
+            // order discount applies to order item 
+            // only in so far as it doesnt exceed existing OderItem discount
             var maxDiscountPercent = Math.Max(
                 orderItemDTO.Discount?.DiscountAmount ?? 0,
                 order.Discount?.Amount ?? 0
