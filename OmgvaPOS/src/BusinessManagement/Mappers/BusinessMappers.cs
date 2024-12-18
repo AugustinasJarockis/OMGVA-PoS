@@ -31,6 +31,8 @@ namespace OmgvaPOS.BusinessManagement.Mappers
         {
             return new BusinessDTO() {
                 Id = business.Id,
+                StripeSecretKey = business.StripeSecretKey,
+                StripePublishKey = business.StripePublishKey,
                 Name = business.Name,
                 Address = business.Address,
                 Phone = business.Phone,
