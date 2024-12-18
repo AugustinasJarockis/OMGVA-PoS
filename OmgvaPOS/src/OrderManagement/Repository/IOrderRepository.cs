@@ -5,6 +5,7 @@ namespace OmgvaPOS.OrderManagement.Repository;
 
 public interface IOrderRepository
 {
+    IQueryable<Order> GetOrderQueryable();
     Order AddOrder(Order order);
     Order GetOrderNoAppendages(long orderId);
     Order GetOrder(long id);

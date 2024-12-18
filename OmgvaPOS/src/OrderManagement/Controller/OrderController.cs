@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.DTOs;
+using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.OrderManagement.Controller;
@@ -55,13 +56,16 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<IEnumerable<OrderDTO>> GetAllBusinessOrders() {
-        long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-        if (businessId == null) return Forbid();
+    public ActionResult<IEnumerable<OrderDTO>> GetAllBusinessOrders([FromQuery] OrderStatus? orderStatus, 
+                                                                    [FromQuery] int? pageSize, 
+                                                                    [FromQuery] int? page) { 
+        
+        var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
+        var queryParams = new OrdersRequestCriteria(orderStatus, page, pageSize);
+        
+        var (orderDTOs, totalPagesCount) = _orderService.GetBusinessOrdersWithRequestCriteria(businessId, queryParams);
 
-
-        var orderDTOs = _orderService.GetAllBusinessOrders((long)businessId);
-
+        Response.Headers.Append("totalPagesCount", totalPagesCount.ToString());
         return Ok(orderDTOs);
     }
 
@@ -80,18 +84,18 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         return Ok(orderDTOs);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{orderId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult DeleteActiveOrder(long id) {
-        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
+    public IActionResult DeleteActiveOrder(long orderId) {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        _orderService.DeleteOrder(id);
+        _orderService.DeleteOrder(orderId);
         return NoContent();
     }
 
@@ -110,5 +114,22 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
 
         var updatedOrderDTO = _orderService.UpdateOrder(updateRequest, orderId);
         return Ok(updatedOrderDTO);
+    }
+
+    [HttpPost("split/{orderId}")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<List<SimpleOrderDTO>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult SplitOrder(long orderId, [FromBody] SplitOrderRequest splitOrderRequest) {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+            return Forbid();
+
+        var simpleOrderDTOs = _orderService.SplitOrder(orderId, splitOrderRequest);
+        
+        return Ok(simpleOrderDTOs);
     }
 }
