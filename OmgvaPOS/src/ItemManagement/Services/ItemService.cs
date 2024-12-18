@@ -37,7 +37,6 @@ namespace OmgvaPOS.ItemManagement.Services
         private readonly DiscountValidatorService _discountValidatorService = discountValidatorService;
         private readonly ILogger<ItemService> _logger = logger;
 
-        //TODO: Think how you will add taxes, discounts
         public List<ItemDTO> GetItems(long businessId) {
             var items = _itemRepository.GetItems(businessId);
             var itemDTOs = items.Select(i => i.ToItemDTO()).ToList();

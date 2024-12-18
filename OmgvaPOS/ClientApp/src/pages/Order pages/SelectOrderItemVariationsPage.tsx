@@ -48,9 +48,6 @@ const SelectOrderItemVariationsPage: React.FC = () => {
                         </div >                        
                     );
                 });
-
-                //TODO: find current 
-
                 setListItems(pageElements);
             }
         } catch (err: any) {

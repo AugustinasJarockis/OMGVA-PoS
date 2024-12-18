@@ -18,7 +18,7 @@ namespace OmgvaPOS.ItemVariationManagement
         private readonly IItemService _itemService = itemService;
         private readonly ILogger<ItemController> _logger = logger;
 
-        [HttpGet("item/{itemId}")] //TODO: Check for potential additional errors
+        [HttpGet("item/{itemId}")] //TODO: Check for potential additional errors //Not found is def missing. There is no checking that item exists?
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<ItemVariationDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -51,7 +51,7 @@ namespace OmgvaPOS.ItemVariationManagement
                 return Ok(itemVariation);
         }
 
-        [HttpPost("{itemId}")]
+        [HttpPost("{itemId}")] //TODO: not found here def possible
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<ItemVariationDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,7 +66,7 @@ namespace OmgvaPOS.ItemVariationManagement
             return Created($"/item/{itemVariationDTO.Id}", itemVariationDTO);
         }
 
-        [HttpPatch("{id}")] //Check other status code possibility
+        [HttpPatch("{id}")] //TODO: Check other status code possibility
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<ItemVariationDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
