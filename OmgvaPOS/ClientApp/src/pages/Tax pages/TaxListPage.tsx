@@ -49,6 +49,7 @@ const TaxListPage: React.FC<TaxListPageProps> = ({ token: authToken }) => {
                 setError('Problem acquiring taxes: ' + error);
             }
             else {
+                result.sort((a, b) => a.TaxType > b.TaxType ? 1 : (a.TaxType < b.TaxType ? -1 : 0));
                 setListItems(result.map(tax =>
                     <DeletableUpdatableListItem
                         key={tax.Id}
