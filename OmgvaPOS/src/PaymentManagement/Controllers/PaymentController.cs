@@ -35,7 +35,13 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            return Ok(_paymentService.GetPayments());
+            var results = _paymentService.GetPayments();
+            if (results.Count == 0)
+            {
+                return NotFound(new { Message = "No payments found" });
+            }
+            
+            return Ok(results);
         }
         
         [HttpGet("{orderId}")]
@@ -51,12 +57,16 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            return Ok(_paymentService.GetPayment(orderId));
+            var results = _paymentService.GetPayment(orderId);
+            if (results.Count == 0)
+                return NotFound(new { Message = "No payments found with provided orderId" });
+            
+            return Ok(results);
         }
 
         [HttpPost("process-card")]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<PaymentDTO>(StatusCodes.Status201Created)]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -140,10 +150,9 @@ namespace OMGVA_PoS.Business_layer.Controllers
         
         [HttpPost("process-cash")]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<PaymentDTO>(StatusCodes.Status201Created)]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ProcessCashPayment([FromBody] PaymentRequest request)
         {
