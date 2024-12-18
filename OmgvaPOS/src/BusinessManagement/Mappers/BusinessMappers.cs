@@ -7,8 +7,8 @@ namespace OmgvaPOS.BusinessManagement.Mappers
     {
         public static Business ToBusiness(this CreateBusinessRequest request) {
             return new Business() {
-                StripeSecretKey = "/////////////////////////",//TODO: somehow acquire stripe acc id
-                StripePublishKey = "/////////////////////////",
+                StripeSecretKey = request.StripeSecretKey,
+                StripePublishKey = request.StripePublishKey,
                 Name = request.Name,
                 Address = request.Address,
                 Phone = request.Phone,
@@ -18,8 +18,8 @@ namespace OmgvaPOS.BusinessManagement.Mappers
 
         public static Business ToBusiness(this BusinessDTO business, Business businessBase) {
             businessBase.Id = businessBase.Id;
-            businessBase.StripeSecretKey = businessBase.StripeSecretKey;
-            businessBase.StripePublishKey = businessBase.StripePublishKey;
+            businessBase.StripeSecretKey = business.StripeSecretKey ?? businessBase.StripeSecretKey;
+            businessBase.StripePublishKey = business.StripePublishKey ?? businessBase.StripePublishKey;
             businessBase.Name = business.Name ?? businessBase.Name;
             businessBase.Address = business.Address ?? businessBase.Address;
             businessBase.Phone = business.Phone ?? businessBase.Phone;
