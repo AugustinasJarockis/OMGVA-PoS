@@ -15,6 +15,7 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
     const [error, setError] = useState<string | null>(null);
     const { authToken } = useAuth();
     const [item, setItem] = useState<Item>();
+    const [variationString, setVariationString] = useState<string>();
     const [sliderValue, setSliderValue] = useState<number>(1); 
     const [savedSliderValue, setSavedSliderValue] = useState<number>(1); 
 
@@ -67,23 +68,39 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
         }
 
         setSliderValue(props.orderItem.Quantity);
+        let newVariationString = '(';
+        if (props.orderItem.Variations) {
+            for (const variation of props.orderItem.Variations) {
+                newVariationString += variation.ItemVariationName + ', ';
+            }
+        }
+        console.log(newVariationString);
+        console.log(newVariationString.length);
+        if (newVariationString.length >= 32) {
+            newVariationString = newVariationString.substring(0, 30);
+            newVariationString += '...';
+        }
+        else {
+            newVariationString = newVariationString.substring(0, newVariationString.length - 2);
+        }
+        newVariationString += ')';
+        setVariationString(newVariationString);
         getSelectedItem();
 
         window.scrollTo(0, 0);
     }, []);
     //TODO: Currency
     //TODO: Max value
-    //TODO: fix css
-    //TODO: show variations
+    //TODO: update price
     return (
         (error) ||
         <div className="order-item-list-item">
             <table>
                 <tr>
-                    <td><b>{props.orderItem.ItemName}</b></td>
+                    <td><b>{props.orderItem.ItemName} {variationString}</b></td>
                     <td>Price: {props.orderItem.TotalPrice} EUR</td>
-                    <td>Quantity:</td>
-                    {(props.orderStatus === OrderStatus.Open && item) && <>
+                    {(props.orderStatus === OrderStatus.Open && item) ? <>
+                        <td>Quantity:</td>
                         <td>
                             <input
                                 type="range"
@@ -104,15 +121,14 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
                                 onInput={updateSliderValue}
                             />
                         </td>
-                        { (sliderValue !== savedSliderValue) &&
-                        <td>
-                            <button onClick={saveChangedItemAmount}>Save changes</button>
-                        </td>
-                        }
-                        <td>
+                        <td className="last-order-list-item-cell">
                             <button onClick={removeOrderItem}>X</button>
+                            { (sliderValue !== savedSliderValue) &&
+                            <button onClick={saveChangedItemAmount}>Save changes</button>
+                            }  
                         </td>
-                    </>}
+                    </>
+                    : <td>Quantity: {props.orderItem.Quantity}</td>}
                 </tr>
             </table>
         </div>

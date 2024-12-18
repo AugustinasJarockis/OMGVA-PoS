@@ -129,12 +129,11 @@ const OrderPage: React.FC = () => {
                 <>
                     <h1>{'Order #' + order.Id}</h1>
                     {order.Status == OrderStatus.Open && <button onClick={goToAddItems}>Add items</button>}
+                    <br/><br/>
                     <section>
                         {listItems}
-                        {/*<p>Address: {order.Address}</p>*/}
-                        {/*<p>Phone: {order.Phone}</p>*/}
-                        {/*<p>Email: {order.Email}</p>*/}
                     </section>
+                    <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     {order.Status == OrderStatus.Open && <button onClick={cancelOrder}>Cancel order</button>}
