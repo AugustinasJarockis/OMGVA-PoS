@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CreateReservation, createReservation } from '../../services/reservationService';
 import { useAuth } from '../../contexts/AuthContext';
 import { getEmployeeSchedulesByItemAndDate } from '../../services/scheduleService';
@@ -7,34 +7,38 @@ import ScheduleViewer from '../../components/Schedules';
 
 interface ReservationCreatePageParams extends Record<string, string | undefined> {
   itemId: string;
-  employeeId: string;
+    employeeId: string;
+    orderId: string;
 }
 
 const ReservationCreatePage: React.FC = () => {
-    const { itemId, employeeId } = useParams<ReservationCreatePageParams>();
+  const { itemId, employeeId, orderId } = useParams<ReservationCreatePageParams>();
   const [timeReserved, setTimeReserved] = useState<string>('');
   const [customerId, setCustomerId] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { state } = useLocation();
   const [scheduleData, setScheduleData] = useState<any>(null);
+  const navigate = useNavigate();
   const { authToken } = useAuth();
 
-  useEffect(() => {
+
+    useEffect(() => {
     if (timeReserved) {
-      const fetchSchedule = async () => {
-        const date = new Date(timeReserved).toISOString().split('T')[0];
+        const fetchSchedule = async () => {
+            const date = new Date(timeReserved).toISOString().split('T')[0];
         const { result, error } = await getEmployeeSchedulesByItemAndDate(authToken, itemId ?? "", date);
         
         if (error) {
-          setError(error);
-          setScheduleData(null);
+            setError(error);
+            setScheduleData(null);
         } else {
             setScheduleData(result);
-          setError(null);
+            setError(null);
         }
-      };
+        };
 
-      fetchSchedule();
+        fetchSchedule();
     }
   }, [timeReserved, itemId, authToken]);
 
@@ -54,13 +58,25 @@ const ReservationCreatePage: React.FC = () => {
       setError(error);
       setSuccessMessage(null);
     } else {
-      setSuccessMessage('Reservation created successfully!');
+        setSuccessMessage('Reservation created successfully!');
+        if (state.group)
+            setTimeout(() => navigate(`/order/${orderId}/add-items`, { state: { group: state.group } }), 2000);
+        else {
+           setTimeout(() =>  navigate(`/order/${orderId}/add-items`), 2000);
+        }
       setError(null);
     }
-  };
+   };
+
+    const returnToVariations = () => {
+        navigate(`/order/${orderId}/add-items/${itemId}/variations`, { state: { group: state.group } });
+    }
 
   return (
-    <div>
+      <div>
+        <header>
+            <button onClick={returnToVariations}>Return</button>
+        </header>
       <h2>Create a Reservation</h2>
       
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
@@ -89,7 +105,7 @@ const ReservationCreatePage: React.FC = () => {
           />
         </div>
 
-        <button type="submit">Create Reservation</button>
+        <button type="submit">Create Reservation and Finish Selection</button>
       </form>
 
       {scheduleData && (
