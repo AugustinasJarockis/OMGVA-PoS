@@ -9,5 +9,4 @@ public interface IPaymentService
     public List<PaymentDTO> GetPayments();
     public List<PaymentDTO> GetPayment(long orderId);
     public PaymentDTO CreatePayment(PaymentDTO request);
-    public BusinessDTO GetBusinessById(long businessId);
 }

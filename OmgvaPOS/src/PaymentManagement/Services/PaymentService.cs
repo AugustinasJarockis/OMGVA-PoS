@@ -29,8 +29,4 @@ public class PaymentService(IPaymentRepository paymentRepository, IBusinessServi
         var payment = request.ToPayment();
         return paymentRepository.CreatePayment(payment).ToPaymentDTO();
     }
-    public BusinessDTO GetBusinessById(long businessId)
-    {
-        return businessService.GetBusiness(businessId);
-    }
 }
