@@ -3,7 +3,7 @@ using OmgvaPOS.Database.Context;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.PaymentManagement.DTOs;
 using OmgvaPOS.PaymentManagement.Models;
-
+using OmgvaPOS.PaymentManagement.Services;
 using Stripe;
 using PaymentMethod = OmgvaPOS.PaymentManagement.Enums.PaymentMethod;
 
@@ -13,10 +13,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
     [Route("payment")]
     public class PaymentController : ControllerBase
     {
-        private readonly OmgvaDbContext _context;
-        public PaymentController(OmgvaDbContext context)
+        private readonly IPaymentService _paymentService;
+        public PaymentController(IPaymentService paymentService)
         {
-            _context = context;
+            _paymentService = paymentService;
         }
 
         [HttpPost]
@@ -27,7 +27,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var business = _context.Businesses.Find(businessId);
+            var business = _paymentService.GetBusinessById(businessId);
             StripeConfiguration.ApiKey = business.StripeSecretKey;
             try
             {
@@ -64,8 +64,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
                         OrderId = request.OrderId,
                         Amount = request.Amount
                     };
-                    _context.Payments.Add(payment);
-                    _context.SaveChanges();
+                    _paymentService.CreatePayment(payment);
                     return Ok(new
                     {
                         success = true,
@@ -107,7 +106,6 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var business = _context.Businesses.Find(businessId);
             var payment = new Payment
             {
                 Id = Guid.NewGuid().ToString(),
@@ -117,8 +115,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 Amount = request.Amount
             };
             
-            _context.Payments.Add(payment);
-            _context.SaveChanges();
+            _paymentService.CreatePayment(payment);
             return Ok(new { success = true, payment });
         }
     }
