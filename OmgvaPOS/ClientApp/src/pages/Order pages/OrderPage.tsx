@@ -7,6 +7,8 @@ import { Order, OrderStatus, getOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 import PaymentModal from '../../components/Modals/PaymentModal';
+import { Payment, createPayment } from '../../services/paymentService'
+import Swal from 'sweetalert2';
 
 const OrderPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -102,22 +104,32 @@ const OrderPage: React.FC = () => {
         setShowPayment(!showPayment);
     }
 
-    const handlePaymentSubmit = async (paymentMethod: string) => {
+    const handlePaymentSubmit = async (paymentMethod: string, customerId: number) => {
         try {
-            // Example: Call your payment processing service
+            const payment: Payment = {
+                Method: paymentMethod,
+                OrderId: order?.Id.toString(),
+                Amount: calculateTotalAmount() * 1000,  // * 1000 so the amount is represented in cents
+                CustomerId: customerId
+            };
+
+            console.log(payment);
+
+            const { Payment, error } = await createPayment(authToken, payment);
             // const { success, error } = await processPayment(authToken, order?.Id, paymentMethod);
+            console.log("After function");
 
             if (error) {
+                console.log('Payment failed: ' + error);
                 setError("Payment failed: " + error);
                 return;
-            }
-
-            if (success) {
-                // Update order status or perform other actions
-                await loadOrder(); // Reload order to reflect changes
+            } else {
+                console.log('Payment successful!');
+                await Swal.fire(`${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} payment successful!`, '', 'success');
                 setShowPayment(false);
             }
         } catch (err: any) {
+            console.log(err.message || 'An unexpected error occurred during payment');
             setError(err.message || 'An unexpected error occurred during payment.');
         }
     }

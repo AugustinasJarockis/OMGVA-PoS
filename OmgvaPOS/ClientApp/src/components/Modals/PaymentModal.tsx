@@ -4,18 +4,19 @@ import './PaymentModal.css';
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (paymentMethod: string) => void;
+    onSubmit: (paymentMethod: string, customerId: number) => void;
     totalAmount: number;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onSubmit, totalAmount }) => {
     const [tipsField, setTipsField] = useState<string>('');
     const [discount, setDiscount] = useState<number>(0);
+    const [customerId, setCustomerId] = useState<number>(0);
 
     if (!isOpen) return null;
 
-    const handlePayment = (method: string) => {
-        onSubmit(method);
+    const handlePayment = (method: string, customerId: number) => {
+        onSubmit(method, customerId);
         onClose();
     };
 
@@ -49,13 +50,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onSubmit, 
                 </div>
                 <div className="form-group">
                     <label>
+                        Customer ID:
+                        <input
+                            type="number"
+                            value={customerId}
+                            onChange={(e) => setCustomerId(parseFloat(e.target.value))}
+                            placeholder="Enter customer ID"
+                        />
+                    </label>
+                </div>
+                <div className="form-group">
+                    <label>
                         Total Amount: {totalAmount.toFixed(2)}
                     </label>
                 </div>
                 <div className="payment-buttons">
-                    <button onClick={() => handlePayment('cash')}>Pay with Cash</button>
-                    <button onClick={() => handlePayment('giftcard')}>Pay with Giftcard</button>
-                    <button onClick={() => handlePayment('card')}>Pay with Card</button>
+                    <button onClick={() => handlePayment('cash', customerId)}>Pay with Cash</button>
+                    <button onClick={() => handlePayment('giftcard', customerId)}>Pay with Giftcard</button>
+                    <button onClick={() => handlePayment('card', customerId)}>Pay with Card</button>
                 </div>
                 <div className="modal-actions">
                     <button onClick={onClose}>Cancel</button>
