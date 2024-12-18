@@ -15,7 +15,7 @@ public static class PaymentMapper
             CustomerId = request.CustomerId,
             OrderId = request.OrderId,
             Amount = request.Amount,
-            GiftCardPaymentId = request.GiftCardPaymentId
+            GiftCardId = request.GiftCardId
         };
     }
 
@@ -28,7 +28,7 @@ public static class PaymentMapper
             CustomerId = payment.CustomerId,
             OrderId = payment.OrderId,
             Amount = payment.Amount,
-            GiftCardPaymentId = payment.GiftCardPaymentId
+            GiftCardId = payment.GiftCardId
         };
     }
 }

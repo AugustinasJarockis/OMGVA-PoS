@@ -13,7 +13,7 @@ namespace OmgvaPOS.PaymentManagement.Models
         public string Id { get; set; }
         public PaymentMethod Method { get; set; }
         public long CustomerId { get; set; }
-        public long? GiftCardPaymentId { get; set; }
+        public long? GiftCardId { get; set; }
         public long OrderId { get; set; }
         public long Amount { get; set; }
         
