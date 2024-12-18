@@ -6,6 +6,7 @@ import '../../pages/Homepage.css';
 import { Order, OrderStatus, getOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
+import PaymentModal from '../../components/Modals/PaymentModal';
 
 const OrderPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -15,6 +16,7 @@ const OrderPage: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { authToken } = useAuth();
+    const [showPayment, setShowPayment] = useState<boolean>(false);
 
     const loadOrder = async () => {
         setError(null);
@@ -97,7 +99,27 @@ const OrderPage: React.FC = () => {
     }
 
     const finishOrder = async () => {
-        //TODO: Do stuff
+        setShowPayment(!showPayment);
+    }
+
+    const handlePaymentSubmit = async (paymentMethod: string) => {
+        try {
+            // Example: Call your payment processing service
+            // const { success, error } = await processPayment(authToken, order?.Id, paymentMethod);
+
+            if (error) {
+                setError("Payment failed: " + error);
+                return;
+            }
+
+            if (success) {
+                // Update order status or perform other actions
+                await loadOrder(); // Reload order to reflect changes
+                setShowPayment(false);
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred during payment.');
+        }
     }
 
     useEffect(() => {
@@ -111,6 +133,11 @@ const OrderPage: React.FC = () => {
             setError("You have to authenticate first!");
         }
     }, []);
+
+    const calculateTotalAmount = (): number => {
+        if (!order || !order.OrderItems) return 0;
+        return order.OrderItems.reduce((total, item) => total + (item.TotalPrice * item.Quantity), 0);
+    }
 
     return (
         error ||
@@ -142,6 +169,12 @@ const OrderPage: React.FC = () => {
             ) : (
                 <p className="error-message">{error}</p>
             )}
+            <PaymentModal
+                isOpen={showPayment}
+                onClose={() => setShowPayment(false)}
+                onSubmit={handlePaymentSubmit}
+                totalAmount={calculateTotalAmount()}
+            />
         </div>
     );
 };
