@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderItemManagement.DTOs;
 using OmgvaPOS.OrderItemManagement.Service;
-using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.OrderItemManagement.Controller;

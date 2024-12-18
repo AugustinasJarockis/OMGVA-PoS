@@ -1,7 +1,4 @@
-﻿using OmgvaPOS.UserManagement.Enums;
-using OmgvaPOS.UserManagement.Models;
-
-namespace OmgvaPOS.OrderManagement.DTOs;
+﻿namespace OmgvaPOS.OrderManagement.DTOs;
 
 public class SimpleUserDTO
 {

@@ -11,6 +11,11 @@ export interface UserResponse {
     HasLeft?: boolean;
 }
 
+export interface SimpleUser {
+    UserId: string,
+    UserName: string
+}
+
 export interface CreateUser {
     BusinessId?: string;
     Name: string;

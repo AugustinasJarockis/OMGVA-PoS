@@ -6,6 +6,11 @@ export interface Discount {
     TimeValidUntil: string,
     Type: DiscountType
 }
+
+export interface SimpleDiscount {
+    DiscountId: string,
+    DiscountAmount: number
+}
 export interface DiscountCreateRequest {
     Amount: number,
     TimeValidUntil: string,
@@ -65,7 +70,6 @@ const createDiscount = async (token: string | null, discount: DiscountCreateRequ
 
 const updateDiscountValidUntilTime = async (token: string | null, id: string, validUntil: string): Promise<string | undefined> => {
     try {
-        console.log(validUntil);
         const response = await axios.patch(`/api/discount/${id}`, '"' + validUntil + '"', {
             headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
         });
