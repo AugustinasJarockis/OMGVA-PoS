@@ -41,7 +41,8 @@ public class PaymentService(
     
     public PaymentDTO ProcessGiftcardPayment(PaymentRequest request)
     {
-        if (giftcardService.GetGiftcard(code: request.GiftCardCode) == null)
+        var giftcard = giftcardService.GetGiftcard(code: request.GiftCardCode);
+        if (giftcard == null)
             throw new BadRequestException("Incorrect giftcard code");
         
         var updateRequest = new GiftcardUpdateRequest
@@ -57,7 +58,8 @@ public class PaymentService(
             Amount = request.Amount,
             OrderId = request.OrderId,
             Method = PaymentMethod.Giftcard,
-            CustomerId = request.CustomerId
+            CustomerId = request.CustomerId,
+            GiftCardId = giftcard.Id
         };
         return paymentRepository.CreatePayment(payment).ToPaymentDTO();
     }
