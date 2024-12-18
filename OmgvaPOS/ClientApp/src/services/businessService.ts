@@ -2,6 +2,8 @@ import axios from 'axios';
 
 export interface Business {
     Id?: string,
+    StripeSecretKey?: string,
+    StripePublishKey?: string,
     Name?: string,
     Address?: string,
     Phone?: string,
