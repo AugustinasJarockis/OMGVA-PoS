@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.DiscountManagement.Controller;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.OrderManagement.DTOs;
+using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Service;
 
 namespace OmgvaPOS.OrderManagement.Controller;
@@ -55,13 +56,16 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<IEnumerable<OrderDTO>> GetAllBusinessOrders() {
-        long? businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
-        if (businessId == null) return Forbid();
+    public ActionResult<IEnumerable<OrderDTO>> GetAllBusinessOrders([FromQuery] OrderStatus? orderStatus, 
+                                                                    [FromQuery] int? pageSize, 
+                                                                    [FromQuery] int? page) { 
+        
+        var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization!);
+        var queryParams = new OrdersRequestCriteria(orderStatus, page, pageSize);
+        
+        var (orderDTOs, totalPagesCount) = _orderService.GetBusinessOrdersWithRequestCriteria(businessId, queryParams);
 
-
-        var orderDTOs = _orderService.GetAllBusinessOrders((long)businessId);
-
+        Response.Headers.Append("totalPagesCount", totalPagesCount.ToString());
         return Ok(orderDTOs);
     }
 

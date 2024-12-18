@@ -46,8 +46,9 @@ public static class OrderMapper
         };
     }
 
-    public static IEnumerable<SimpleOrderDTO> ToSimpleOrderDTOList(this IEnumerable<Order> orders) {
-        return orders?.Select(ToSimpleOrderDTO).ToList();
+    public static IEnumerable<SimpleOrderDTO> ToSimpleOrderDTOList(this IEnumerable<Order>? orders)
+    {
+        return orders == null ? [] : orders.Select(ToSimpleOrderDTO).ToList();
     }
 
     public static Order ToUpdatedOrder(this UpdateOrderRequest updateRequest, Order currentOrder)

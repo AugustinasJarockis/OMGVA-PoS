@@ -101,6 +101,28 @@ public class OrderService : IOrderService
         var activeOrders = orders.Where(o => o.Status == OrderStatus.Open);
         return activeOrders;
     }
+    
+    public (IEnumerable<SimpleOrderDTO> orders, int totalPages) 
+        GetBusinessOrdersWithRequestCriteria(long businessId, OrdersRequestCriteria requestCriteria) {
+        
+        var totalItemsCount = _orderRepository
+            .GetOrderQueryable()
+            .Where(o => o.BusinessId == businessId)
+            .Count(o => requestCriteria.RequestedOrderStatus == null || o.Status == requestCriteria.RequestedOrderStatus);
+        var totalPages = (int)Math.Ceiling((double)totalItemsCount / requestCriteria.PageSize);
+
+        // Fetch orders with pagination
+        var orders = _orderRepository.GetOrderQueryable()
+            .Where(o => o.BusinessId == businessId)
+            .Where(o => requestCriteria.RequestedOrderStatus == null || o.Status == requestCriteria.RequestedOrderStatus)
+            .OrderByDescending(o => o.Id)
+            .Skip((requestCriteria.PageNumber - 1) * requestCriteria.PageSize)
+            .Take(requestCriteria.PageSize)
+            .ToList()
+            .ToSimpleOrderDTOList();
+
+        return (orders, totalPages);
+    }
 
     public void DeleteOrder(long id) {
         var order = _orderRepository.GetOrder(id);

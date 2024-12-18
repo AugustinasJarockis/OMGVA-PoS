@@ -12,6 +12,12 @@ public class OrderRepository : IOrderRepository
         _context = context;
     }
 
+
+    public IQueryable<Order> GetOrderQueryable()
+    {
+        return _context.Orders;
+    }
+
     public Order AddOrder(Order order) {
         _context.Orders.Add(order);
         _context.SaveChanges();
