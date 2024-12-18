@@ -1,4 +1,6 @@
 ﻿using OmgvaPOS.Database.Context;
+using OmgvaPOS.Exceptions;
+using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemManagement.Validators;
@@ -12,6 +14,7 @@ using OmgvaPOS.OrderItemManagement.Validators;
 using OmgvaPOS.OrderItemVariationManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Mappers;
+using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Repository;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.OrderManagement.Validators;
@@ -61,6 +64,8 @@ public class OrderItemService : IOrderItemService
         OrderValidator.Exists(order);
         OrderValidator.IsOpen(order);
 
+        ValidateItemBelongsToBusiness(item, order);
+        
         var newOrderItem = new OrderItem {
             ItemId = request.ItemId,
             Quantity = request.Quantity,
@@ -234,4 +239,15 @@ public class OrderItemService : IOrderItemService
             throw new ApplicationException("Error updating order item. The operation has been rolled back.");
         }
     }
+    
+    private void ValidateItemBelongsToBusiness(Item item, Order order)
+    {
+        if (item.BusinessId != order.BusinessId)
+        {
+            _logger.LogWarning($"Item '{item.Name}' with ID {item.Id} cannot be ad ded to order because it belongs to another business. " +
+                               $"Item business: {item.BusinessId}, Order business: {order.BusinessId}");
+            throw new BadRequestException($"Item cannot be added to order because it's from another business");
+        }
+    }
+    
 }
