@@ -21,7 +21,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType<Payment>(StatusCodes.Status200OK)]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,7 +37,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         
         [HttpGet("{orderId}")]
         [Authorize(Roles = "Admin,Owner")]
-        [ProducesResponseType<Payment>(StatusCodes.Status200OK)]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,7 +53,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
 
         [HttpPost("process-card")]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<Payment>(StatusCodes.Status201Created)]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,10 +93,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 else if (paymentIntent.Status == "succeeded")
                 {
                     // Payment succeeded
-                    var payment = new Payment
+                    var payment = new PaymentDTO
                     {
                         Id = paymentIntent.Id,
-                        Method = PaymentMethod.Card,
+                        Method = PaymentMethod.Card.ToString(),
                         CustomerId = request.CustomerId,
                         OrderId = request.OrderId,
                         Amount = request.Amount
@@ -137,7 +137,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
         
         [HttpPost("process-cash")]
         [Authorize(Roles = "Admin,Owner,Employee")]
-        [ProducesResponseType<Payment>(StatusCodes.Status201Created)]
+        [ProducesResponseType<PaymentDTO>(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -148,10 +148,10 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var payment = new Payment
+            var payment = new PaymentDTO
             {
                 Id = Guid.NewGuid().ToString(),
-                Method = PaymentMethod.Cash,
+                Method = PaymentMethod.Cash.ToString(),
                 CustomerId = request.CustomerId,
                 OrderId = request.OrderId,
                 Amount = request.Amount

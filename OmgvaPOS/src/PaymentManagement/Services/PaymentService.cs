@@ -1,6 +1,8 @@
 using OmgvaPOS.BusinessManagement.DTOs;
 using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.BusinessManagement.Services;
+using OmgvaPOS.PaymentManagement.DTOs;
+using OmgvaPOS.PaymentManagement.Mappers;
 using OmgvaPOS.PaymentManagement.Models;
 using OmgvaPOS.PaymentManagement.Repository;
 
@@ -8,17 +10,24 @@ namespace OmgvaPOS.PaymentManagement.Services;
 
 public class PaymentService(IPaymentRepository paymentRepository, IBusinessService businessService, ILogger<PaymentService> logger) : IPaymentService
 {
-    public List<Payment> GetPayments()
+    public List<PaymentDTO> GetPayments()
     {
-        return paymentRepository.GetPayments();
+        return paymentRepository.GetPayments()
+            .Select(p => p.ToPaymentDTO())
+            .ToList();
     }
-    public List<Payment> GetPayment(long orderId)
+
+    public List<PaymentDTO> GetPayment(long orderId)
     {
-        return paymentRepository.GetPayment(orderId);
+        return paymentRepository.GetPayment(orderId)
+            .Select(p => p.ToPaymentDTO())
+            .ToList();
     }
-    public Payment CreatePayment(Payment payment)
+
+    public PaymentDTO CreatePayment(PaymentDTO request)
     {
-        return paymentRepository.CreatePayment(payment);
+        var payment = request.ToPayment();
+        return paymentRepository.CreatePayment(payment).ToPaymentDTO();
     }
     public BusinessDTO GetBusinessById(long businessId)
     {

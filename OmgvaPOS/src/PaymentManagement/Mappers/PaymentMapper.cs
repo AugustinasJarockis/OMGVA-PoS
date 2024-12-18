@@ -6,12 +6,12 @@ namespace OmgvaPOS.PaymentManagement.Mappers;
 
 public static class PaymentMapper
 {
-    public static Payment ToPayment(this PaymentRequest request)
+    public static Payment ToPayment(this PaymentDTO request)
     {
         return new Payment
         {
             Id = Guid.NewGuid().ToString(),
-            Method = Enum.Parse<PaymentMethod>(request.PaymentMethodId, true),
+            Method = Enum.Parse<PaymentMethod>(request.Method, true),
             CustomerId = request.CustomerId,
             OrderId = request.OrderId,
             Amount = request.Amount,
