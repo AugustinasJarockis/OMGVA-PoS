@@ -23,3 +23,29 @@
         }
     }
 }
+
+.order-item-list-item {
+    align-content: flex-start;
+    background: #777777;
+    border: 1px solid #CCCCCCAA;
+    border-collapse: collapse;
+    border-radius: 8px;
+    color: #111111;
+    height: 70px;
+    text-align: center;
+    width: 1100px;
+    margin: 3px;
+}
+
+.order-item-list-item .last-order-list-item-cell{
+    width: 195px;
+    display:block;
+    float: right;
+    vertical-align: central;
+
+    button {
+        vertical-align: central;
+        float: right;
+        margin-left: 3px;
+    }
+}

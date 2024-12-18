@@ -4,8 +4,11 @@ import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
 import { Order, OrderStatus, getOrder } from '../../services/orderService';
+import OrderItemListItem from '../../components/List/OrderItemListItem';
+import { deleteOrderItem } from '../../services/orderItemService';
 
 const OrderPage: React.FC = () => {
+    const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
     const [order, setOrder] = useState<Order>();
     const { state } = useLocation();
@@ -24,7 +27,12 @@ const OrderPage: React.FC = () => {
                     return;
                 }
                 setOrder(result);
-                console.log(result);
+
+                if (result?.OrderItems) {
+                    setListItems(result?.OrderItems.map(item =>
+                        <OrderItemListItem key={item.Id} orderItem={item} orderId={String(id)} orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
+                    ));
+                }
             }
             else {
                 setError("Could not identify the order");
@@ -33,6 +41,34 @@ const OrderPage: React.FC = () => {
             setError(err.message || 'An unexpected error occurred.');
         }
     };
+
+    const onDeleteOrderItem = async (orderItemId: string) => {
+        try {
+            if (!id) {
+                setError("Could not identify the order");
+                return;
+            }
+
+            const error = await deleteOrderItem(authToken, id, orderItemId);
+
+            if (error) {
+                setError("An error occurred while deleting order item: " + error);
+                return;
+            }
+
+            if (!listItems) {
+                loadOrder();
+            }
+
+            if (listItems) {
+                const newList = listItems.filter((item) => item.key != orderItemId);
+                setListItems(newList);
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
+    }
 
     const goToBusinessOrders = async () => {
         if (authToken) {
@@ -77,6 +113,7 @@ const OrderPage: React.FC = () => {
     }, []);
 
     return (
+        error ||
         <div>
             <header>
                 <nav className="nav-bar">
@@ -92,11 +129,11 @@ const OrderPage: React.FC = () => {
                 <>
                     <h1>{'Order #' + order.Id}</h1>
                     {order.Status == OrderStatus.Open && <button onClick={goToAddItems}>Add items</button>}
+                    <br/><br/>
                     <section>
-                        {/*<p>Address: {order.Address}</p>*/}
-                        {/*<p>Phone: {order.Phone}</p>*/}
-                        {/*<p>Email: {order.Email}</p>*/}
+                        {listItems}
                     </section>
+                    <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     {order.Status == OrderStatus.Open && <button onClick={cancelOrder}>Cancel order</button>}
