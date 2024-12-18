@@ -63,7 +63,7 @@ const UpdateSchedulePage: React.FC = () => {
                 setError('Failed to update schedule: ' + error);
             } else if (result) {
                 setSuccess('Schedule updated successfully!');
-                setTimeout(() => navigate(`/employee/${id}/schedules`), 2000);
+                setTimeout(() => navigate(`/schedules/${id}`), 2000);
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -71,7 +71,7 @@ const UpdateSchedulePage: React.FC = () => {
     };
 
     const handleCancel = () => {
-        navigate(`/employee/${id}/schedules`);
+        navigate(`/schedules/${id}`);
     };
 
     return (
