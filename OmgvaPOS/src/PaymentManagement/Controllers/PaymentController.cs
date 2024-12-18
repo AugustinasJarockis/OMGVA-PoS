@@ -3,7 +3,7 @@ using OmgvaPOS.Database.Context;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.PaymentManagement.DTOs;
 using OmgvaPOS.PaymentManagement.Models;
-
+using OmgvaPOS.PaymentManagement.Services;
 using Stripe;
 using PaymentMethod = OmgvaPOS.PaymentManagement.Enums.PaymentMethod;
 
@@ -13,10 +13,31 @@ namespace OMGVA_PoS.Business_layer.Controllers
     [Route("payment")]
     public class PaymentController : ControllerBase
     {
-        private readonly OmgvaDbContext _context;
-        public PaymentController(OmgvaDbContext context)
+        private readonly IPaymentService _paymentService;
+        public PaymentController(IPaymentService paymentService)
         {
-            _context = context;
+            _paymentService = paymentService;
+        }
+        
+        [HttpGet]
+        public IActionResult GetPayments()
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+                return Forbid();
+            
+            return Ok(_paymentService.GetPayments());
+        }
+        
+        [HttpGet]
+        [Route("{orderId}")]
+        public IActionResult GetPayment([FromRoute] long orderId)
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+                return Forbid();
+            
+            return Ok(_paymentService.GetPayment(orderId));
         }
 
         [HttpPost]
@@ -27,7 +48,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var business = _context.Businesses.Find(businessId);
+            var business = _paymentService.GetBusinessById(businessId);
             StripeConfiguration.ApiKey = business.StripeSecretKey;
             try
             {
@@ -56,6 +77,15 @@ namespace OMGVA_PoS.Business_layer.Controllers
                 else if (paymentIntent.Status == "succeeded")
                 {
                     // Payment succeeded
+                    var payment = new Payment
+                    {
+                        Id = paymentIntent.Id,
+                        Method = PaymentMethod.Card,
+                        CustomerId = request.CustomerId,
+                        OrderId = request.OrderId,
+                        Amount = request.Amount
+                    };
+                    _paymentService.CreatePayment(payment);
                     return Ok(new
                     {
                         success = true,
@@ -97,14 +127,16 @@ namespace OMGVA_PoS.Business_layer.Controllers
             if (businessId == null)
                 return Forbid();
             
-            var business = _context.Businesses.Find(businessId);
             var payment = new Payment
             {
                 Id = Guid.NewGuid().ToString(),
                 Method = PaymentMethod.Cash,
-                CustomerId = 0,
-                OrderId = 0
+                CustomerId = request.CustomerId,
+                OrderId = request.OrderId,
+                Amount = request.Amount
             };
+            
+            _paymentService.CreatePayment(payment);
             return Ok(new { success = true, payment });
         }
     }

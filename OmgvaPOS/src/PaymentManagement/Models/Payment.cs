@@ -15,10 +15,11 @@ namespace OmgvaPOS.PaymentManagement.Models
         public long CustomerId { get; set; }
         public long? GiftCardPaymentId { get; set; }
         public long OrderId { get; set; }
+        public long Amount { get; set; }
         
         // navigational properties
         // for foreign keys
-        public GiftcardPaymentEntity GiftcardPaymentEntity { get; set; }
+        public GiftcardPaymentEntity? GiftcardPaymentEntity { get; set; }
         public Customer Customer { get; set; }
         
         [ForeignKey("OrderId")]
