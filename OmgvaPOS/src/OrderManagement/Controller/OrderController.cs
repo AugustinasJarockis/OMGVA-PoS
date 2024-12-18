@@ -84,18 +84,18 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         return Ok(orderDTOs);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{orderId}")]
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<OrderDTO>(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult DeleteActiveOrder(long id) {
-        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(id)))
+    public IActionResult DeleteActiveOrder(long orderId) {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        _orderService.DeleteOrder(id);
+        _orderService.DeleteOrder(orderId);
         return NoContent();
     }
 
@@ -114,5 +114,22 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
 
         var updatedOrderDTO = _orderService.UpdateOrder(updateRequest, orderId);
         return Ok(updatedOrderDTO);
+    }
+
+    [HttpPost("split/{orderId}")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<List<SimpleOrderDTO>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult SplitOrder(long orderId, [FromBody] SplitOrderRequest splitOrderRequest) {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+            return Forbid();
+
+        var simpleOrderDTOs = _orderService.SplitOrder(orderId, splitOrderRequest);
+        
+        return Ok(simpleOrderDTOs);
     }
 }

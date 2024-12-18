@@ -137,7 +137,7 @@ const ItemDataForm: React.FC<ItemDataFormProps> = (props: ItemDataFormProps) => 
                             pattern="[0-7]{1}:[0-9]{2}"
                             placeholder={props.item?.Duration}
                             required={props.required}
-                            onInvalid={e => e.currentTarget.setCustomValidity('Please enter the duration in format H:mm:ss.')}
+                            onInvalid={e => e.currentTarget.setCustomValidity('Please enter the duration in format H:mm.')}
                             onInput={e => e.currentTarget.setCustomValidity('')}
                         /><br /><br />
                         <label>Service provider</label>

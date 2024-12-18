@@ -15,6 +15,13 @@ export interface Order {
     OrderItems: Array<OrderItem>
 }
 
+export interface UpdateOrderRequest {
+    Status?: OrderStatus, 
+    Tip?: number,
+    RefundReason?: string,
+    UserId?: string
+}
+
 export enum OrderStatus {
     Open,
     Closed,
@@ -82,4 +89,20 @@ const createOrder = async (token: string | null): Promise<{ error?: string, resu
     }
 };
 
-export { getAllActiveOrders, getAllOrders, getOrder, createOrder };
+const updateOrder = async (token: string | null, id: string, order: UpdateOrderRequest): Promise<string | Order> => {
+    try {
+        const response = await axios.patch(`/api/order/${id}`, order, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log(response);
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+};
+
+export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder };

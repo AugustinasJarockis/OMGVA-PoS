@@ -50,4 +50,33 @@
         margin-left: 3px;
         z-index: 1000;
     }
+
+    input {
+        z-index: 1000;
+    }
+}
+
+.order-item-list-item .expanded-item-info {
+    width: 195px;
+    display: block;
+    float: right;
+    vertical-align: central;
+}
+
+.tip-button {
+    display: block;
+    align-content: center;
+    align-items: center;
+    p {
+        display: block;
+        width: 50px;
+        align-content:center;
+        align-self:center;
+    }
+    input {
+        display: block;
+        width: 50px;
+        align-content:center;
+        align-self:center;
+    }
 }
