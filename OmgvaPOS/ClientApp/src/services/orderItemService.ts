@@ -9,6 +9,7 @@ export interface OrderItem {
     ItemId: string,
     ItemName: string,
     Quantity: number,
+    MaxQuantity: number,
     Discount?: SimpleDiscount,
     Variations?: Array<OrderItemVariation>
 }

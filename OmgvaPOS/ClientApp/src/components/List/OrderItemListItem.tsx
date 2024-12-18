@@ -16,6 +16,7 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
     const { authToken } = useAuth();
     const [item, setItem] = useState<Item>();
     const [variationString, setVariationString] = useState<string>();
+    const [longVariationString, setLongVariationString] = useState<string>();
     const [expanded, setExpanded] = useState<boolean>();
     const [sliderValue, setSliderValue] = useState<number>(1); 
     const [savedSliderValue, setSavedSliderValue] = useState<number>(1); 
@@ -65,6 +66,10 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
         }
     }
 
+    const expandInfo = async () => {
+        setExpanded(expanded ? false : true);
+    }
+
     useEffect(() => {
         if (!authToken) {
             setError("You have to authenticate first!");
@@ -78,12 +83,19 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
                 newVariationString += variation.ItemVariationName + ', ';
             }
         }
+        let longVariationsString;
+        if (newVariationString.length > 1)
+            longVariationsString = newVariationString.substring(0, newVariationString.length - 2) + ')';
+        else
+            longVariationsString = '()';
+        setLongVariationString(longVariationsString);
         if (newVariationString.length >= 32) {
             newVariationString = newVariationString.substring(0, 30);
             newVariationString += '...';
         }
         else {
-            newVariationString = newVariationString.substring(0, newVariationString.length - 2);
+            if (newVariationString.length > 1)
+                newVariationString = newVariationString.substring(0, newVariationString.length - 2);
         }
         newVariationString += ')';
         setVariationString(newVariationString);
@@ -94,46 +106,59 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
     //TODO: Currency
     //TODO: Max value
     //TODO: update price
+    //TODO: Center tip amount fix css of total amount
     return (
-        (error) ||
-        <div className="order-item-list-item">
-            <table>
-                <tr>
-                    <td><b>{props.orderItem.ItemName} {variationString}</b></td>
-                    <td>Price: {props.orderItem.TotalPrice} EUR</td>
-                    {(props.orderStatus === OrderStatus.Open && item) ? <>
-                        <td>Quantity:</td>
-                        <td>
-                            <input
-                                type="range"
-                                min='1'
-                                max={Math.min(item?.InventoryQuantity, 65000)}
-                                value={sliderValue}
-                                step='1'
-                                onInput={updateSliderValue}
-                            />
-                        </td>
-                        <td>
-                            <input
-                                type="number"
-                                min='1'
-                                max={Math.min(item?.InventoryQuantity, 65000)}
-                                value={sliderValue}
-                                step='1'
-                                onInput={updateSliderValue}
-                            />
-                        </td>
-                        <td className="last-order-list-item-cell">
-                            <button onClick={removeOrderItem}>X</button>
-                            { (sliderValue !== savedSliderValue) &&
-                            <button onClick={saveChangedItemAmount}>Save changes</button>
-                            }  
-                        </td>
-                    </>
-                    : <td>Quantity: {props.orderItem.Quantity}</td>}
-                </tr>
-            </table>
-        </div>
+        (error) || <>
+            <div className="order-item-list-item" onClick={ expandInfo }>
+                <table>
+                    <tr>
+                        <td><b>{props.orderItem.ItemName} {variationString}</b></td>
+                        <td>Price: {props.orderItem.TotalPrice} EUR</td>
+                        {(props.orderStatus === OrderStatus.Open && item) ? <>
+                            <td>Quantity:</td>
+                            <td>
+                                <input
+                                    type="range"
+                                    min='1'
+                                    max={Math.min(props.orderItem.MaxQuantity, 65000)}
+                                    value={sliderValue}
+                                    step='1'
+                                    onInput={updateSliderValue}
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min='1'
+                                    max={Math.min(item?.InventoryQuantity, 65000)}
+                                    value={sliderValue}
+                                    step='1'
+                                    onInput={updateSliderValue}
+                                />
+                            </td>
+                            <td className="last-order-list-item-cell">
+                                <button onClick={removeOrderItem}>X</button>
+                                { (sliderValue !== savedSliderValue) &&
+                                <button onClick={saveChangedItemAmount}>Save changes</button>
+                                }  
+                            </td>
+                        </>
+                        : <td>Quantity: {props.orderItem.Quantity}</td>}
+                    </tr>
+                </table>
+            </div>
+            {(expanded) && <div className="expanded-item-info">
+                <table>
+                    <tr>
+                        <td>Item id: { props.orderItem.ItemId }</td>
+                        <td>Item name: { props.orderItem.ItemName }</td>
+                        <td>Tax percent: { props.orderItem.TaxPercent }%</td>
+                        <td>Variations: {longVariationString}</td>
+                    </tr>
+                </table>
+            </div>
+            }
+        </>
     );
 };
 

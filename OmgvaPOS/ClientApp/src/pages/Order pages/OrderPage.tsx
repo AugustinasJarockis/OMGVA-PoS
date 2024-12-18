@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
-import { Order, OrderStatus, getOrder } from '../../services/orderService';
+import { Order, OrderStatus, UpdateOrderRequest, getOrder, updateOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 
@@ -88,8 +88,52 @@ const OrderPage: React.FC = () => {
         }
     }
 
+    const updateTip = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const request: UpdateOrderRequest = {
+            Tip: +e.currentTarget.value
+        }
+
+        try {
+            if (id) {
+                const result = await updateOrder(authToken, id, request);
+                if (typeof result == "string") {
+                    setError("An error occurred while updating order: " + result);
+                    return;
+                }
+                console.log(result);
+                setOrder(result);
+            }
+            else {
+                setError("Could not identify the order");
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
+    };
+
     const cancelOrder = async () => {
-        //TODO: Do stuff
+        const request: UpdateOrderRequest = {
+            Status: OrderStatus.Cancelled
+        }
+
+        console.log("working");
+
+        try {
+            if (id) {
+                const result = await updateOrder(authToken, id, request);
+                if (typeof result == "string") {
+                    setError("An error occurred while updating order status: " + result);
+                    return;
+                }
+            }
+            else {
+                setError("Could not identify the order");
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
     }
 
     const refundOrder = async () => {
@@ -133,6 +177,19 @@ const OrderPage: React.FC = () => {
                     <section>
                         {listItems}
                     </section>
+                    <br/><br/>
+                    <div className="tip-button">
+                        <p>Tip amount:</p>
+                        <input
+                            type="number"
+                            min='0'
+                            value={order.Tip}
+                            onInput={updateTip}
+                        />
+                    </div>
+                    <div>
+                        <p>Total: {order.FinalPrice}</p>
+                    </div>
                     <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;
