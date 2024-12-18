@@ -18,7 +18,7 @@ export interface ScheduleWithAvailability {
     Date: Date;
     StartTime: string;
     EndTime: string;
-    AvailableTimeslots?: Array<Timeslot>;
+    AvailableTimeslots: Array<Timeslot>;
 }
 export interface Timeslot {
     StartTime: string;
