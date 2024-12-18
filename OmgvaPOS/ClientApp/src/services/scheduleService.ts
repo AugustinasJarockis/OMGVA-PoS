@@ -11,9 +11,9 @@ export interface EmployeeSchedule {
 export interface EmployeeSchedulesWithAvailability {
     EmployeeId: number;
     EmployeeName: string;
-    ScheduleWithAvailability: Array<ScheduleWithAvailability>;
+    ScheduleWithAvailability: Array<ScheduleWithAvailabilities>;
 }
-export interface ScheduleWithAvailability {
+export interface ScheduleWithAvailabilities {
     EmployeeScheduleId: number;
     Date: string;
     StartTime: string;
