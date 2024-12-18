@@ -18,6 +18,27 @@ namespace OMGVA_PoS.Business_layer.Controllers
         {
             _paymentService = paymentService;
         }
+        
+        [HttpGet]
+        public IActionResult GetPayments()
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+                return Forbid();
+            
+            return Ok(_paymentService.GetPayments());
+        }
+        
+        [HttpGet]
+        [Route("{orderId}")]
+        public IActionResult GetPayment([FromRoute] long orderId)
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+                return Forbid();
+            
+            return Ok(_paymentService.GetPayment(orderId));
+        }
 
         [HttpPost]
         [Route("process-card")]
