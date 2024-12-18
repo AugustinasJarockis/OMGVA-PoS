@@ -36,9 +36,11 @@ const UserPage: React.FC = () => {
         navigate("/user/update/" + id, { state: { user: user } });
     };
 
-    const goToBusiness = async () => {
+    const goTo = async () => {
         if (authToken) {
             const businessId = getTokenBusinessId(authToken);
+            if (getTokenRole(authToken) == "Employee")
+                navigate('/home');
             navigate('/business/' + businessId);
         }
     };
@@ -65,7 +67,7 @@ const UserPage: React.FC = () => {
         <div>
             {user ? (
                 <>
-                    <button onClick={goToBusiness}>Return to business</button>
+                    <button onClick={goTo}>{getTokenRole(authToken ?? "") === "Employee" ? "Return to home" : "Return to business" }</button>
                     <h1>{user.Name}</h1>
                     <section>
                         <p>Username: {user.Username}</p>
