@@ -23,24 +23,18 @@ namespace OMGVA_PoS.Business_layer.Controllers
         }
         
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         [ProducesResponseType<PaymentDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetPayments()
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
             if (businessId == null)
                 return Forbid();
-            
+
             var results = _paymentService.GetPayments();
-            if (results.Count == 0)
-            {
-                return NotFound(new { Message = "No payments found" });
-            }
-            
             return Ok(results);
         }
         
