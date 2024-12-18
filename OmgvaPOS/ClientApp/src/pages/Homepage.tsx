@@ -29,6 +29,13 @@ const HomePage: React.FC<HomePageProps> = ({ onLogout }) => {
         navigate(`/schedules/${id}`);
     };
 
+    const goToUser = async () => {
+        if (authToken) {
+            const userId = getTokenUserId(localStorage.getItem('authToken') ?? authToken);
+            navigate(`/user/${userId}/`);
+        }
+    };
+
     return (
         <div>
             <nav className="nav-bar">
@@ -41,6 +48,9 @@ const HomePage: React.FC<HomePageProps> = ({ onLogout }) => {
                     </li>
                     <li>
                         <button onClick={goToBusinessOrders}>Business orders</button>
+                    </li>
+                    <li>
+                        <button onClick={goToUser}>Me</button>
                     </li>
                     <li>
                         <button onClick={onLogout}>Logout</button>
