@@ -178,17 +178,20 @@ const OrderPage: React.FC = () => {
                         {listItems}
                     </section>
                     <br/><br/>
-                    <div className="tip-button">
-                        <p>Tip amount:</p>
-                        <input
-                            type="number"
-                            min='0'
-                            value={order.Tip}
-                            onInput={updateTip}
-                        />
-                    </div>
-                    <div>
-                        <p>Total: {order.FinalPrice}</p>
+                    <div className="tip-total-container">
+                        <div className="tip-box">
+                            <p>Tip</p>
+                            <input
+                                type="number"
+                                min="0"
+                                value={order.Tip}
+                                onInput={updateTip}
+                            />
+                        </div>
+                        <div className="total-box">
+                            <p>Total</p>
+                            <span>{order.FinalPrice.toFixed(2)}</span>
+                        </div>
                     </div>
                     <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
