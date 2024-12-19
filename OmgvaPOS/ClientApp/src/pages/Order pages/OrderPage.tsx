@@ -168,10 +168,9 @@ const OrderPage: React.FC = () => {
     const onSplitSuccess = async (simpleOrders: Array<SimpleOrder>) => {
         Swal.fire('Order split successfully!', '', 'success');
         let simpleOrdersProper: Array<string> = simpleOrders.map(o => o.Id);
-        if (state.splitOrders) {
+        if (state && state.splitOrders) {
             simpleOrdersProper = simpleOrdersProper.concat(state.splitOrders);
         }
-        console.log(simpleOrdersProper);
         navigate('/order', { state: { splitOrders: simpleOrdersProper } });
     };
 

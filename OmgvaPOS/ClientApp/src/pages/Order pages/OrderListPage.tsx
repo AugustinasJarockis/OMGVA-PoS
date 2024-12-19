@@ -125,20 +125,20 @@ const OrderListPage: React.FC = () => {
             </header>
             <br/><br/>
             {(splitPaymentItems)
-              ? <button onClick={clearSplitOrder}>Exit split order view</button>
+              ? <><button onClick={clearSplitOrder}>Exit split order view</button> <br/> <br/> </>
               : <>
                 <button onClick={changeShowOnlyOpen}>{showOnlyOpen ? "Show all orders" : "Show only open orders"}</button>
                 <h1>{showOnlyOpen ? "Current open orders" : "All orders"}</h1>
               </>
             }
-            { (!splitPaymentItems) &&
                 <div className="order-list-container">
                     {listItems}
+                    { (!splitPaymentItems) &&
                     <div className="create-button-wrapper">
                         <CallbackListItem key="create" text="Create a new order" onClickHandle={createNewOrder} />
                     </div>
+                    }
                 </div>
-            }
             {error && <p className="error-message">{error}</p>}
         </div>
     );
