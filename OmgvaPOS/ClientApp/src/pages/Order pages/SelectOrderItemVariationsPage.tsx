@@ -5,15 +5,42 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getAllItemVariations } from '../../services/itemVariationService';
 import ItemVariationSelector from '../../components/Selectors/ItemVariationsSelector';
 import { CreateOrderItemRequest, createOrderItem } from '../../services/orderItemService';
+import { Item, getItem } from '../../services/itemService';
 
 const SelectOrderItemVariationsPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [groupNames, setGroupNames] = useState<Array<string>>();
     const [error, setError] = useState<string | null>(null);
+    const [item, setItem] = useState<Item>();
     const { id, itemId } = useParams();
     const { state } = useLocation();
     const navigate = useNavigate();
     const { authToken } = useAuth();
+
+    const getSelectedItem = async () => {
+        setError(null);
+
+        try {
+            if (itemId) {
+                const { result, error } = await getItem(authToken, itemId);
+                if (error) {
+                    setError(`An error occurred while fetching item with id ${itemId}: ` + error);
+                    return;
+                }
+                if (result?.Duration) {
+                    const splitRes = result.Duration.split(':');
+                    result.Duration = splitRes[0] + ':' + splitRes[1];
+                }
+                setItem(result);
+            }
+            else {
+                setError("Could not identify the item");
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
+    }
 
     const getItemVariations = async () => {
         setError(null);
@@ -49,6 +76,7 @@ const SelectOrderItemVariationsPage: React.FC = () => {
                     );
                 });
                 setListItems(pageElements);
+                getSelectedItem();
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -71,11 +99,16 @@ const SelectOrderItemVariationsPage: React.FC = () => {
                 itemVariationIds.push( chosenValue );
         }
 
-        //TODO: check if item quantity is not 0
         if (!itemId) {
             setError('Could not identify the item');
             return;
         }
+
+        if (item?.InventoryQuantity && item?.InventoryQuantity <= 0) {
+            setError('Item is out of stock');
+            return;
+        }
+
         const orderItemCreationRequest: CreateOrderItemRequest = {
             Quantity: 1,
             ItemId: itemId,
@@ -93,10 +126,18 @@ const SelectOrderItemVariationsPage: React.FC = () => {
                 setError("An error occurred while creating order item: " + error);
                 return;
             }
-            if (state.group)
-                navigate(`/order/${id}/add-items`, { state: { group: state.group } });
+
+            if (item && item.UserId && id && state.group) {
+                console.log("tureciau nunaviguot");
+                console.log(state.group);
+                navigate(`/order/${id}/reservation/create/item/${itemId}/employee/${item.UserId}`, { state: { group: state.group} });
+            }
             else {
-                navigate(`/order/${id}/add-items`);
+                if (state.group)
+                    navigate(`/order/${id}/add-items`, { state: { group: state.group } });
+                else {
+                    navigate(`/order/${id}/add-items`);
+                }
             }
         }
         catch (err: any) {
@@ -123,18 +164,19 @@ const SelectOrderItemVariationsPage: React.FC = () => {
             setError("You have to authenticate first!");
         }
     }, []);
-    //TODO: item name
+
     return (
         <div>
             <header>
                 <button onClick={returnToOrder}>Return to order</button>
                 <button onClick={returnToList}>Return</button>
             </header>
+            <h1>{item?.Name}</h1>
             <h1>Item variations</h1>
             <form onSubmit={handleSubmission}>
                 {listItems}
                 <br/><br/>
-                <input type="submit" value="Finish selection" />
+                <input type="submit" value={item?.UserId === undefined ? "Finish selection" : "Book reservation"} />
             </form>
             {error && <p className="error-message">{error}</p>}
         </div>

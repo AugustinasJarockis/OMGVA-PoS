@@ -137,14 +137,14 @@ const ItemDataForm: React.FC<ItemDataFormProps> = (props: ItemDataFormProps) => 
                             pattern="[0-7]{1}:[0-9]{2}"
                             placeholder={props.item?.Duration}
                             required={props.required}
-                            onInvalid={e => e.currentTarget.setCustomValidity('Please enter the duration in format H:mm:ss.')}
+                            onInvalid={e => e.currentTarget.setCustomValidity('Please enter the duration in format H:mm.')}
                             onInput={e => e.currentTarget.setCustomValidity('')}
                         /><br /><br />
                         <label>Service provider</label>
                         <UserSelector current={props.item?.UserId} required={props.required} /><br/><br/>
                     </>
                     }
-                    <input type="submit" value={props.submitText ? props.submitText : "Submit"} />
+                    <input className="update-item-button" type="submit" value={props.submitText ? props.submitText : "Submit"} />
                 </form>
             </>
         </div>

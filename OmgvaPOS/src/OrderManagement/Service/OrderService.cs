@@ -1,13 +1,20 @@
-﻿using OmgvaPOS.Database.Context;
+﻿using OmgvaPOS.BusinessManagement.Models;
+using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
+using OmgvaPOS.ItemVariationManagement.Models;
+using OmgvaPOS.OrderItemManagement.Models;
+using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Service;
+using OmgvaPOS.OrderItemManagement.Validators;
+using OmgvaPOS.OrderItemVariationManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Mappers;
 using OmgvaPOS.OrderManagement.Models;
 using OmgvaPOS.OrderManagement.Repository;
 using OmgvaPOS.OrderManagement.Validators;
+using OmgvaPOS.UserManagement.Models;
 using OmgvaPOS.UserManagement.Service;
 
 namespace OmgvaPOS.OrderManagement.Service;
@@ -17,6 +24,7 @@ public class OrderService : IOrderService
     private readonly OmgvaDbContext _context;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderItemService _orderItemService;
+    private readonly IOrderItemRepository _orderItemRepository;
     private readonly IItemService _itemService;
     private readonly IItemRepository _itemRepository;
     private readonly IUserService _userService;
@@ -26,6 +34,7 @@ public class OrderService : IOrderService
         OmgvaDbContext context,
         IOrderRepository orderRepository,
         IOrderItemService orderItemService,
+        IOrderItemRepository orderItemRepository,
         IItemService itemService,
         IItemRepository itemRepository,
         ILogger<OrderService> logger, 
@@ -33,6 +42,7 @@ public class OrderService : IOrderService
         _context = context;
         _orderRepository = orderRepository;
         _orderItemService = orderItemService;
+        _orderItemRepository = orderItemRepository;
         _itemService = itemService;
         _itemRepository = itemRepository;
         _logger = logger;
@@ -47,7 +57,7 @@ public class OrderService : IOrderService
         var order = OrderMapper.RequestToOrder(businessId, userId);
 
         order = _orderRepository.AddOrder(order);
-        return OrderMapper.ToSimpleOrderDTO(order);
+        return order.ToSimpleOrderDTO();
     }
 
     public OrderDTO GetOrder(long orderId) {
@@ -81,6 +91,7 @@ public class OrderService : IOrderService
             Status = order.Status,
             Tip = order.Tip,
             RefundReason = order.RefundReason,
+            Currency = orderItemDTOs.FirstOrDefault()?.Currency,
             FinalPrice = finalPrice,
             TaxesPaid = finalTaxesPaid,
             Discount = order.Discount.ToSimpleDiscountDTO(),
@@ -100,6 +111,28 @@ public class OrderService : IOrderService
         var orders = GetAllBusinessOrders(businessId);
         var activeOrders = orders.Where(o => o.Status == OrderStatus.Open);
         return activeOrders;
+    }
+    
+    public (IEnumerable<SimpleOrderDTO> orders, int totalPages) 
+        GetBusinessOrdersWithRequestCriteria(long businessId, OrdersRequestCriteria requestCriteria) {
+        
+        var totalItemsCount = _orderRepository
+            .GetOrderQueryable()
+            .Where(o => o.BusinessId == businessId)
+            .Count(o => requestCriteria.RequestedOrderStatus == null || o.Status == requestCriteria.RequestedOrderStatus);
+        var totalPages = (int)Math.Ceiling((double)totalItemsCount / requestCriteria.PageSize);
+
+        // Fetch orders with pagination
+        var orders = _orderRepository.GetOrderQueryable()
+            .Where(o => o.BusinessId == businessId)
+            .Where(o => requestCriteria.RequestedOrderStatus == null || o.Status == requestCriteria.RequestedOrderStatus)
+            .OrderByDescending(o => o.Id)
+            .Skip((requestCriteria.PageNumber - 1) * requestCriteria.PageSize)
+            .Take(requestCriteria.PageSize)
+            .ToList()
+            .ToSimpleOrderDTOList();
+
+        return (orders, totalPages);
     }
 
     public void DeleteOrder(long id) {
@@ -141,7 +174,7 @@ public class OrderService : IOrderService
         return order;
     }
     
-    public SimpleOrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId)
+    public OrderDTO UpdateOrder(UpdateOrderRequest updateRequest, long orderId)
     {
         OrderValidator.ValidateUpdateOrderRequest(updateRequest);
         var order = GetOrderOrThrow(orderId);
@@ -159,8 +192,7 @@ public class OrderService : IOrderService
             updatedOrder = UpdateOrderStatus(orderId, updateRequest.Status.Value);
         }
         
-
-        return updatedOrder.ToSimpleOrderDTO();
+        return GetOrder(updatedOrder.Id);
     }
 
     public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus)
@@ -173,5 +205,49 @@ public class OrderService : IOrderService
 
         return order;
     }
-    
+
+    public IEnumerable<SimpleOrderDTO> SplitOrder(long orderId, SplitOrderRequest splitOrderRequest) {
+        var originalOrder = _orderRepository.GetOrder(orderId);
+        OrderValidator.Exists(originalOrder);
+        
+        var newOrder = OrderMapper.RequestToOrder(originalOrder.BusinessId, originalOrder.UserId);
+        newOrder.DiscountId = originalOrder.DiscountId;
+        newOrder = _orderRepository.AddOrder(newOrder);
+
+        using var transaction = _context.Database.BeginTransaction();
+        try {
+            foreach (var splitOrderItem in splitOrderRequest.SplitOrderItems) {
+                var originalOrderItem = _orderItemRepository.GetOrderItem(splitOrderItem.OrderItemId);
+                OrderItemValidator.Exists(originalOrderItem);
+                OrderValidator.CorrectSplitRequest(originalOrderItem, splitOrderItem);
+
+                var newOrderItem = new OrderItem {
+                    Quantity = (short)splitOrderItem.Quantity,
+                    ItemId = originalOrderItem.ItemId,
+                    OrderId = newOrder.Id,
+                    DiscountId = originalOrderItem.DiscountId,
+                    OrderItemVariations = originalOrderItem.OrderItemVariations,
+                };
+
+                _orderItemRepository.AddOrderItem(newOrderItem);
+
+                if (originalOrderItem.Quantity - splitOrderItem.Quantity == 0)
+                    _orderItemRepository.DeleteOrderItem(originalOrderItem);
+                else {
+                    originalOrderItem.Quantity -= (short)splitOrderItem.Quantity;
+                    _orderItemRepository.UpdateOrderItemQuantity(originalOrderItem);
+                }
+            }
+            transaction.Commit();
+        }
+        catch (Exception ex) {
+            transaction.Rollback();
+
+            _logger.LogError(ex, "An error occurred while splitting order.");
+            throw new ApplicationException("Error splitting order. The operation has been rolled back.");
+        }
+
+
+        return [originalOrder.ToSimpleOrderDTO(), newOrder.ToSimpleOrderDTO()];
+    }
 }

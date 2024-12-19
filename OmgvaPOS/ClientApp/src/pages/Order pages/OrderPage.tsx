@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
-import { Order, OrderStatus, getOrder } from '../../services/orderService';
+import { Order, OrderStatus, UpdateOrderRequest, getOrder, updateOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 import PaymentModal from '../../components/Modals/PaymentModal';
@@ -51,7 +51,7 @@ const OrderPage: React.FC = () => {
 
                 if (result?.OrderItems) {
                     setListItems(result?.OrderItems.map(item =>
-                        <OrderItemListItem key={item.Id} orderItem={item} orderId={String(id)} orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
+                        <OrderItemListItem key={item.Id} orderItem={item} orderId={String(id)} updateOrder={ loadOrder } orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
                     ));
                 }
             }
@@ -77,14 +77,7 @@ const OrderPage: React.FC = () => {
                 return;
             }
 
-            if (!listItems) {
-                loadOrder();
-            }
-
-            if (listItems) {
-                const newList = listItems.filter((item) => item.key != orderItemId);
-                setListItems(newList);
-            }
+            loadOrder();
         }
         catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -109,8 +102,50 @@ const OrderPage: React.FC = () => {
         }
     }
 
+    const updateTip = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const request: UpdateOrderRequest = {
+            Tip: +e.currentTarget.value
+        }
+
+        try {
+            if (id) {
+                const result = await updateOrder(authToken, id, request);
+                if (typeof result == "string") {
+                    setError("An error occurred while updating order: " + result);
+                    return;
+                }
+                await loadOrder();
+            }
+            else {
+                setError("Could not identify the order");
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
+    };
+
     const cancelOrder = async () => {
-        //TODO: Do stuff
+        const request: UpdateOrderRequest = {
+            Status: OrderStatus.Cancelled
+        }
+
+        try {
+            if (id) {
+                const result = await updateOrder(authToken, id, request);
+                if (typeof result == "string") {
+                    setError("An error occurred while updating order status: " + result);
+                    return;
+                }
+                await loadOrder();
+            }
+            else {
+                setError("Could not identify the order");
+            }
+        }
+        catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        }
     }
 
     const refundOrder = async () => {
@@ -155,6 +190,25 @@ const OrderPage: React.FC = () => {
                     <section>
                         {listItems}
                     </section>
+                    <br/><br/>
+                    <div className="tip-total-container">
+                        <div className="tip-box">
+                            <p>Tip</p>
+                            {order.Status == OrderStatus.Open ? 
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={order.Tip}
+                                    onInput={updateTip}
+                                />
+                                : <p>{order.Tip}</p>
+                            }
+                        </div>
+                        <div className="total-box">
+                            <p>Total</p>
+                            <span>{order.FinalPrice.toFixed(2)}</span>
+                        </div>
+                    </div>
                     <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;

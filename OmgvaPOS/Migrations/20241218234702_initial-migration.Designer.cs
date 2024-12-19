@@ -12,8 +12,8 @@ using OmgvaPOS.Database.Context;
 namespace OmgvaPOS.Migrations
 {
     [DbContext(typeof(OmgvaDbContext))]
-    [Migration("20241218182354_Initial")]
-    partial class Initial
+    [Migration("20241218234702_initial-migration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -341,7 +341,7 @@ namespace OmgvaPOS.Migrations
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("GiftCardPaymentId")
+                    b.Property<long?>("GiftCardId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("GiftcardPaymentEntityId")
@@ -534,7 +534,7 @@ namespace OmgvaPOS.Migrations
             modelBuilder.Entity("OmgvaPOS.GiftcardPaymentManagement.Models.GiftcardPaymentEntity", b =>
                 {
                     b.HasOne("OmgvaPOS.GiftcardManagement.Models.Giftcard", "Giftcard")
-                        .WithMany("GiftcardPayments")
+                        .WithMany()
                         .HasForeignKey("GiftcardId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -738,11 +738,6 @@ namespace OmgvaPOS.Migrations
                     b.Navigation("OrderItems");
 
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("OmgvaPOS.GiftcardManagement.Models.Giftcard", b =>
-                {
-                    b.Navigation("GiftcardPayments");
                 });
 
             modelBuilder.Entity("OmgvaPOS.ItemManagement.Models.Item", b =>

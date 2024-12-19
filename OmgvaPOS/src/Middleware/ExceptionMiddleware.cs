@@ -35,34 +35,30 @@ public class ExceptionMiddleware
         switch (exception)
         {
             case BadRequestException:
+                _logger.LogWarning(exception, exception.Message);
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 response.Message = exception.Message;
                 break;
                 
             case NotFoundException:
+                _logger.LogWarning(exception, exception.Message);
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 response.Message = exception.Message;
                 break;
             
             case ValidationException:
+                _logger.LogWarning(exception, exception.Message);
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 response.Message = exception.Message;
                 break;
 
             case ConflictException:
+                _logger.LogWarning(exception, exception.Message);
                 context.Response.StatusCode = StatusCodes.Status409Conflict;
                 response.Message = exception.Message;
                 break;
             
             case ApplicationException:
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                response.Message = exception.Message;
-                break;
-            
-            // TODO: not implemented exception should not be present.
-            // But if they are, exception handler should return internal server error instead of the actual message 
-            // Leaving the actual message for easier debugging while developing
-            case NotImplementedException: 
                 _logger.LogWarning(exception, exception.Message);
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 response.Message = exception.Message;

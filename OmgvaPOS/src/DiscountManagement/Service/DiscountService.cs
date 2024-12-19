@@ -52,7 +52,6 @@ public class DiscountService : IDiscountService
 
     public List<DiscountDTO> GetBusinessDiscounts(long businessId) {
         List<Discount> discounts = _discountRepository.GetBusinessDiscounts(businessId);
-        DiscountValidator.Exist(discounts);
         return discounts.Select(DiscountMapper.ToDTO).ToList();
     }
 

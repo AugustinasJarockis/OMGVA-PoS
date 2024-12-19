@@ -5,7 +5,7 @@ import BusinessPage from './pages/Business pages/BusinessPage';
 import SelectBusinessPage from './pages/Business pages/SelectBusinessPage';
 import UpdateBusinessPage from './pages/Business pages/UpdateBusinessPage';
 import './App.css';
-import { getTokenRole, isTokenValid } from './utils/tokenUtils';
+import { getTokenBusinessId, getTokenRole, isTokenValid } from './utils/tokenUtils';
 import CreateBusinessPage from './pages/Business pages/CreateBusinessPage';
 import TaxListPage from './pages/Tax pages/TaxListPage';
 import CreateTaxPage from './pages/Tax pages/CreateTaxPage';
@@ -113,14 +113,18 @@ const App: React.FC = () => {
                             <Route path="/reservation/employee/:id" element={<ReservationsListPage />} />
                             <Route path="/reservation/:id" element={<ReservationDetailsPage />} />
                             <Route path="/reservation/update/:id" element={<ReservationUpdatePage />} />
-                            <Route path="/reservation/create/" element={<ReservationCreatePage />} />
+                            <Route path="/order/:orderId/reservation/create/item/:itemId/employee/:employeeId" element={<ReservationCreatePage />} />
                             <Route path="/schedules/:id" element={<EmployeeSchedulesPage />} />
                             <Route path="/schedules/create/:id" element={<CreateSchedulePage />} />
                             <Route path="/schedules/update/:id" element={<UpdateSchedulePage />} />
                             <Route path="/home" element={<HomePage onLogout={handleLogout} />} />
                             {localStorage.getItem('authToken') !== null && (getRole() === "Admin")
                                 ? (<Route path="*" element={<Navigate to="/business" />} />)
-                                : (<Route path="*" element={<Navigate to="/home" />} />)}
+                                :
+                                (getRole() === "Owner" ? <Route path="*" element={<Navigate to={'/business/'+getTokenBusinessId(localStorage.getItem('authToken') ?? "")} />} /> :
+                                    <Route path="*" element={<Navigate to="/home" />} />
+                                )
+                             }
                         </>
                     )}
                     {!isAuthenticated && <Route path="*" element={<Navigate to="/" />} />}

@@ -1,4 +1,5 @@
 ﻿using OmgvaPOS.Exceptions;
+using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Models;
@@ -26,5 +27,12 @@ public static class OrderValidator
     {
         if (updateRequest.Tip != null & updateRequest.Tip < 0)
             throw new BadRequestException("Tip cannot be negative");
+    }
+
+    public static void CorrectSplitRequest(OrderItem originalOrderItem, SplitOrderItem splitOrderItem) {
+        if (splitOrderItem.Quantity == 0)
+            throw new BadRequestException("You have to split more than 0 of that item, cmon now.");
+        if (originalOrderItem.Quantity < splitOrderItem.Quantity)
+            throw new BadRequestException("Cannot split a higher quantity of an item than there already is in the order.");
     }
 }
