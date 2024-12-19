@@ -19,4 +19,6 @@ public interface IOrderService
     public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus);
     public Order GetOrderOrThrow(long orderId);
     public IEnumerable<SimpleOrderDTO> SplitOrder(long orderId, SplitOrderRequest splitOrderItems);
+    public void RefundOrder(long orderId);
+    public void CancelOrder(long orderId);
 }
