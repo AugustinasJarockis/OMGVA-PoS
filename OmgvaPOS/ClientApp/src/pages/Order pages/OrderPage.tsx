@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import axios from 'axios';
+import SplitPaymentModal from "../../components/Modals/SplitPaymentModal.tsx";
 
 const OrderPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -22,6 +23,7 @@ const OrderPage: React.FC = () => {
     const { authToken } = useAuth();
     const [showPayment, setShowPayment] = useState<boolean>(false);
     const [stripePromise, setStripePromise] = useState<any>(null);
+    const [showSplitPayment, setShowSplitPayment] = useState<boolean>(false);
 
     const loadStripeKey = async () => {
         try {
@@ -156,6 +158,24 @@ const OrderPage: React.FC = () => {
         setShowPayment(!showPayment);
     }
 
+    const orderItemsForSplit = order?.OrderItems?.map(item => ({
+        Id: item.Id,
+        Name: item.ItemName,
+        Quantity: item.Quantity,
+        TotalPrice: item.TotalPrice
+    })) ?? [];
+
+    const onSplitSuccess = async (simpleOrders: any) => {
+        // simpleOrders is the list of SimpleOrderDTO returned by the server
+        Swal.fire('Order split successfully!', '', 'success');
+        navigate('/order');
+    };
+
+    const splitOrder = async () => {
+        setShowSplitPayment(true);
+    }
+
+
 
     useEffect(() => {
         if (authToken) {
@@ -227,6 +247,8 @@ const OrderPage: React.FC = () => {
                     <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;
+                    {order.Status == OrderStatus.Open && <button onClick={splitOrder}>Split payment</button>}
+                    &nbsp;&nbsp;&nbsp;&nbsp;
                     {order.Status == OrderStatus.Open && <button onClick={cancelCurrentOrder}>Cancel order</button>}
                     {order.Status == OrderStatus.Closed && <button onClick={refundOrder}>Refund order</button>}
                     {order.Status == OrderStatus.Refunded && <p className="nice-order-text">Order refunded. Reason: {order.RefundReason}</p>}
@@ -260,6 +282,14 @@ const OrderPage: React.FC = () => {
                     />
                 </Elements>
             )}
+            <SplitPaymentModal
+                isOpen={showSplitPayment}
+                onClose={() => setShowSplitPayment(false)}
+                authToken={authToken as string}
+                orderId={order?.Id.toString() ?? ''}
+                orderItems={orderItemsForSplit}
+                onSplitSuccess={onSplitSuccess}
+            />
         </div>
     );
 };
