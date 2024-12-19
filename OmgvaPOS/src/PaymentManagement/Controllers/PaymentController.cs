@@ -17,10 +17,12 @@ namespace OMGVA_PoS.Business_layer.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly IBusinessService _businessService;
-        public PaymentController(IPaymentService paymentService, IBusinessService businessService)
+        private readonly ILogger<PaymentController> _logger;
+        public PaymentController(IPaymentService paymentService, IBusinessService businessService, ILogger<PaymentController> logger)
         {
             _paymentService = paymentService;
             _businessService = businessService;
+            _logger = logger;
         }
         
         [HttpGet]
@@ -109,6 +111,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
                         OrderId = request.OrderId,
                         Amount = request.Amount
                     };
+                    _logger.LogInformation("Payment processed: {@Payment}", payment.Id);
                     _paymentService.CreatePayment(payment.ToPaymentDTO());
                     return Ok(new
                     {

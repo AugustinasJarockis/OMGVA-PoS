@@ -20,6 +20,7 @@ public class PaymentRepository(OmgvaDbContext context, ILogger<PaymentRepository
     }
     public Payment CreatePayment(Payment payment)
     {
+        _logger.LogInformation("Payment processed: {@Payment}", payment.Id);
         context.Payments.Add(payment);
         context.SaveChanges();
         return payment;
