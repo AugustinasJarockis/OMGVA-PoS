@@ -11,7 +11,7 @@ export interface Reservation {
   CustomerName?: string;
 }
 export interface CreateReservation {
-    TimeReserved: Date;
+    TimeReserved: string;
     EmployeeId: number;
     CustomerId: number;
     PhoneNumber?: string;
