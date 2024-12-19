@@ -166,7 +166,6 @@ const OrderPage: React.FC = () => {
     })) ?? [];
 
     const onSplitSuccess = async (simpleOrders: any) => {
-        // simpleOrders is the list of SimpleOrderDTO returned by the server
         Swal.fire('Order split successfully!', '', 'success');
         navigate('/order');
     };
@@ -174,8 +173,6 @@ const OrderPage: React.FC = () => {
     const splitOrder = async () => {
         setShowSplitPayment(true);
     }
-
-
 
     useEffect(() => {
         if (authToken) {
