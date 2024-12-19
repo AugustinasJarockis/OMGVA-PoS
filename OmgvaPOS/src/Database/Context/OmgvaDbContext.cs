@@ -27,10 +27,10 @@ namespace OmgvaPOS.Database.Context
         public DbSet<GiftcardPaymentEntity> GiftcardPayments { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemVariation> ItemVariations { get; set; }
-        public DbSet<OrderManagement.Models.Order> Orders { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderItemVariation> OrderItemVariations { get; set; }
-        public DbSet<PaymentManagement.Models.Payment> Payments { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<StripeReader> StripeReaders { get; set; }
         public DbSet<Tax> Taxes { get; set; }

@@ -127,3 +127,10 @@
         color: #007BFF;
         font-weight: bold;
     }
+
+.nice-order-text {
+    margin: 0;
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+}
