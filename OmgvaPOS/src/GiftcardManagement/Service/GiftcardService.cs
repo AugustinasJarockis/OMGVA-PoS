@@ -38,13 +38,13 @@ namespace OmgvaPOS.GiftcardManagement.Service
             if (giftcard == null)
                 return;
 
-            if (giftcard.Balance < giftcardUpdateRequest.Amount)
+            if (giftcard.Balance < giftcardUpdateRequest.Amount/100)
                 throw new BadRequestException("Giftcard does not have enough balance");
                 
             if (giftcardUpdateRequest.Amount <= 0)
                 throw new BadRequestException("Amount must be positive");
 
-            decimal calculatedAmount = giftcard.Balance - giftcardUpdateRequest.Amount;
+            decimal calculatedAmount = giftcard.Balance - giftcardUpdateRequest.Amount/100;
             _giftcardRepository.Update(giftcardUpdateRequest.Code, calculatedAmount);
         }
         public List<Giftcard> GetGiftcards(long businessId)
