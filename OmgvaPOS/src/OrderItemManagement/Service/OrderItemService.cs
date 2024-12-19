@@ -58,7 +58,9 @@ public class OrderItemService : IOrderItemService
         ItemValidator.Exists(item);
         ItemValidator.IsNotArchived(item);
         ItemValidator.EnoughInventoryQuantity(item, request.Quantity);
-        item.InventoryQuantity -= request.Quantity;
+        if (item.Duration == null) { // if is not service
+            item.InventoryQuantity -= request.Quantity;
+        }
 
         var order = _orderRepository.GetOrder(orderId);
         OrderValidator.Exists(order);
@@ -86,7 +88,9 @@ public class OrderItemService : IOrderItemService
                 ItemVariationValidator.IsNotArchived(itemVariation);
                 ItemVariationValidator.EnoughInventoryQuantity(itemVariation, request.Quantity);
                 ItemVariationValidator.ValidateItemVariationBelongsToItem(itemVariation, item);
-                itemVariation.InventoryQuantity -= request.Quantity;
+                if (item.Duration == null) { // if is not service
+                    itemVariation.InventoryQuantity -= request.Quantity;
+                }
 
                 itemVariations.Add(itemVariation);
 
@@ -108,12 +112,15 @@ public class OrderItemService : IOrderItemService
             // Add the new order item
             _orderItemRepository.AddOrderItem(newOrderItem); ;
 
-            // Update item inventory
-            _itemRepository.UpdateItemInventoryQuantity(item);
 
-            // Update item variation inventory
-            foreach (var itemVariation in itemVariations) {
-                _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
+            if (item.Duration == null) { // if is not service
+                // Update item inventory
+                _itemRepository.UpdateItemInventoryQuantity(item);
+
+                // Update item variation inventory
+                foreach (var itemVariation in itemVariations) {
+                    _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
+                }
             }
 
             transaction.Commit();
@@ -219,7 +226,9 @@ public class OrderItemService : IOrderItemService
         ItemValidator.Exists(item);
         ItemValidator.IsNotArchived(item);
         ItemValidator.EnoughInventoryQuantity(item, changeInQuantity);
-        item.InventoryQuantity -= changeInQuantity;
+        if (item.Duration == null) { // if is not service
+            item.InventoryQuantity -= changeInQuantity;
+        }
 
         List<ItemVariation> itemVariations = [];
         // if order item has variations
@@ -230,7 +239,9 @@ public class OrderItemService : IOrderItemService
                 ItemVariationValidator.Exists(itemVariation);
                 ItemVariationValidator.IsNotArchived(itemVariation);
                 ItemVariationValidator.EnoughInventoryQuantity(itemVariation, changeInQuantity);
-                itemVariation.InventoryQuantity -= changeInQuantity;
+                if (item.Duration == null) { // if is not service
+                    itemVariation.InventoryQuantity -= changeInQuantity;
+                }
 
                 itemVariations.Add(itemVariation);
             }
@@ -240,10 +251,12 @@ public class OrderItemService : IOrderItemService
         try {
             _orderItemRepository.UpdateOrderItemQuantity(orderItem); ;
 
-            _itemRepository.UpdateItemInventoryQuantity(item);
+            if (item.Duration == null) { // if is not a service
+                _itemRepository.UpdateItemInventoryQuantity(item);
 
-            foreach (var itemVariation in itemVariations) {
-                _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
+                foreach (var itemVariation in itemVariations) {
+                    _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
+                }
             }
 
             transaction.Commit();

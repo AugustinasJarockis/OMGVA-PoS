@@ -14,6 +14,7 @@ interface ReservationCreatePageParams extends Record<string, string | undefined>
 const ReservationCreatePage: React.FC = () => {
   const { itemId, employeeId, orderId } = useParams<ReservationCreatePageParams>();
   const [timeReserved, setTimeReserved] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [customerId, setCustomerId] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -29,8 +30,8 @@ const ReservationCreatePage: React.FC = () => {
             const date = new Date(timeReserved).toISOString().split('T')[0];
         const { result, error } = await getEmployeeSchedulesByItemAndDate(authToken, itemId ?? "", date);
         
-        if (noSchedulesFound) {
-            setError(error);
+        if (error) {
+            setError("No schedules found.");
             setScheduleData(null);
         } else {
             setScheduleData(result);
@@ -49,6 +50,7 @@ const ReservationCreatePage: React.FC = () => {
       TimeReserved: new Date(timeReserved),
       EmployeeId: parseInt(employeeId ?? ""),
       CustomerId: customerId,
+      PhoneNumber: phoneNumber ?? "",
       ItemId: parseInt(itemId ?? ""),
     };
 
@@ -104,6 +106,21 @@ const ReservationCreatePage: React.FC = () => {
             required
           />
         </div>
+          
+          <div>
+              <label htmlFor="phone">Phone</label>
+              <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  placeholder="+370xxxxxxxx"
+                  pattern='\+?[0-9 \-]+'
+                  maxLength={40}
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onInvalid={e => e.currentTarget.setCustomValidity('Please enter a phone number.')}
+                  onInput={e => e.currentTarget.setCustomValidity('')}/>
+          </div>
 
         <button type="submit">Create Reservation and Finish Selection</button>
       </form>

@@ -23,6 +23,11 @@ public static class OrderValidator
             throw new ValidationException($"Order with ID {order.Id} is {order.Status} (not open for editing)");
     }
 
+    public static void IsClosed(Order order) {
+        if (order.Status != OrderStatus.Closed)
+            throw new ValidationException($"Order with ID {order.Id} is {order.Status}, i.e. cannot refund.");
+    }
+
     public static void ValidateUpdateOrderRequest(UpdateOrderRequest updateRequest)
     {
         if (updateRequest.Tip != null & updateRequest.Tip < 0)

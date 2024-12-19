@@ -116,7 +116,7 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         return Ok(updatedOrderDTO);
     }
 
-    [HttpPost("split/{orderId}")]
+    [HttpPost("{orderId}/split")]
     [Authorize(Roles = "Admin,Owner,Employee")]
     [ProducesResponseType<List<SimpleOrderDTO>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -131,5 +131,37 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
         var simpleOrderDTOs = _orderService.SplitOrder(orderId, splitOrderRequest);
         
         return Ok(simpleOrderDTOs);
+    }
+
+    [HttpPost("{orderId}/refund")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public ActionResult<OrderDTO> RefundOrder(long orderId) {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+            return Forbid();
+
+        _orderService.RefundOrder(orderId);
+        OrderDTO orderDTO = _orderService.GetOrder(orderId);
+        return Ok(orderDTO);
+    }
+
+    [HttpPost("{orderId}/cancel")]
+    [Authorize(Roles = "Admin,Owner,Employee")]
+    [ProducesResponseType<OrderDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public ActionResult<OrderDTO> CancelOrder(long orderId) {
+        if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
+            return Forbid();
+
+        _orderService.CancelOrder(orderId);
+        OrderDTO orderDTO = _orderService.GetOrder(orderId);
+        return Ok(orderDTO);
     }
 }

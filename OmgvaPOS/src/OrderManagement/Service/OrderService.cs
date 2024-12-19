@@ -3,6 +3,8 @@ using OmgvaPOS.Database.Context;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Models;
+using OmgvaPOS.ItemVariationManagement.Repositories;
+using OmgvaPOS.ItemVariationManagement.Validators;
 using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Service;
@@ -25,8 +27,10 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderItemService _orderItemService;
     private readonly IOrderItemRepository _orderItemRepository;
+    private readonly IOrderItemDeletionService _orderItemDeletionService;
     private readonly IItemService _itemService;
     private readonly IItemRepository _itemRepository;
+    private readonly IItemVariationRepository _itemVariationRepository;
     private readonly IUserService _userService;
     private readonly ILogger<OrderService> _logger;
 
@@ -35,16 +39,20 @@ public class OrderService : IOrderService
         IOrderRepository orderRepository,
         IOrderItemService orderItemService,
         IOrderItemRepository orderItemRepository,
+        IOrderItemDeletionService orderItemDeletionService,
         IItemService itemService,
         IItemRepository itemRepository,
-        ILogger<OrderService> logger, 
+        IItemVariationRepository variationRepository,
+        ILogger<OrderService> logger,
         IUserService userService) {
         _context = context;
         _orderRepository = orderRepository;
         _orderItemService = orderItemService;
         _orderItemRepository = orderItemRepository;
+        _orderItemDeletionService = orderItemDeletionService;
         _itemService = itemService;
         _itemRepository = itemRepository;
+        _itemVariationRepository = variationRepository;
         _logger = logger;
         _userService = userService;
     }
@@ -249,5 +257,46 @@ public class OrderService : IOrderService
 
 
         return [originalOrder.ToSimpleOrderDTO(), newOrder.ToSimpleOrderDTO()];
+    }
+
+    public void RefundOrder(long orderId) {
+        var order = _orderRepository.GetOrder(orderId);
+        OrderValidator.Exists(order);
+        OrderValidator.IsClosed(order);
+
+        using var transaction = _context.Database.BeginTransaction();
+        try {
+            _orderItemDeletionService.ReturnItemsToInventory(order.OrderItems);
+
+            order.Status = OrderStatus.Refunded;
+            _orderRepository.UpdateOrder(order);
+            transaction.Commit();
+        }
+        catch (Exception ex) {
+            transaction.Rollback();
+
+            _logger.LogError(ex, "An an error occured while refunding order.");
+            throw new ApplicationException("Error refunding order. The operation has been rolled back.");
+        }
+    }
+    public void CancelOrder(long orderId) {
+        var order = _orderRepository.GetOrder(orderId);
+        OrderValidator.Exists(order);
+        OrderValidator.IsOpen(order);
+
+        using var transaction = _context.Database.BeginTransaction();
+        try {
+            _orderItemDeletionService.ReturnItemsToInventory(order.OrderItems);
+
+            order.Status = OrderStatus.Cancelled;
+            _orderRepository.UpdateOrder(order);
+            transaction.Commit();
+        }
+        catch (Exception ex) {
+            transaction.Rollback();
+
+            _logger.LogError(ex, "An an error occured while cancelling order.");
+            throw new ApplicationException("Error cancelling order. The operation has been rolled back.");
+        }
     }
 }
