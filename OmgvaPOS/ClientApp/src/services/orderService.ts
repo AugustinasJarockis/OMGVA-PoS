@@ -23,6 +23,10 @@ export interface UpdateOrderRequest {
     UserId?: string
 }
 
+export interface RefundOrderRequest {
+    RefundReason: string
+}
+
 export enum OrderStatus {
     Open,
     Closed,
@@ -120,4 +124,19 @@ const cancelOrder = async (token: string | null, id: string): Promise<string | O
     }
 };
 
-export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder, cancelOrder };
+const refundOrder = async (token: string | null, id: string, request: RefundOrderRequest): Promise<string | Order> => {
+    try {
+        const response = await axios.post(`/api/order/${id}/refund`, request, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+};
+
+export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder, cancelOrder, refundOrder };
