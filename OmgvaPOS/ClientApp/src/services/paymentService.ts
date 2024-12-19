@@ -86,6 +86,10 @@ export const createGiftcardPayment = async (token: string | null, payment: Payme
             return { error: response.data.message };
         }
     } catch (error: any) {
+        if (error.response && error.response.status === 404) {
+            // Giftcard not found or invalid
+            return { error: "Giftcard not found or invalid" };
+        }
         return { error: error.message || 'An unexpected error occurred.' };
     }
 }

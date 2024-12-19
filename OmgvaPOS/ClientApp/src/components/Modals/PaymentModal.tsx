@@ -32,7 +32,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     const stripe = useStripe();
     const elements = useElements();
 
-    // Reset isCardMode whenever the modal opens
     useEffect(() => {
         if (isOpen) {
             setIsCardMode(false);
@@ -40,6 +39,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const showErrorSwal = (message: string) => {
+        // Show a Swal error alert
+        Swal.fire('Error', message, 'error');
+    };
 
     const handlePayment = async (method: string, code?: string) => {
         try {
@@ -58,19 +62,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 const { result, error } = await createPayment(authToken, payment);
                 if (error) {
                     onPaymentError("Payment failed: " + error);
+                    showErrorSwal("Payment failed: " + error);
                 } else {
                     onPaymentSuccess();
                 }
                 onClose();
             } else if (method === 'card') {
                 if (!stripe || !elements) {
-                    onPaymentError('Stripe not initialized.');
+                    const errMsg = 'Stripe not initialized.';
+                    onPaymentError(errMsg);
+                    showErrorSwal(errMsg);
                     return;
                 }
 
                 const cardElement = elements.getElement(CardElement);
                 if (!cardElement) {
-                    onPaymentError('Card element not found.');
+                    const errMsg = 'Card element not found.';
+                    onPaymentError(errMsg);
+                    showErrorSwal(errMsg);
                     return;
                 }
 
@@ -80,18 +89,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 });
 
                 if (error) {
-                    onPaymentError(`Payment failed: ${error.message}`);
+                    const errMsg = `Payment failed: ${error.message}`;
+                    onPaymentError(errMsg);
+                    showErrorSwal(errMsg);
                     return;
                 }
 
                 if (!paymentMethod) {
-                    onPaymentError('No payment method returned.');
+                    const errMsg = 'No payment method returned.';
+                    onPaymentError(errMsg);
+                    showErrorSwal(errMsg);
                     return;
                 }
 
                 const { result, error: cardError } = await createCardPayment(authToken, payment, paymentMethod.id);
                 if (cardError) {
-                    onPaymentError("Payment failed: " + cardError);
+                    const errMsg = "Payment failed: " + cardError;
+                    onPaymentError(errMsg);
+                    showErrorSwal(errMsg);
                 } else {
                     onPaymentSuccess();
                 }
@@ -99,7 +114,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }
 
         } catch (err: any) {
-            onPaymentError(err.message || 'An unexpected error occurred during payment.');
+            const errMsg = err.message || 'An unexpected error occurred during payment.';
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
             onClose();
         }
     };

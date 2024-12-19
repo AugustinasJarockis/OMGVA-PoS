@@ -181,7 +181,9 @@ const OrderPage: React.FC = () => {
                             Swal.fire('Payment successful!', '', 'success');
                             setShowPayment(false);
                         }}
-                        onPaymentError={(errorMessage) => setError(errorMessage)}
+                        onPaymentError={(errorMessage) => {
+                            Swal.fire('Error', errorMessage, 'error');
+                        }}
                     />
                 </Elements>
             )}
