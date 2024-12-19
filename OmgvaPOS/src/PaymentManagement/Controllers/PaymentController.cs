@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.HelperUtils;
+using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.PaymentManagement.DTOs;
 using OmgvaPOS.PaymentManagement.Mappers;
@@ -117,7 +118,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
                     };
                     _logger.LogInformation("Payment processed: {@Payment}", payment.Id);
                     _paymentService.CreatePayment(payment.ToPaymentDTO());
-                    
+                    _orderService.UpdateOrderStatus(request.OrderId, OrderStatus.Closed);
                     return Ok(new
                     {
                         success = true,
