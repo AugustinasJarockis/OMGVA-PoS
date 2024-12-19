@@ -26,8 +26,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                                                    }) => {
     const [tipsField, setTipsField] = useState<string>('');
     const [discount, setDiscount] = useState<number>(0);
-    const [customerId, setCustomerId] = useState<number>(0);
-    const [customerName, setCustomerName] = useState<string>(''); // New state for customer name
+    const [customerName, setCustomerName] = useState<string>(''); // No longer using customerId state
     const [giftcardCode, setGiftcardCode] = useState<string>('');
     const [isCardMode, setIsCardMode] = useState<boolean>(false);
 
@@ -46,42 +45,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         Swal.fire('Error', message, 'error');
     };
 
-    const createCustomerIfNeeded = async (): Promise<boolean> => {
-
-        // If no customer name provided
-        if (!customerName.trim()) {
-            const errMsg = 'Customer name is required.';
-            onPaymentError(errMsg);
-            showErrorSwal(errMsg);
-            return false;
-        }
-
-        const { result, error } = await createCustomer(authToken, { Name: customerName });
-        if (error) {
-            onPaymentError("Failed to create customer: " + error);
-            showErrorSwal("Failed to create customer: " + error);
-            return false;
-        }
-
-        if (result && result.Id) {
-            setCustomerId(result.Id);
-            console.log(result.Id);
-            return true;
-        } else {
-            const errMsg = 'Failed to retrieve created customer ID.';
-            onPaymentError(errMsg);
-            showErrorSwal(errMsg);
-            return false;
-        }
-    };
-
-    const handlePaymentWithCustomer = async (method: string, code?: string) => {
+    const handlePaymentWithCustomer = async (method: string, customerId: number, code?: string) => {
         try {
             const payment: Payment = {
                 Method: method,
                 OrderId: parseInt(orderId),
                 Amount: Math.round(totalAmount * 100),
-                CustomerId: customerId, // now we use the created customerId
+                CustomerId: customerId, // Use the created customerId directly
             };
 
             if (code) {
@@ -152,12 +122,34 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     };
 
     const handlePayment = async (method: string, code?: string) => {
-        // First ensure we have a customer
-        const customerCreated = await createCustomerIfNeeded();
-        if (!customerCreated) return; // If customer wasn't created successfully, stop the payment process
+        // Ensure customer name is provided
+        if (!customerName.trim()) {
+            const errMsg = 'Customer name is required.';
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
+            return;
+        }
 
-        // If customer created or already existed, proceed with payment
-        await handlePaymentWithCustomer(method, code);
+        // Create customer
+        const { result: customerResult, error: customerError } = await createCustomer(authToken, { Name: customerName });
+        if (customerError) {
+            const errMsg = "Failed to create customer: " + customerError;
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
+            return;
+        }
+
+        if (!customerResult || !customerResult.Id) {
+            const errMsg = 'Failed to retrieve created customer ID.';
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
+            return;
+        }
+
+        const createdCustomerId = customerResult.Id;
+
+        // Proceed with payment now that we have a customer
+        await handlePaymentWithCustomer(method, createdCustomerId, code);
     };
 
     const handleGiftcardPayment = async () => {
