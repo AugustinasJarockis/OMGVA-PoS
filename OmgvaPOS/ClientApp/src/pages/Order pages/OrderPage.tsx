@@ -30,7 +30,7 @@ const OrderPage: React.FC = () => {
 
                 if (result?.OrderItems) {
                     setListItems(result?.OrderItems.map(item =>
-                        <OrderItemListItem key={item.Id} orderItem={item} orderId={String(id)} orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
+                        <OrderItemListItem key={item.Id} orderItem={item} orderId={String(id)} updateOrder={ loadOrder } orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
                     ));
                 }
             }
@@ -56,14 +56,7 @@ const OrderPage: React.FC = () => {
                 return;
             }
 
-            if (!listItems) {
-                loadOrder();
-            }
-
-            if (listItems) {
-                const newList = listItems.filter((item) => item.key != orderItemId);
-                setListItems(newList);
-            }
+            loadOrder();
         }
         catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -100,8 +93,7 @@ const OrderPage: React.FC = () => {
                     setError("An error occurred while updating order: " + result);
                     return;
                 }
-                console.log(result);
-                setOrder(result);
+                await loadOrder();
             }
             else {
                 setError("Could not identify the order");
@@ -117,8 +109,6 @@ const OrderPage: React.FC = () => {
             Status: OrderStatus.Cancelled
         }
 
-        console.log("working");
-
         try {
             if (id) {
                 const result = await updateOrder(authToken, id, request);
@@ -126,6 +116,7 @@ const OrderPage: React.FC = () => {
                     setError("An error occurred while updating order status: " + result);
                     return;
                 }
+                await loadOrder();
             }
             else {
                 setError("Could not identify the order");
@@ -181,12 +172,15 @@ const OrderPage: React.FC = () => {
                     <div className="tip-total-container">
                         <div className="tip-box">
                             <p>Tip</p>
-                            <input
-                                type="number"
-                                min="0"
-                                value={order.Tip}
-                                onInput={updateTip}
-                            />
+                            {order.Status == OrderStatus.Open ? 
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={order.Tip}
+                                    onInput={updateTip}
+                                />
+                                : <p>{order.Tip}</p>
+                            }
                         </div>
                         <div className="total-box">
                             <p>Total</p>
