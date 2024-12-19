@@ -94,7 +94,7 @@ namespace OmgvaPOS.ReservationManagement.Service
 
         private void SendReservationSMS(string? phoneNumber, Reservation reservation)
         {
-            if (phoneNumber == null)
+            if (string.IsNullOrEmpty(phoneNumber))
                 return;
             
             var item = _itemService.GetItemOrThrow(reservation.ItemId);
