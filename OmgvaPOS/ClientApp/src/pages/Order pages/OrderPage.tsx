@@ -7,8 +7,10 @@ import { Order, OrderStatus, getOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 import PaymentModal from '../../components/Modals/PaymentModal';
-import { Payment, createPayment } from '../../services/paymentService'
 import Swal from 'sweetalert2';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import axios from 'axios';
 
 const OrderPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -19,10 +21,25 @@ const OrderPage: React.FC = () => {
     const navigate = useNavigate();
     const { authToken } = useAuth();
     const [showPayment, setShowPayment] = useState<boolean>(false);
+    const [stripePromise, setStripePromise] = useState<any>(null);
+
+    const loadStripeKey = async () => {
+        try {
+            const response = await axios.get('/api/payment/stripe-publish-key', {
+                headers: { Authorization: `Bearer ${authToken}` },
+            });
+            if (response.status === 200 && response.data.publishKey) {
+                setStripePromise(loadStripe(response.data.publishKey));
+            } else {
+                setError("Failed to load stripe publish key");
+            }
+        } catch (e: any) {
+            setError(e.message);
+        }
+    }
 
     const loadOrder = async () => {
         setError(null);
-
         try {
             if (id) {
                 const { result, error } = await getOrder(authToken, id);
@@ -104,38 +121,9 @@ const OrderPage: React.FC = () => {
         setShowPayment(!showPayment);
     }
 
-    const handlePaymentSubmit = async (paymentMethod: string, customerId: number) => {
-        try {
-            const payment: Payment = {
-                Method: paymentMethod,
-                OrderId: order?.Id.toString(),
-                Amount: calculateTotalAmount() * 1000,  // * 1000 so the amount is represented in cents
-                CustomerId: customerId
-            };
-
-            console.log(payment);
-
-            const { Payment, error } = await createPayment(authToken, payment);
-            // const { success, error } = await processPayment(authToken, order?.Id, paymentMethod);
-            console.log("After function");
-
-            if (error) {
-                console.log('Payment failed: ' + error);
-                setError("Payment failed: " + error);
-                return;
-            } else {
-                console.log('Payment successful!');
-                await Swal.fire(`${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} payment successful!`, '', 'success');
-                setShowPayment(false);
-            }
-        } catch (err: any) {
-            console.log(err.message || 'An unexpected error occurred during payment');
-            setError(err.message || 'An unexpected error occurred during payment.');
-        }
-    }
-
     useEffect(() => {
         if (authToken) {
+            loadStripeKey(); // Load stripe key as soon as we know we have auth
             if (state && state.order) {
                 setOrder(state.order);
             } else {
@@ -181,19 +169,22 @@ const OrderPage: React.FC = () => {
             ) : (
                 <p className="error-message">{error}</p>
             )}
-            <PaymentModal
-                isOpen={showPayment}
-                onClose={() => setShowPayment(false)}
-                authToken={authToken as string}
-                orderId={order?.Id.toString() ?? ''}
-                totalAmount={calculateTotalAmount()}
-                onPaymentSuccess={() => {
-                    Swal.fire('Payment successful!', '', 'success');
-                    setShowPayment(false);
-                }}
-                onPaymentError={(errorMessage) => setError(errorMessage)}
-            />
-
+            {stripePromise && (
+                <Elements stripe={stripePromise}>
+                    <PaymentModal
+                        isOpen={showPayment}
+                        onClose={() => setShowPayment(false)}
+                        authToken={authToken as string}
+                        orderId={order?.Id.toString() ?? ''}
+                        totalAmount={calculateTotalAmount()}
+                        onPaymentSuccess={() => {
+                            Swal.fire('Payment successful!', '', 'success');
+                            setShowPayment(false);
+                        }}
+                        onPaymentError={(errorMessage) => setError(errorMessage)}
+                    />
+                </Elements>
+            )}
         </div>
     );
 };

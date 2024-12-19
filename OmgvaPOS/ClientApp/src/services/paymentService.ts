@@ -30,10 +30,33 @@ export const createPayment = async (token: string | null, payment: Payment): Pro
             return createCashPayment(token, payment);
         case 'giftcard':
             return createGiftcardPayment(token, payment);
-        // case 'card':
-        //     return createCardPayment(token, payment);
+        case 'card':
+            // Card payment will need a PaymentMethodId from Stripe.js front-end
+            // We'll handle calling createCardPayment in PaymentModal after we get the PaymentMethodId.
+            // For now, just return an error if called directly.
+            return { error: 'Card payment requires a payment method id.' };
         default:
             return { error: 'Invalid payment method.' };
+    }
+}
+
+export const createCardPayment = async (token: string | null, payment: Payment, paymentMethodId: string): Promise<{ result?: Payment, error?: string }> => {
+    try {
+        const response = await axios.post('/api/payment/process-card', {
+            PaymentMethodId: paymentMethodId,
+            OrderId: payment.OrderId,
+            Amount: payment.Amount,
+            CustomerId: payment.CustomerId
+        }, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.status === 200) {
+            return { result: response.data };
+        } else {
+            return { error: response.data.error || 'An error occurred' };
+        }
+    } catch (error: any) {
+        return { error: error.message || 'An unexpected error occurred.' };
     }
 }
 
@@ -43,7 +66,7 @@ export const createCashPayment = async (token: string | null, payment: Payment):
             headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {
-            return { result: response.data };
+            return { result: response.data.payment };
         } else {
             return { error: response.data.message };
         }
@@ -58,7 +81,7 @@ export const createGiftcardPayment = async (token: string | null, payment: Payme
             headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {
-            return { result: response.data };
+            return { result: response.data.payment };
         } else {
             return { error: response.data.message };
         }
