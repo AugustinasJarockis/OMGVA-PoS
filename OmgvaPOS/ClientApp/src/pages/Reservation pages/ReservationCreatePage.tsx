@@ -29,7 +29,7 @@ const ReservationCreatePage: React.FC = () => {
             const date = new Date(timeReserved).toISOString().split('T')[0];
         const { result, error } = await getEmployeeSchedulesByItemAndDate(authToken, itemId ?? "", date);
         
-        if (error) {
+        if (noSchedulesFound) {
             setError(error);
             setScheduleData(null);
         } else {
@@ -54,8 +54,8 @@ const ReservationCreatePage: React.FC = () => {
 
     const { result, error } = await createReservation(authToken, reservationData);
 
-    if (error) {
-      setError(error);
+    if (error || result === null) {
+      setError(error ?? 'Employee is not available at the selected time.');
       setSuccessMessage(null);
     } else {
         setSuccessMessage('Reservation created successfully!');
@@ -69,7 +69,7 @@ const ReservationCreatePage: React.FC = () => {
    };
 
     const returnToVariations = () => {
-        navigate(`/order/${orderId}/add-items/${itemId}/variations`, { state: { group: state.group } });
+        navigate(`/order/${orderId}/add-items/${itemId}/variations`, { state: { group: state.group, currency: state.currency } });
     }
 
   return (

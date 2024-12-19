@@ -32,7 +32,7 @@ const OrderItemSelectionListPage: React.FC<ItemListPageProps> = ({ itemGroup: it
                     result = result.filter(i => i.ItemGroup === group);
                 }
                 else if (state && state.group) {
-                    result = result.filter(i => i.ItemGroup === state.group);
+                    result = result.filter(i => i.ItemGroup === state.group && (!state.currency || i.Currency === state.currency));
                 }
 
                 result.sort((a, b) => a.Name < b.Name ? -1 : (a.Name > b.Name ? 1 : 0));
@@ -55,11 +55,11 @@ const OrderItemSelectionListPage: React.FC<ItemListPageProps> = ({ itemGroup: it
     }
 
     const selectItem = (itemId: string) => {
-        navigate(`/order/${id}/add-items/${itemId}/variations`, { state: { group: state.group } });
+        navigate(`/order/${id}/add-items/${itemId}/variations`, { state: { group: state.group, currency: state.currency } });
     }
 
     const returnToGroups = () => {
-        navigate(`/order/${id}/add-items/group`);
+        navigate(`/order/${id}/add-items/group`, { state: { currency: state.currency }});
     }
 
     useEffect(() => {

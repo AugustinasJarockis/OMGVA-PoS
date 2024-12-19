@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getAllItems } from '../../services/itemService';
 import SquareGridItem from '../../components/Grid/SquareGridItem';
 import '../Item pages/ItemPages.css';
@@ -9,6 +9,7 @@ const OrderItemSelectCategoryListPage: React.FC = () => {
     const [gridItems, setGridItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
     const { id } = useParams();
+    const { state } = useLocation();
     const navigate = useNavigate();
     const { authToken } = useAuth();
 
@@ -38,7 +39,7 @@ const OrderItemSelectCategoryListPage: React.FC = () => {
     }
 
     const openItemGroup = (groupString: string) => {
-        navigate(`/order/${id}/add-items`, { state: { group: groupString } });
+        navigate(`/order/${id}/add-items`, { state: { group: groupString, currency: state.currency } });
     }
 
     const returnToOrder = () => {
