@@ -65,6 +65,7 @@ public class OrderItemService : IOrderItemService
         OrderValidator.IsOpen(order);
 
         ValidateItemBelongsToBusiness(item, order);
+        ValidateItemHasSameCurrencyAsOrder(item, order);
         
         var newOrderItem = new OrderItem {
             ItemId = request.ItemId,
@@ -261,6 +262,26 @@ public class OrderItemService : IOrderItemService
             _logger.LogWarning($"Item '{item.Name}' with ID {item.Id} cannot be added to order because it belongs to another business. " +
                                $"Item business: {item.BusinessId}, Order business: {order.BusinessId}");
             throw new NotFoundException("Item not found in business");
+        }
+    }
+    
+    private void ValidateItemHasSameCurrencyAsOrder(Item item, Order order)
+    {
+        if (order.OrderItems.Count == 0)
+        {
+            return;
+        }
+
+        // Get the first item's currency as reference
+        var referenceCurrency = _itemService.GetItemOrThrow(order.OrderItems.First().ItemId).Currency;
+
+        // Check if the new item's currency matches
+        if (item.Currency != referenceCurrency)
+        {
+            throw new ValidationException(
+                $"Cannot mix currencies. Order currency is {referenceCurrency}, " +
+                $"but trying to add item with currency {item.Currency}"
+            );
         }
     }
     
