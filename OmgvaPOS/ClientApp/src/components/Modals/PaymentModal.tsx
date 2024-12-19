@@ -162,30 +162,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     <>
                         <div className="form-group">
                             <label>
-                                Tips to add:
-                                <input
-                                    type="text"
-                                    value={tipsField}
-                                    onChange={(e) => setTipsField(e.target.value)}
-                                    placeholder="Unused"
-                                    disabled
-                                />
-                            </label>
-                        </div>
-                        <div className="form-group">
-                            <label>
-                                Discount:
-                                <input
-                                    type="number"
-                                    value={discount}
-                                    onChange={(e) => setDiscount(parseFloat(e.target.value))}
-                                    placeholder="Unused"
-                                    disabled
-                                />
-                            </label>
-                        </div>
-                        <div className="form-group">
-                            <label>
                                 Customer ID:
                                 <input
                                     type="number"
