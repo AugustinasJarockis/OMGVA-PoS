@@ -1,14 +1,15 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { OrderItem, updateOrderItem } from '../../services/orderItemService';
 import { useAuth } from '../../contexts/AuthContext';
-import { OrderStatus } from '../../services/orderService';
+import { OrderStatus, updateOrder } from '../../services/orderService';
 import { Item, getItem } from '../../services/itemService';
 
 interface OrderItemListItemProps {
     orderItem: OrderItem,
     orderStatus: OrderStatus,
     orderId: string,
-    onDelete: (orderItemId: string) => void
+    onDelete: (orderItemId: string) => void,
+    updateOrder: () => void
 }
 
 const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemListItemProps) => {
@@ -59,6 +60,7 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
                 setError("An error occurred while updating order item quantity: " + result);
                 return;
             }
+            props.updateOrder();
             setSavedSliderValue(sliderValue);
         }
         catch (err: any) {
@@ -104,9 +106,6 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
         window.scrollTo(0, 0);
     }, []);
     //TODO: Currency
-    //TODO: Max value
-    //TODO: update price
-    //TODO: Center tip amount fix css of total amount
     return (
         (error) || <>
             <div className="order-item-list-item" onClick={ expandInfo }>

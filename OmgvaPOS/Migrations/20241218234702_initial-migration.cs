@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OmgvaPOS.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -356,7 +356,7 @@ namespace OmgvaPOS.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Method = table.Column<int>(type: "int", nullable: false),
                     CustomerId = table.Column<long>(type: "bigint", nullable: false),
-                    GiftCardPaymentId = table.Column<long>(type: "bigint", nullable: true),
+                    GiftCardId = table.Column<long>(type: "bigint", nullable: true),
                     OrderId = table.Column<long>(type: "bigint", nullable: false),
                     Amount = table.Column<long>(type: "bigint", nullable: false),
                     GiftcardPaymentEntityId = table.Column<long>(type: "bigint", nullable: true)
