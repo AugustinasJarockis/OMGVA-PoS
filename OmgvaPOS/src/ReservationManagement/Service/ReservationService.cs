@@ -71,10 +71,12 @@ namespace OmgvaPOS.ReservationManagement.Service
             var requestedStartTime = TimeOnly.FromDateTime(createRequest.TimeReserved).ToTimeSpan();
             var requestedEndTime = requestedStartTime + item.Duration;
 
-            var isAvailable = employeeSchedule.ScheduleWithAvailabilities
-                .Any(es => requestedStartTime >= es.StartTime && requestedEndTime <= es.EndTime);
+            // Check if the requested reservation fits within the employee's available timeslots
+            var isAvailableInTimeslots = employeeSchedule.ScheduleWithAvailabilities
+                .SelectMany(s => s.AvailableTimeslots)
+                .Any(slot => requestedStartTime >= slot.StartTime && requestedEndTime <= slot.EndTime);
 
-            if (!isAvailable)
+            if (!isAvailableInTimeslots)
             {
                 throw new ConflictException("Employee is unavailable during the requested time.");
             }
@@ -101,6 +103,7 @@ namespace OmgvaPOS.ReservationManagement.Service
             var message = $"Reservation for {item.Name} confirmed.\nReservation time: {reservation.TimeReserved}";
             _smsService.SendSMSAsync(phoneNumber, message);
         }
+
 
         // TODO: think about historic data for reservation UPDATE
         // for example cannot update if reservation is complete

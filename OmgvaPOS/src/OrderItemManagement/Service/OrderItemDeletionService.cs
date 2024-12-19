@@ -72,8 +72,8 @@ namespace OmgvaPOS.OrderItemManagement.Service
 
         public void ReturnItemsToInventory(ICollection<OrderItem> orderItems) {
             foreach (var orderItem in orderItems) {
-                var item = _itemRepository.GetItem(orderItem.Id);
-                if (item.Duration != null) break; // check if its a service, if yes -> do nothing with item
+                var item = _itemRepository.GetItem(orderItem.ItemId);
+                if (item.Duration != null) continue; // check if its a service, if yes -> do nothing with item
 
                 item.InventoryQuantity += orderItem.Quantity;
                 _itemRepository.UpdateItemInventoryQuantity(item);

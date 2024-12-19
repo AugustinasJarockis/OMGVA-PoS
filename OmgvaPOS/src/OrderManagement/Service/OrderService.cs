@@ -259,7 +259,7 @@ public class OrderService : IOrderService
         return [originalOrder.ToSimpleOrderDTO(), newOrder.ToSimpleOrderDTO()];
     }
 
-    public void RefundOrder(long orderId) {
+    public void RefundOrder(RefundOrderRequest refundOrderRequest, long orderId) {
         var order = _orderRepository.GetOrder(orderId);
         OrderValidator.Exists(order);
         OrderValidator.IsClosed(order);
@@ -269,7 +269,9 @@ public class OrderService : IOrderService
             _orderItemDeletionService.ReturnItemsToInventory(order.OrderItems);
 
             order.Status = OrderStatus.Refunded;
+            order.RefundReason = refundOrderRequest.RefundReason;
             _orderRepository.UpdateOrder(order);
+            transaction.Commit();
         }
         catch (Exception ex) {
             transaction.Rollback();
@@ -287,8 +289,9 @@ public class OrderService : IOrderService
         try {
             _orderItemDeletionService.ReturnItemsToInventory(order.OrderItems);
 
-            order.Status = OrderStatus.Refunded;
+            order.Status = OrderStatus.Cancelled;
             _orderRepository.UpdateOrder(order);
+            transaction.Commit();
         }
         catch (Exception ex) {
             transaction.Rollback();
