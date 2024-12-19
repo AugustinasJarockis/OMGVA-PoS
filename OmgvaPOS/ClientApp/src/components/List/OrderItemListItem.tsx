@@ -8,6 +8,7 @@ interface OrderItemListItemProps {
     orderItem: OrderItem,
     orderStatus: OrderStatus,
     orderId: string,
+    orderCurrency: string,
     onDelete: (orderItemId: string) => void,
     updateOrder: () => void
 }
@@ -105,14 +106,14 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
 
         window.scrollTo(0, 0);
     }, []);
-    //TODO: Currency
+
     return (
         (error) || <>
             <div className="order-item-list-item" onClick={ expandInfo }>
                 <table>
                     <tr>
                         <td><b>{props.orderItem.ItemName} {variationString}</b></td>
-                        <td>Price: {props.orderItem.TotalPrice} EUR</td>
+                        <td>Price: {props.orderItem.TotalPrice} {props.orderCurrency}</td>
                         {(props.orderStatus === OrderStatus.Open && item) ? <>
                             <td>Quantity:</td>
                             <td>

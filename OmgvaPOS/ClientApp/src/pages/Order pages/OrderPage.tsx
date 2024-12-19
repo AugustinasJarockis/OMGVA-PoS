@@ -30,7 +30,7 @@ const OrderPage: React.FC = () => {
 
                 if (result?.OrderItems) {
                     setListItems(result?.OrderItems.map(item =>
-                        <OrderItemListItem key={item.Id} orderItem={item} orderId={String(id)} updateOrder={ loadOrder } orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
+                        <OrderItemListItem key={item.Id} orderCurrency={result?.Currency} orderItem={item} orderId={String(id)} updateOrder={ loadOrder } orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
                     ));
                 }
             }
@@ -74,7 +74,7 @@ const OrderPage: React.FC = () => {
 
     const goToAddItems = async () => {
         if (authToken) {
-            navigate(`/order/${id}/add-items/group`);
+            navigate(`/order/${id}/add-items/group`, { state: { currency: order?.Currency } });
         }
         else {
             navigate('/');
@@ -178,13 +178,14 @@ const OrderPage: React.FC = () => {
                                     min="0"
                                     value={order.Tip}
                                     onInput={updateTip}
-                                />
+                                />  
                                 : <p>{order.Tip}</p>
                             }
+                            {order.Currency}
                         </div>
                         <div className="total-box">
                             <p>Total</p>
-                            <span>{order.FinalPrice.toFixed(2)}</span>
+                            <span>{order.FinalPrice.toFixed(2)} {order.Currency}</span>
                         </div>
                     </div>
                     <br/><br/>
