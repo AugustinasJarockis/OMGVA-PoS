@@ -50,7 +50,6 @@ public class CustomerController : Microsoft.AspNetCore.Mvc.Controller
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    // TODO: if reservation status is done, don't let to update it for historical reasons
     public ActionResult<CustomerDTO> UpdateCustomer(long customerId, [FromBody] UpdateCustomerRequest updateRequest)
     {
         var customer = _customerService.Update(customerId, updateRequest);

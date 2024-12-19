@@ -55,7 +55,6 @@ namespace OmgvaPOS.ReservationManagement.Controller
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        // TODO: if reservation status is done, don't let to update it for historical reasons
         public ActionResult<ReservationDto> UpdateReservation(long reservationId, [FromBody] UpdateReservationRequest updateRequest)
         {
             var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
