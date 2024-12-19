@@ -134,11 +134,6 @@ const OrderPage: React.FC = () => {
         }
     }, []);
 
-    const calculateTotalAmount = (): number => {
-        if (!order || !order.OrderItems) return 0;
-        return order.OrderItems.reduce((total, item) => total + (item.TotalPrice * item.Quantity), 0);
-    }
-
     return (
         error ||
         <div>
@@ -176,7 +171,7 @@ const OrderPage: React.FC = () => {
                         onClose={() => setShowPayment(false)}
                         authToken={authToken as string}
                         orderId={order?.Id.toString() ?? ''}
-                        totalAmount={calculateTotalAmount()}
+                        totalAmount={order?.FinalPrice ?? 0}
                         onPaymentSuccess={() => {
                             Swal.fire('Payment successful!', '', 'success');
                             setShowPayment(false);
