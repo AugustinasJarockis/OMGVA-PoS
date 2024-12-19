@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
-import { Order, OrderStatus, UpdateOrderRequest, cancelOrder, getOrder, updateOrder } from '../../services/orderService';
+import { Order, OrderStatus, SimpleOrder, UpdateOrderRequest, cancelOrder, getOrder, updateOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 import PaymentModal from '../../components/Modals/PaymentModal';
@@ -165,10 +165,14 @@ const OrderPage: React.FC = () => {
         TotalPrice: item.TotalPrice
     })) ?? [];
 
-    const onSplitSuccess = async (simpleOrders: any) => {
-        // simpleOrders is the list of SimpleOrderDTO returned by the server
+    const onSplitSuccess = async (simpleOrders: Array<SimpleOrder>) => {
         Swal.fire('Order split successfully!', '', 'success');
-        navigate('/order');
+        let simpleOrdersProper: Array<string> = simpleOrders.map(o => o.Id);
+        if (state.splitOrders) {
+            simpleOrdersProper = simpleOrdersProper.concat(state.splitOrders);
+        }
+        console.log(simpleOrdersProper);
+        navigate('/order', { state: { splitOrders: simpleOrdersProper } });
     };
 
     const splitOrder = async () => {

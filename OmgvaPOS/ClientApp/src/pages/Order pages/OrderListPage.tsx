@@ -33,7 +33,7 @@ const OrderListPage: React.FC = () => {
             }
             else {
                 setListItems(result.map(order =>
-                    <ClickableOrderListItem orderType={OrderStatus.Open} key={order.Id} stateContent={{ splitPaymentItems: splitPaymentItems }} text={'Order  #' + order.Id} url={'/order/' + order.Id} />));
+                    <ClickableOrderListItem orderType={OrderStatus.Open} key={order.Id} stateContent={{ splitOrders: splitPaymentItems }} text={'Order  #' + order.Id} url={'/order/' + order.Id} />));
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -108,8 +108,8 @@ const OrderListPage: React.FC = () => {
 
     useEffect(() => {
         if (authToken) {
-            if (state && state.SplitOrders) {
-                setSplitPaymentItems(state.SplitOrders);
+            if (state && state.splitOrders) {
+                setSplitPaymentItems(state.splitOrders);
             }
             getActiveOrders();
         }
