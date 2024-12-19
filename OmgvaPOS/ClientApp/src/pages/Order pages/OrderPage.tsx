@@ -149,7 +149,7 @@ const OrderPage: React.FC = () => {
     }
 
     const refundOrder = async () => {
-        //TODO: Do stuff
+        navigate(`/order/${id}/refund`);
     }
 
     const finishOrder = async () => {

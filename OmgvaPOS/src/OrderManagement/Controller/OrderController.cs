@@ -140,11 +140,11 @@ public class OrderController(IOrderService orderService, ILogger<DiscountControl
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<OrderDTO> RefundOrder(long orderId) {
+    public ActionResult<OrderDTO> RefundOrder([FromBody] RefundOrderRequest refundOrderRequest, long orderId) {
         if (!AuthorizationHandler.CanManageBusiness(HttpContext.Request.Headers.Authorization!, _orderService.GetOrderBusinessId(orderId)))
             return Forbid();
 
-        _orderService.RefundOrder(orderId);
+        _orderService.RefundOrder(refundOrderRequest, orderId);
         OrderDTO orderDTO = _orderService.GetOrder(orderId);
         return Ok(orderDTO);
     }
