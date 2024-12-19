@@ -152,6 +152,7 @@ const OrderPage: React.FC = () => {
         setShowPayment(!showPayment);
     }
 
+
     useEffect(() => {
         if (authToken) {
             loadStripeKey(); // Load stripe key as soon as we know we have auth
@@ -225,6 +226,7 @@ const OrderPage: React.FC = () => {
                         totalAmount={order?.FinalPrice ?? 0}
                         onPaymentSuccess={() => {
                             Swal.fire('Payment successful!', '', 'success');
+                            updateOrder(authToken as string, order?.Id.toString() ?? '', { Status: OrderStatus.Closed });
                             setShowPayment(false);
                         }}
                         onPaymentError={(errorMessage) => {
