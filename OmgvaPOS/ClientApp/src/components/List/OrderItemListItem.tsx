@@ -113,7 +113,7 @@ const OrderItemListItem: React.FC<OrderItemListItemProps> = (props: OrderItemLis
                 <table>
                     <tr>
                         <td><b>{props.orderItem.ItemName} {variationString}</b></td>
-                        <td>Price: {props.orderItem.TotalPrice.toPrecision(2)} {props.orderCurrency}</td>
+                        <td>Price: {props.orderItem.TotalPrice.toFixed(2)} {props.orderCurrency}</td>
                         {(props.orderStatus === OrderStatus.Open && item) ? <>
                             <td>Quantity:</td>
                             <td>
