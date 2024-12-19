@@ -132,9 +132,8 @@ const OrderPage: React.FC = () => {
                     setError("An error occurred while cancelling order: " + result);
                     return;
                 }
-                //console.log(result);
                 setOrder(result);
-                //loadOrder();
+                navigate('/order');
             }
             else {
                 setError("Could not identify the order");

@@ -270,6 +270,7 @@ public class OrderService : IOrderService
 
             order.Status = OrderStatus.Refunded;
             _orderRepository.UpdateOrder(order);
+            transaction.Commit();
         }
         catch (Exception ex) {
             transaction.Rollback();
@@ -289,6 +290,7 @@ public class OrderService : IOrderService
 
             order.Status = OrderStatus.Cancelled;
             _orderRepository.UpdateOrder(order);
+            transaction.Commit();
         }
         catch (Exception ex) {
             transaction.Rollback();

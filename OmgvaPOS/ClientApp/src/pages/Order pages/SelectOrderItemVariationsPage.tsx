@@ -174,7 +174,7 @@ const SelectOrderItemVariationsPage: React.FC = () => {
             <form onSubmit={handleSubmission}>
                 {listItems}
                 <br/><br/>
-                <input type="submit" value={item?.UserId === undefined ? "Finish selection" : "Book reservation"} />
+                <input type="submit" value={item === null || item?.UserId === null ? "Finish selection" : "Book reservation"} />
             </form>
             {error && <p className="error-message">{error}</p>}
         </div>

@@ -29,8 +29,8 @@ const ReservationCreatePage: React.FC = () => {
             const date = new Date(timeReserved).toISOString().split('T')[0];
         const { result, error } = await getEmployeeSchedulesByItemAndDate(authToken, itemId ?? "", date);
         
-        if (noSchedulesFound) {
-            setError(error);
+        if (error) {
+            setError("No schedules found.");
             setScheduleData(null);
         } else {
             setScheduleData(result);
