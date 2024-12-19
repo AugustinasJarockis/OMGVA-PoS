@@ -2,16 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.HelperUtils;
 using OmgvaPOS.ItemManagement.DTOs;
-using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
-using OmgvaPOS.ItemManagement.Mappers;
 using OmgvaPOS.TaxManagement.Models;
 using OmgvaPOS.TaxManagement.Services;
-using OmgvaPOS.Validators;
-using System.Net;
 using OmgvaPOS.UserManagement.Service;
 using OmgvaPOS.DiscountManagement.Repository;
-using OmgvaPOS.Exceptions;
 
 namespace OmgvaPOS.ItemManagement
 {
