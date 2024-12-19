@@ -4,6 +4,7 @@ using OmgvaPOS.ItemManagement.Validators;
 using OmgvaPOS.ItemVariationManagement.Models;
 using OmgvaPOS.ItemVariationManagement.Repositories;
 using OmgvaPOS.ItemVariationManagement.Validators;
+using OmgvaPOS.OrderItemManagement.Models;
 using OmgvaPOS.OrderItemManagement.Repository;
 using OmgvaPOS.OrderItemManagement.Validators;
 using OmgvaPOS.OrderManagement.Repository;
@@ -42,36 +43,15 @@ namespace OmgvaPOS.OrderItemManagement.Service
             OrderValidator.Exists(order);
             OrderValidator.IsOpen(order);
 
-            var item = _itemRepository.GetItem(orderItem.ItemId);
-            ItemValidator.Exists(item);
-            item.InventoryQuantity += orderItem.Quantity;
-
-            List<ItemVariation> itemVariations = [];
-            // if order item has variations
-            if (orderItem.OrderItemVariations != null && orderItem.OrderItemVariations.Count != 0) {
-
-                foreach (var orderItemVariation in orderItem.OrderItemVariations) {
-                    var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
-                    ItemVariationValidator.Exists(itemVariation);
-                    itemVariation.InventoryQuantity += orderItem.Quantity;
-
-                    itemVariations.Add(itemVariation);
-                }
-            }
-
             // DeleteOrderItem may be called inside a transaction, 
             // in that case, using a nested transaction is not only unnecesary,
             // but also causes major errors
             if (useTransaction) {
                 using var transaction = _context.Database.BeginTransaction();
                 try {
+                    ReturnItemsToInventory([orderItem]);
+
                     _orderItemRepository.DeleteOrderItem(orderItem);
-
-                    _itemRepository.UpdateItemInventoryQuantity(item);
-
-                    foreach (var itemVariation in itemVariations) {
-                        _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
-                    }
 
                     transaction.Commit();
                 }
@@ -85,13 +65,29 @@ namespace OmgvaPOS.OrderItemManagement.Service
             else {
                 _orderItemRepository.DeleteOrderItem(orderItem);
 
-                _itemRepository.UpdateItemInventoryQuantity(item);
-
-                foreach (var itemVariation in itemVariations) {
-                    _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
-                }
+                ReturnItemsToInventory([orderItem]);
             }
 
+        }
+
+        public void ReturnItemsToInventory(ICollection<OrderItem> orderItems) {
+            foreach (var orderItem in orderItems) {
+                var item = _itemRepository.GetItem(orderItem.Id);
+                if (item.Duration != null) break; // check if its a service, if yes -> do nothing with item
+
+                item.InventoryQuantity += orderItem.Quantity;
+                _itemRepository.UpdateItemInventoryQuantity(item);
+
+                var orderItemWithVariations = _orderItemRepository.GetOrderItem(orderItem.Id);
+                if (orderItemWithVariations.OrderItemVariations != null && orderItemWithVariations.OrderItemVariations.Count != 0) {
+                    foreach (var orderItemVariation in orderItemWithVariations.OrderItemVariations) {
+                        var itemVariation = _itemVariationRepository.GetItemVariation(orderItemVariation.ItemVariationId);
+                        ItemVariationValidator.Exists(itemVariation);
+                        itemVariation.InventoryQuantity += orderItem.Quantity;
+                        _itemVariationRepository.UpdateItemVariationInventoryQuantity(itemVariation);
+                    }
+                }
+            }
         }
     }
 }
