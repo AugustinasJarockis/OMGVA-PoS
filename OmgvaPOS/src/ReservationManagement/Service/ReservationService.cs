@@ -105,13 +105,15 @@ namespace OmgvaPOS.ReservationManagement.Service
         }
 
 
-        // TODO: think about historic data for reservation UPDATE
-        // for example cannot update if reservation is complete
         public ReservationDto Update(long id, UpdateReservationRequest updateRequest, long businessId)
         {
             var existingReservation = GetReservationOrThrow(id);
 
             _userService.ValidateUserBelongsToBusiness(updateRequest.EmployeeId, businessId);
+            if (existingReservation.Status == ReservationStatus.Done)
+            {
+                throw new ValidationException("Cannot update finished reservation");
+            }
 
             if(updateRequest.CustomerId != null)
             {

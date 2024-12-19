@@ -31,7 +31,7 @@ namespace OmgvaPOS.TaxManagement.Services
            return _taxRepository.GetAllTaxes();
         }
 
-        public TaxDto UpdateTax(Tax tax) { //TODO: return new ID and update items
+        public TaxDto UpdateTax(Tax tax) {
             var taxItemConnections = _taxItemRepository.GetAllTaxItemQueriable().Where(c => c.TaxId == tax.Id);
             var items = _itemRepository.GetItemsQueriable().Where(i => i.IsArchived == false);
             var itemsRelatedToTax = items.Where(i => taxItemConnections.Select(c => c.ItemId).Contains(i.Id));

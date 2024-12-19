@@ -1,5 +1,6 @@
 ﻿using OmgvaPOS.BusinessManagement.Models;
 using OmgvaPOS.Database.Context;
+using OmgvaPOS.Exceptions;
 using OmgvaPOS.ItemManagement.Repositories;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ItemVariationManagement.Models;
@@ -203,12 +204,17 @@ public class OrderService : IOrderService
         return GetOrder(updatedOrder.Id);
     }
 
-    public Order UpdateOrderStatus(long orderId, OrderStatus orderStatus)
+    public Order UpdateOrderStatus(long orderId, OrderStatus newOrderStatus)
     {
+        if (newOrderStatus == OrderStatus.Refunded)
+            throw new BadRequestException("To refund order use explicit /refund endpoint");
+        
+        if (newOrderStatus == OrderStatus.Cancelled)
+            throw new BadRequestException("To cancel order use explicit /cancel endpoint");
+        
         var order = GetOrderOrThrow(orderId);
         
-        // TODO: any extra logic that might be needed when changing order status. 
-        order.Status = orderStatus;
+        order.Status = newOrderStatus;
         _orderRepository.UpdateOrder(order);
 
         return order;
