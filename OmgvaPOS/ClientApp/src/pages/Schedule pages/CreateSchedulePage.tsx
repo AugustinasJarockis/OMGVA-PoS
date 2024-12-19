@@ -35,7 +35,7 @@ const CreateSchedulePage: React.FC = () => {
                 setError(error);
             } else {
                 setSuccess("Schedule created successfully!");
-                setTimeout(() => navigate(`/employee/${id}/schedules`), 2000);
+                setTimeout(() => navigate(`/schedules/${id}`), 2000);
             }
         } catch (err: any) {
             setError(err.message || "An unexpected error occurred.");
@@ -43,7 +43,7 @@ const CreateSchedulePage: React.FC = () => {
     };
 
     const handleCancel = () => {
-        navigate(`/employee/${id}/schedules`);
+        navigate(`/schedules/${id}`);
     };
 
     return (
