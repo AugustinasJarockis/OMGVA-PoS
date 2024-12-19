@@ -6,6 +6,7 @@ import { OrderItem } from './orderItemService';
 export interface Order {
     Id: string,
     Status: OrderStatus,
+    Currency: string,
     Tip: number,
     RefundReason?: string,
     FinalPrice: number,
@@ -94,7 +95,6 @@ const updateOrder = async (token: string | null, id: string, order: UpdateOrderR
         const response = await axios.patch(`/api/order/${id}`, order, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        console.log(response);
         if (response.status === 200) {
             return response.data;
         } else {
