@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OmgvaPOS.BusinessManagement.Services;
 using OmgvaPOS.HelperUtils;
+using OmgvaPOS.OrderManagement.DTOs;
 using OmgvaPOS.OrderManagement.Enums;
 using OmgvaPOS.OrderManagement.Service;
 using OmgvaPOS.PaymentManagement.DTOs;
@@ -19,14 +20,11 @@ namespace OMGVA_PoS.Business_layer.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly IBusinessService _businessService;
-        private readonly IOrderService _orderService;
         private readonly ILogger<PaymentController> _logger;
-        public PaymentController(IPaymentService paymentService, IBusinessService businessService,
-            IOrderService orderService, ILogger<PaymentController> logger)
+        public PaymentController(IPaymentService paymentService, IBusinessService businessService, ILogger<PaymentController> logger)
         {
             _paymentService = paymentService;
             _businessService = businessService;
-            _orderService = orderService;
             _logger = logger;
         }
         
@@ -118,7 +116,6 @@ namespace OMGVA_PoS.Business_layer.Controllers
                     };
                     _logger.LogInformation("Payment processed: {@Payment}", payment.Id);
                     _paymentService.CreatePayment(payment.ToPaymentDTO());
-                    _orderService.UpdateOrderStatus(request.OrderId, OrderStatus.Closed);
                     return Ok(new
                     {
                         success = true,
