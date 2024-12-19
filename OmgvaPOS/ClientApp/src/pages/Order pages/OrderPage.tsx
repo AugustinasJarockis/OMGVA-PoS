@@ -87,7 +87,7 @@ const OrderPage: React.FC = () => {
 
     const goToBusinessOrders = async () => {
         if (authToken) {
-            navigate('/order');
+            navigate('/order', { state: { splitOrders: state?.splitOrders } });
         }
         else {
             navigate('/');

@@ -69,7 +69,6 @@ const ReservationCreatePage: React.FC = () => {
         }
 
         const createdCustomerId = customerResult.Id;
-        console.log(createdCustomerId);
 
         const reservationData: CreateReservation = {
             TimeReserved: timeReserved,
@@ -79,7 +78,6 @@ const ReservationCreatePage: React.FC = () => {
             ItemId: parseInt(itemId ?? ""),
         };
 
-        console.log(reservationData.CustomerId);
         const { result, error: reservationError } = await createReservation(authToken, reservationData);
 
         if (reservationError || result === null) {

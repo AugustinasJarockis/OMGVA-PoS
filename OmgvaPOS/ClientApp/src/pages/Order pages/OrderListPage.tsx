@@ -12,6 +12,7 @@ import CallbackListItem from '../../components/List/CallbackListItem';
 const OrderListPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
     const [splitPaymentItems, setSplitPaymentItems] = useState<string | undefined>(undefined);
+    const [shouldSetSplit, setShouldSetSplit] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [showOnlyOpen, setShowOnlyOpen] = useState<boolean>(true);
     const { state } = useLocation();
@@ -33,7 +34,7 @@ const OrderListPage: React.FC = () => {
             }
             else {
                 setListItems(result.map(order =>
-                    <ClickableOrderListItem orderType={OrderStatus.Open} key={order.Id} stateContent={{ splitOrders: splitPaymentItems }} text={'Order  #' + order.Id} url={'/order/' + order.Id} />));
+                    <ClickableOrderListItem orderType={OrderStatus.Open} key={order.Id} text={'Order  #' + order.Id} url={'/order/' + order.Id} />));
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -55,7 +56,7 @@ const OrderListPage: React.FC = () => {
                 }
 
                 setListItems(result.map(order =>
-                    <ClickableOrderListItem orderType={order.Status} key={order.Id} text={'Order  #' + order.Id} url={'/order/' + order.Id} />));
+                    <ClickableOrderListItem orderType={order.Status} key={order.Id} stateContent={{ splitOrders: splitPaymentItems }} text={'Order  #' + order.Id} url={'/order/' + order.Id} />));
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -108,15 +109,16 @@ const OrderListPage: React.FC = () => {
 
     useEffect(() => {
         if (authToken) {
-            if (state && state.splitOrders) {
+            if (state && state.splitOrders && shouldSetSplit) {
                 setSplitPaymentItems(state.splitOrders);
+                setShouldSetSplit(false);
             }
             getActiveOrders();
         }
         else {
             setError("You have to authenticate first!");
         }
-    }, []);
+    }, [splitPaymentItems]);
 
     return (
         <div>
