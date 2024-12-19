@@ -32,7 +32,9 @@ using OmgvaPOS.PaymentManagement.Services;
 using OmgvaPOS.ScheduleManagement.Service;
 using OmgvaPOS.ScheduleManagement.Repository;
 using System.Text;
-
+using Amazon;
+using Amazon.SimpleNotificationService;
+using OmgvaPOS.SmsManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 var initDatabaseAction = DbInitializerAction.DoNothing;
@@ -130,7 +132,21 @@ builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
+builder.Services.AddSingleton<IAmazonSimpleNotificationService>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var awsOptions = configuration.GetSection("AWS");
 
+    return new AmazonSimpleNotificationServiceClient(
+        awsOptions["AccessKey"],
+        awsOptions["SecretKey"],
+        new AmazonSimpleNotificationServiceConfig
+        {
+            RegionEndpoint = RegionEndpoint.GetBySystemName(awsOptions["Region"])
+        }
+    );
+});
+builder.Services.AddScoped<SMSService>();
 builder.Services.AddScoped<DiscountValidatorService, DiscountValidatorService>();
 
 //in case you want to use cloud database

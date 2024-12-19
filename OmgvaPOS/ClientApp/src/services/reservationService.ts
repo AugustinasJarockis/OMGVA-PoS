@@ -14,6 +14,7 @@ export interface CreateReservation {
     TimeReserved: Date;
     EmployeeId: number;
     CustomerId: number;
+    PhoneNumber?: string;
     ItemId: number;
 }
 export interface UpdateReservation {
