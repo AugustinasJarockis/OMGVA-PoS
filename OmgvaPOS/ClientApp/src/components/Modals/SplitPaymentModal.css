@@ -1,0 +1,126 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-family: Arial, sans-serif; /* Consistent font */
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 500px; /* Slightly wider for more content */
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+}
+
+.modal-content p {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.split-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.split-item-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #f9f9f9;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.split-item-list li:hover {
+    background: #f1f1f1;
+    border-color: #ccc;
+}
+
+.split-item-list span {
+    font-size: 14px;
+    color: #333;
+}
+
+.split-item-list input[type="number"] {
+    width: 80px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.split-item-list input[type="number"]:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.modal-actions button:first-child {
+    background: #28a745; /* Green for Confirm Split */
+    color: #fff;
+}
+
+.modal-actions button:first-child:hover {
+    background: #218838;
+}
+
+.modal-actions button:last-child {
+    background: #6c757d; /* Gray for Cancel */
+    color: #fff;
+}
+
+.modal-actions button:last-child:hover {
+    background: #5a6268;
+}
