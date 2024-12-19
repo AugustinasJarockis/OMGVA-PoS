@@ -50,11 +50,21 @@ export enum OrderStatus {
     Refunded
 }
 
-const getAllOrders = async (token: string | null): Promise<{ result?: Array<Order>, error?: string }> => {
+const getAllOrders = async (token: string | null, page?: number): Promise<{ result?: Array<Order>, error?: string }> => {
     try {
-        const response = await axios.get('/api/order', {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        console.log(page);
+        let response;
+        if (page) {
+            response = await axios.get('/api/order', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        }
+        else {
+            response = await axios.get(`/api/order?page=${page}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        }
+
         if (response.status === 200) {
             return { result: response.data };
         } else {

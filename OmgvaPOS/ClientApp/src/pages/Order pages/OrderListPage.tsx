@@ -11,6 +11,7 @@ import CallbackListItem from '../../components/List/CallbackListItem';
 
 const OrderListPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
+    const [currentPage, setCurrentPage] = useState<number>(1);
     const [splitPaymentItems, setSplitPaymentItems] = useState<string | undefined>(undefined);
     const [shouldSetSplit, setShouldSetSplit] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -45,7 +46,7 @@ const OrderListPage: React.FC = () => {
         setError(null);
 
         try {
-            let { result, error } = await getAllOrders(authToken);
+            let { result, error } = await getAllOrders(authToken, currentPage);
 
             if (!result) {
                 setError('Problem acquiring all orders: ' + error);
@@ -107,6 +108,14 @@ const OrderListPage: React.FC = () => {
             navigate('/');
     }
 
+    const forwardPage = () => {
+        setCurrentPage(currentPage + 1);
+    }
+
+    const backPage = () => {
+        setCurrentPage(Math.max(currentPage - 1, 1));
+    }
+
     useEffect(() => {
         if (authToken) {
             if (state && state.splitOrders && shouldSetSplit) {
@@ -118,7 +127,7 @@ const OrderListPage: React.FC = () => {
         else {
             setError("You have to authenticate first!");
         }
-    }, [splitPaymentItems]);
+    }, [splitPaymentItems, currentPage]);
 
     return (
         <div>
@@ -126,6 +135,8 @@ const OrderListPage: React.FC = () => {
                 <button onClick={goToBusiness}>Business</button>
             </header>
             <br/><br/>
+            <button onClick={backPage}>{'<'}</button>
+            <button onClick={forwardPage}>{'>'}</button>
             {(splitPaymentItems)
               ? <><button onClick={clearSplitOrder}>Exit split order view</button> <br/> <br/> </>
               : <>
