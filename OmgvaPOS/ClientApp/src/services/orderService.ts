@@ -105,4 +105,19 @@ const updateOrder = async (token: string | null, id: string, order: UpdateOrderR
     }
 };
 
-export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder };
+const cancelOrder = async (token: string | null, id: string): Promise<string | Order> => {
+    try {
+        const response = await axios.post(`/api/order/${id}/cancel`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+};
+
+export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder, cancelOrder };

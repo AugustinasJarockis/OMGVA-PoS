@@ -9,3 +9,15 @@
 .refunded-order-clickable .clickable-list-item {
     background: #CCCCEE;
 }
+
+.closed-order-clickable .clickable-list-item:hover {
+    background: #997777CC;
+}
+
+.cancelled-order-clickable .clickable-list-item:hover {
+    background: #DDAAAACC;
+}
+
+.refunded-order-clickable .clickable-list-item:hover {
+    background: #AAAACCCC;
+}
