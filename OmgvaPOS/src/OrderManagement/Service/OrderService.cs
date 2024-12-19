@@ -91,6 +91,7 @@ public class OrderService : IOrderService
             Status = order.Status,
             Tip = order.Tip,
             RefundReason = order.RefundReason,
+            Currency = orderItemDTOs.FirstOrDefault()?.Currency,
             FinalPrice = finalPrice,
             TaxesPaid = finalTaxesPaid,
             Discount = order.Discount.ToSimpleDiscountDTO(),
