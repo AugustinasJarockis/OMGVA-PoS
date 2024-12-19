@@ -15,7 +15,6 @@ const EmployeeReservationsPage: React.FC = () => {
     const fetchReservations = async () => {
         setError(null);
         try {
-            console.log(id);
             const { result, error } = await getEmployeeReservations(authToken, id ?? "");
             if (error) {
                 setError('Error fetching reservations: ' + error);

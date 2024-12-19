@@ -16,6 +16,13 @@ export interface Order {
     OrderItems: Array<OrderItem>
 }
 
+export interface SimpleOrder {
+    Id: string,
+    Status: OrderStatus,
+    Tip: number,
+    RefundReason?: string,
+    User: SimpleUser
+}
 export interface UpdateOrderRequest {
     Status?: OrderStatus, 
     Tip?: number,
@@ -25,6 +32,15 @@ export interface UpdateOrderRequest {
 
 export interface RefundOrderRequest {
     RefundReason: string
+}
+
+export interface SplitPaymentRequest {
+    SplitOrderItems: Array<SplitOrderItem>
+}
+
+export interface SplitOrderItem {
+    OrderItemId: string,
+    Quantity: number
 }
 
 export enum OrderStatus {
@@ -109,6 +125,21 @@ const updateOrder = async (token: string | null, id: string, order: UpdateOrderR
     }
 };
 
+const splitOrder = async (token: string | null, id: string, request: SplitPaymentRequest): Promise<string | Array<SimpleOrder>> => {
+    try {
+        const response = await axios.post(`/api/order/${id}/split`, request, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            return response.data.message;
+        }
+    } catch (error: any) {
+        return error.message || 'An unexpected error occurred.';
+    }
+}
+
 const cancelOrder = async (token: string | null, id: string): Promise<string | Order> => {
     try {
         const response = await axios.post(`/api/order/${id}/cancel`, {}, {
@@ -139,4 +170,4 @@ const refundOrder = async (token: string | null, id: string, request: RefundOrde
     }
 };
 
-export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder, cancelOrder, refundOrder };
+export { getAllActiveOrders, getAllOrders, getOrder, createOrder, updateOrder, cancelOrder, refundOrder, splitOrder };

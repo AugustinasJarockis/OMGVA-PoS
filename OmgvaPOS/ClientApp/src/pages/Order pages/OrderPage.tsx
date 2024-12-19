@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
-import { Order, OrderStatus, UpdateOrderRequest, cancelOrder, getOrder, updateOrder } from '../../services/orderService';
+import { Order, OrderStatus, SimpleOrder, UpdateOrderRequest, cancelOrder, getOrder, updateOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 import PaymentModal from '../../components/Modals/PaymentModal';
@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import axios from 'axios';
+import SplitPaymentModal from "../../components/Modals/SplitPaymentModal.tsx";
 
 const OrderPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -22,6 +23,7 @@ const OrderPage: React.FC = () => {
     const { authToken } = useAuth();
     const [showPayment, setShowPayment] = useState<boolean>(false);
     const [stripePromise, setStripePromise] = useState<any>(null);
+    const [showSplitPayment, setShowSplitPayment] = useState<boolean>(false);
 
     const loadStripeKey = async () => {
         try {
@@ -85,7 +87,7 @@ const OrderPage: React.FC = () => {
 
     const goToBusinessOrders = async () => {
         if (authToken) {
-            navigate('/order');
+            navigate('/order', { state: { splitOrders: state?.splitOrders } });
         }
         else {
             navigate('/');
@@ -156,6 +158,25 @@ const OrderPage: React.FC = () => {
         setShowPayment(!showPayment);
     }
 
+    const orderItemsForSplit = order?.OrderItems?.map(item => ({
+        Id: item.Id,
+        Name: item.ItemName,
+        Quantity: item.Quantity,
+        TotalPrice: item.TotalPrice
+    })) ?? [];
+
+    const onSplitSuccess = async (simpleOrders: Array<SimpleOrder>) => {
+        Swal.fire('Order split successfully!', '', 'success');
+        let simpleOrdersProper: Array<string> = simpleOrders.map(o => o.Id);
+        if (state && state.splitOrders) {
+            simpleOrdersProper = simpleOrdersProper.concat(state.splitOrders);
+        }
+        navigate('/order', { state: { splitOrders: simpleOrdersProper } });
+    };
+
+    const splitOrder = async () => {
+        setShowSplitPayment(true);
+    }
 
     useEffect(() => {
         if (authToken) {
@@ -227,6 +248,8 @@ const OrderPage: React.FC = () => {
                     <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;
+                    {order.Status == OrderStatus.Open && <button onClick={splitOrder}>Split payment</button>}
+                    &nbsp;&nbsp;&nbsp;&nbsp;
                     {order.Status == OrderStatus.Open && <button onClick={cancelCurrentOrder}>Cancel order</button>}
                     {order.Status == OrderStatus.Closed && <button onClick={refundOrder}>Refund order</button>}
                     {order.Status == OrderStatus.Refunded && <p className="nice-order-text">Order refunded. Reason: {order.RefundReason}</p>}
@@ -260,6 +283,14 @@ const OrderPage: React.FC = () => {
                     />
                 </Elements>
             )}
+            <SplitPaymentModal
+                isOpen={showSplitPayment}
+                onClose={() => setShowSplitPayment(false)}
+                authToken={authToken as string}
+                orderId={order?.Id.toString() ?? ''}
+                orderItems={orderItemsForSplit}
+                onSplitSuccess={onSplitSuccess}
+            />
         </div>
     );
 };
