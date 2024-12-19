@@ -8,6 +8,18 @@ public static class PaymentMapper
 {
     public static Payment ToPayment(this PaymentDTO request)
     {
+        if (request.Id != null)
+        {
+            return new Payment
+            {
+                Id = request.Id,
+                Method = Enum.Parse<PaymentMethod>(request.Method, true),
+                CustomerId = request.CustomerId,
+                OrderId = request.OrderId,
+                Amount = request.Amount,
+                GiftCardId = request.GiftCardId
+            };
+        }
         return new Payment
         {
             Id = Guid.NewGuid().ToString(),

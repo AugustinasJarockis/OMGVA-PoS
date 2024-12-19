@@ -144,7 +144,7 @@ const ItemDataForm: React.FC<ItemDataFormProps> = (props: ItemDataFormProps) => 
                         <UserSelector current={props.item?.UserId} required={props.required} /><br/><br/>
                     </>
                     }
-                    <input type="submit" value={props.submitText ? props.submitText : "Submit"} />
+                    <input className="update-item-button" type="submit" value={props.submitText ? props.submitText : "Submit"} />
                 </form>
             </>
         </div>

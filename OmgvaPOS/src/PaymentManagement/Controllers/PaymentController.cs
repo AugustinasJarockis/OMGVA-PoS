@@ -17,10 +17,12 @@ namespace OMGVA_PoS.Business_layer.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly IBusinessService _businessService;
-        public PaymentController(IPaymentService paymentService, IBusinessService businessService)
+        private readonly ILogger<PaymentController> _logger;
+        public PaymentController(IPaymentService paymentService, IBusinessService businessService, ILogger<PaymentController> logger)
         {
             _paymentService = paymentService;
             _businessService = businessService;
+            _logger = logger;
         }
         
         [HttpGet]
@@ -109,6 +111,7 @@ namespace OMGVA_PoS.Business_layer.Controllers
                         OrderId = request.OrderId,
                         Amount = request.Amount
                     };
+                    _logger.LogInformation("Payment processed: {@Payment}", payment.Id);
                     _paymentService.CreatePayment(payment.ToPaymentDTO());
                     return Ok(new
                     {
@@ -184,6 +187,21 @@ namespace OMGVA_PoS.Business_layer.Controllers
             
             var payment = _paymentService.ProcessGiftcardPayment(request);
             return Ok(new { success = true, payment });
+        }
+        
+        [HttpGet("stripe-publish-key")]
+        [Authorize(Roles = "Admin,Owner,Employee")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult GetStripePublishKey()
+        {
+            var businessId = JwtTokenHandler.GetTokenBusinessId(HttpContext.Request.Headers.Authorization);
+            if (businessId == null)
+                return Forbid();
+            
+            var business = _businessService.GetBusiness(businessId);
+            return Ok(new { publishKey = business.StripePublishKey });
         }
     }
 }

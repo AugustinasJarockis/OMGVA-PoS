@@ -128,15 +128,13 @@ const SelectOrderItemVariationsPage: React.FC = () => {
             }
 
             if (item && item.UserId && id && state.group) {
-                console.log("tureciau nunaviguot");
-                console.log(state.group);
-                navigate(`/order/${id}/reservation/create/item/${itemId}/employee/${item.UserId}`, { state: { group: state.group} });
+                navigate(`/order/${id}/reservation/create/item/${itemId}/employee/${item.UserId}`, { state: { group: state.group, currency: item.Currency } });
             }
-            else {
+            else if (item){
                 if (state.group)
-                    navigate(`/order/${id}/add-items`, { state: { group: state.group } });
+                    navigate(`/order/${id}/add-items`, { state: { group: state.group, currency: item.Currency } });
                 else {
-                    navigate(`/order/${id}/add-items`);
+                    navigate(`/order/${id}/add-items`, { state: { currency: item.Currency } });
                 }
             }
         }
