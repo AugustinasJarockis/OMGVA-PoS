@@ -9,25 +9,71 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    font-family: Arial, sans-serif; /* You can choose another font if desired */
 }
 
 .modal-content {
-    background: blue;
+    background: #ffffff;
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     width: 400px;
     max-width: 90%;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2, .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #333;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-group label {
-    display: flex;
-    flex-direction: column;
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+.card-element-container {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    background: #f9f9f9;
 }
 
 .payment-buttons {
@@ -39,16 +85,77 @@
 .payment-buttons button {
     flex: 1;
     margin: 0 5px;
-    padding: 10px;
+    padding: 10px 0;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: #007BFF;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.payment-buttons button:hover {
+    background: #0056b3;
+}
+
+.payment-buttons button:nth-child(1) {
+    background: #28a745; /* Green for Cash */
+}
+
+.payment-buttons button:nth-child(1):hover {
+    background: #218838;
+}
+
+.payment-buttons button:nth-child(2) {
+    background: #ffc107; /* Amber for Giftcard */
+    color: #333;
+}
+
+.payment-buttons button:nth-child(2):hover {
+    background: #e0a800;
+    color: #fff;
+}
+
+.payment-buttons button:nth-child(3) {
+    background: #007bff; /* Blue for Card */
+}
+
+.payment-buttons button:nth-child(3):hover {
+    background: #0056b3;
 }
 
 .modal-actions {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
 }
 
 .modal-actions button {
     padding: 8px 16px;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    background: #6c757d;
+    color: #fff;
+}
+
+.modal-actions button:hover {
+    background: #5a6268;
+}
+
+.modal-actions button:nth-child(1) {
+    background: #007BFF; /* For confirm or primary action buttons */
+}
+
+.modal-actions button:nth-child(1):hover {
+    background: #0056b3;
+}
+
+.card-element-container {
+    margin-bottom: 20px;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './PaymentModal.css';
 import { createPayment, Payment, createCardPayment } from '../../services/paymentService';
+import { createCustomer } from '../../services/customerService'; // Import createCustomer function
 import Swal from 'sweetalert2';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 
@@ -25,7 +26,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                                                    }) => {
     const [tipsField, setTipsField] = useState<string>('');
     const [discount, setDiscount] = useState<number>(0);
-    const [customerId, setCustomerId] = useState<number>(0);
+    const [customerName, setCustomerName] = useState<string>(''); // No longer using customerId state
     const [giftcardCode, setGiftcardCode] = useState<string>('');
     const [isCardMode, setIsCardMode] = useState<boolean>(false);
 
@@ -41,17 +42,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     if (!isOpen) return null;
 
     const showErrorSwal = (message: string) => {
-        // Show a Swal error alert
         Swal.fire('Error', message, 'error');
     };
 
-    const handlePayment = async (method: string, code?: string) => {
+    const handlePaymentWithCustomer = async (method: string, customerId: number, code?: string) => {
         try {
             const payment: Payment = {
                 Method: method,
                 OrderId: parseInt(orderId),
                 Amount: Math.round(totalAmount * 100),
-                CustomerId: customerId,
+                CustomerId: customerId, // Use the created customerId directly
             };
 
             if (code) {
@@ -121,6 +121,37 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         }
     };
 
+    const handlePayment = async (method: string, code?: string) => {
+        // Ensure customer name is provided
+        if (!customerName.trim()) {
+            const errMsg = 'Customer name is required.';
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
+            return;
+        }
+
+        // Create customer
+        const { result: customerResult, error: customerError } = await createCustomer(authToken, { Name: customerName });
+        if (customerError) {
+            const errMsg = "Failed to create customer: " + customerError;
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
+            return;
+        }
+
+        if (!customerResult || !customerResult.Id) {
+            const errMsg = 'Failed to retrieve created customer ID.';
+            onPaymentError(errMsg);
+            showErrorSwal(errMsg);
+            return;
+        }
+
+        const createdCustomerId = customerResult.Id;
+
+        // Proceed with payment now that we have a customer
+        await handlePaymentWithCustomer(method, createdCustomerId, code);
+    };
+
     const handleGiftcardPayment = async () => {
         const { value: code } = await Swal.fire({
             title: "Enter your Giftcard Code",
@@ -162,36 +193,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     <>
                         <div className="form-group">
                             <label>
-                                Tips to add:
+                                Customer Name:
                                 <input
                                     type="text"
-                                    value={tipsField}
-                                    onChange={(e) => setTipsField(e.target.value)}
-                                    placeholder="Unused"
-                                    disabled
-                                />
-                            </label>
-                        </div>
-                        <div className="form-group">
-                            <label>
-                                Discount:
-                                <input
-                                    type="number"
-                                    value={discount}
-                                    onChange={(e) => setDiscount(parseFloat(e.target.value))}
-                                    placeholder="Unused"
-                                    disabled
-                                />
-                            </label>
-                        </div>
-                        <div className="form-group">
-                            <label>
-                                Customer ID:
-                                <input
-                                    type="number"
-                                    value={customerId}
-                                    onChange={(e) => setCustomerId(parseFloat(e.target.value))}
-                                    placeholder="Enter customer ID"
+                                    value={customerName}
+                                    onChange={(e) => setCustomerName(e.target.value)}
+                                    placeholder="Enter customer name"
                                 />
                             </label>
                         </div>
