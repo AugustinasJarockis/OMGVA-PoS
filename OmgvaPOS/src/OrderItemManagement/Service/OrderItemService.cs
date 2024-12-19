@@ -182,6 +182,7 @@ public class OrderItemService : IOrderItemService
         OrderItemDTO orderItemDTO = new OrderItemDTO {
             Id = orderItem.Id,
             TotalPrice = totalPrice,
+            Currency = item.Currency,
             UnitPriceNoDiscount = unitPriceWithVariations,
             TaxPercent = totalTaxPercent,
             ItemId = item.Id,
