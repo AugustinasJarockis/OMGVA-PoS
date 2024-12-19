@@ -51,6 +51,7 @@ public class OrderRepository : IOrderRepository
         var orders = _context.Orders
             .Where (o => o.BusinessId == businessId)
             .Include(o => o.User)
+            .OrderByDescending(o => o.Id)
             .ToList();
         return orders;
     }
