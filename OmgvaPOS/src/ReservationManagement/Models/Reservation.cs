@@ -5,8 +5,6 @@ using OmgvaPOS.UserManagement.Models;
 
 namespace OmgvaPOS.ReservationManagement.Models
 {
-    // TODO: add item to link what service will be provided with this Reservation
-    // TODO: add business or reuse business from item to protect this resource
     public class Reservation
     {
         public long Id { get; set; }
