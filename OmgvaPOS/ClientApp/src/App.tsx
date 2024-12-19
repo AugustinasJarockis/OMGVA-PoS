@@ -39,6 +39,7 @@ import OrderPage from './pages/Order pages/OrderPage';
 import OrderItemSelectCategoryListPage from './pages/Order pages/OrderItemSelectionCategoryPage';
 import OrderItemSelectionListPage from './pages/Order pages/OrderItemSelectionPage';
 import SelectOrderItemVariationsPage from './pages/Order pages/SelectOrderItemVariationsPage';
+import CreateOrderDiscountPage from './pages/Discount pages/CreateOrderDiscountPage';
 import OrderRefundPage from './pages/Order pages/OrderRefundPage';
 
 const App: React.FC = () => {
@@ -99,6 +100,7 @@ const App: React.FC = () => {
                             <Route path="/item/:itemId/item-variation/update/:id" element={<UpdateItemVariationPage/>} />
                             <Route path="/order" element={<OrderListPage />} />
                             <Route path="/order/:id" element={<OrderPage />} />
+                            <Route path="/order/:id/discount" element={<CreateOrderDiscountPage />} />
                             <Route path="/order/:id/add-items" element={<OrderItemSelectionListPage />} />
                             <Route path="/order/:id/add-items/group" element={<OrderItemSelectCategoryListPage />} />
                             <Route path="/order/:id/add-items/:itemId/variations" element={<SelectOrderItemVariationsPage />} />

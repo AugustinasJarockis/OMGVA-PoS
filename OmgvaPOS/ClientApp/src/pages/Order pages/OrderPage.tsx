@@ -101,6 +101,10 @@ const OrderPage: React.FC = () => {
         }
     }
 
+    const addOrderDiscount = () => {
+        navigate(`/order/${id}/discount`);
+    }
+
     const updateTip = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const request: UpdateOrderRequest = {
             Tip: +e.currentTarget.value
@@ -188,6 +192,15 @@ const OrderPage: React.FC = () => {
                         {listItems}
                     </section>
                     <br/><br/>
+                    <div className='discount-box'>
+                        {(order.Status === OrderStatus.Open && order.Discount === null) ?
+                        <button onClick={addOrderDiscount}>Add discount</button>
+                        :   ((order.Status == OrderStatus.Open) 
+                            ? <p>Discount: {order.Discount?.DiscountAmount}%</p> 
+                            : (order.Discount && <p>Discount: {order.Discount?.DiscountAmount}%</p>)
+                            )
+                        }
+                    </div>
                     <div className="tip-total-container">
                         <div className="tip-box">
                             <p>Tip</p>
@@ -200,7 +213,7 @@ const OrderPage: React.FC = () => {
                                 />  
                                 : <p>{order.Tip}</p>
                             }
-                            {order.Currency}
+                            &nbsp;{order.Currency}
                         </div>
                         <div className="total-box">
                             <p>Total</p>
