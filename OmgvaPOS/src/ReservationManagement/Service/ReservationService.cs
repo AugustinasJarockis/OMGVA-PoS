@@ -1,6 +1,5 @@
 using OmgvaPOS.CustomerManagement.Service;
 using OmgvaPOS.Exceptions;
-using OmgvaPOS.ItemManagement.Models;
 using OmgvaPOS.ItemManagement.Services;
 using OmgvaPOS.ReservationManagement.DTOs;
 using OmgvaPOS.ReservationManagement.Enums;
@@ -9,6 +8,7 @@ using OmgvaPOS.ReservationManagement.Models;
 using OmgvaPOS.ReservationManagement.Repository;
 using OmgvaPOS.ReservationManagement.Validators;
 using OmgvaPOS.ScheduleManagement.Service;
+using OmgvaPOS.SmsManagement;
 using OmgvaPOS.UserManagement.Service;
 using static OmgvaPOS.Exceptions.ExceptionErrors;
 
@@ -21,14 +21,16 @@ namespace OmgvaPOS.ReservationManagement.Service
         private readonly IUserService _userService;
         private readonly IScheduleService _scheduleService;
         private readonly IItemService _itemService;
+        private readonly SMSService _smsService;
 
-        public ReservationService(IReservationRepository repository, ICustomerService customerService, IUserService userService, IScheduleService scheduleService, IItemService itemService)
+        public ReservationService(IReservationRepository repository, ICustomerService customerService, IUserService userService, IScheduleService scheduleService, IItemService itemService, SMSService smsService)
         {
             _repository = repository;
             _customerService = customerService;
             _userService = userService;
             _scheduleService = scheduleService;
             _itemService = itemService;
+            _smsService = smsService;
         }
 
         public IEnumerable<ReservationDto> GetAll()
@@ -86,9 +88,19 @@ namespace OmgvaPOS.ReservationManagement.Service
             }
 
             var createdReservation = _repository.Create(reservation);
+            SendReservationSMS(createRequest.PhoneNumber, createdReservation);
             return createdReservation.ToDto();
         }
 
+        private void SendReservationSMS(string? phoneNumber, Reservation reservation)
+        {
+            if (phoneNumber == null)
+                return;
+            
+            var item = _itemService.GetItemOrThrow(reservation.ItemId);
+            var message = $"Reservation for {item.Name} confirmed.\nReservation time: {reservation.TimeReserved}";
+            _smsService.SendSMSAsync(phoneNumber, message);
+        }
 
         // TODO: think about historic data for reservation UPDATE
         // for example cannot update if reservation is complete

@@ -6,4 +6,5 @@ public class CreateReservationRequest
     public long EmployeeId { get; set; }
     public long CustomerId { get; set; }
     public long ItemId { get; set; }
+    public string? PhoneNumber { get; set; }
 }
