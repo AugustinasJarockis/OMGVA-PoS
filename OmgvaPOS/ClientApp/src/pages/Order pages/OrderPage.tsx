@@ -192,15 +192,19 @@ const OrderPage: React.FC = () => {
                         {listItems}
                     </section>
                     <br/><br/>
-                    <div className='discount-box'>
-                        {(order.Status === OrderStatus.Open && order.Discount === null) ?
-                        <button onClick={addOrderDiscount}>Add discount</button>
-                        :   ((order.Status == OrderStatus.Open) 
-                            ? <p>Discount: {order.Discount?.DiscountAmount}%</p> 
-                            : (order.Discount && <p>Discount: {order.Discount?.DiscountAmount}%</p>)
-                            )
-                        }
+                    {(order.Status === OrderStatus.Open || order.Discount !== null) &&
+                    <div className="tip-total-container">
+                        <div className='discount-box'>
+                            {(order.Status === OrderStatus.Open && order.Discount === null) ?
+                            <button onClick={addOrderDiscount}>Add discount</button>
+                            :   ((order.Status == OrderStatus.Open) 
+                                ? <p>Discount: {order.Discount?.DiscountAmount}%</p> 
+                                : (order.Discount && <p>Discount: {order.Discount?.DiscountAmount}%</p>)
+                                )
+                            }
+                        </div>
                     </div>
+                    }
                     <div className="tip-total-container">
                         <div className="tip-box">
                             <p>Tip</p>
@@ -225,6 +229,7 @@ const OrderPage: React.FC = () => {
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     {order.Status == OrderStatus.Open && <button onClick={cancelCurrentOrder}>Cancel order</button>}
                     {order.Status == OrderStatus.Closed && <button onClick={refundOrder}>Refund order</button>}
+                    {order.Status == OrderStatus.Refunded && <p className="nice-order-text">Order refunded. Reason: {order.RefundReason}</p>}
                 </>
             ) : (
                 <p className="error-message">{error}</p>
@@ -237,9 +242,16 @@ const OrderPage: React.FC = () => {
                         authToken={authToken as string}
                         orderId={order?.Id.toString() ?? ''}
                         totalAmount={order?.FinalPrice ?? 0}
-                        onPaymentSuccess={() => {
+                        onPaymentSuccess={async () => {
                             Swal.fire('Payment successful!', '', 'success');
-                            updateOrder(authToken as string, order?.Id.toString() ?? '', { Status: OrderStatus.Closed });
+                            const result = await updateOrder(authToken as string, order?.Id.toString() ?? '', { Status: OrderStatus.Closed });
+                            if (typeof result == "string") {
+                                setError("An error occurred while finishing order payment: " + result);
+                                return;
+                            }
+                            if (result)
+                                setOrder(result);
+                            loadOrder();
                             setShowPayment(false);
                         }}
                         onPaymentError={(errorMessage) => {

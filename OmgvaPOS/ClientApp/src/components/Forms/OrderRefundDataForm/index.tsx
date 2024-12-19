@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import { RefundOrderRequest } from '../../../services/orderService';
+import "./OrderRefundForm.css";
 
 interface OrderRefundDataFormProps {
     submitText?: string;
@@ -23,7 +24,7 @@ const OrderRefundDataForm: React.FC<OrderRefundDataFormProps> = (props: OrderRef
     return (
         <div>
             <>
-                <form onSubmit={handleSubmission}>
+                <form className="order-refund-form" onSubmit={handleSubmission}>
                     <label htmlFor="refundReason">Refund reason</label>
                     <input type="text-area"
                         id="refundReason"

@@ -14,10 +14,10 @@ const OrderRefundPage: React.FC = () => {
     const handleSubmission = async (refundOrderRequest: RefundOrderRequest) => {
         try {
             if (checkId() && id) {
-                const error = await refundOrder(authToken, id, refundOrderRequest);
+                const result = await refundOrder(authToken, id, refundOrderRequest);
 
-                if (error) {
-                    setError("An error occurred while refunding the order: " + error);
+                if (typeof result === 'string') {
+                    setError("An error occurred while refunding the order: " + result);
                     return;
                 }
 
