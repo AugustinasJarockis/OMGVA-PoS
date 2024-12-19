@@ -6,6 +6,11 @@ import '../../pages/Homepage.css';
 import { Order, OrderStatus, UpdateOrderRequest, getOrder, updateOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
+import PaymentModal from '../../components/Modals/PaymentModal';
+import Swal from 'sweetalert2';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import axios from 'axios';
 
 const OrderPage: React.FC = () => {
     const [listItems, setListItems] = useState<Array<JSX.Element>>();
@@ -15,10 +20,26 @@ const OrderPage: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { authToken } = useAuth();
+    const [showPayment, setShowPayment] = useState<boolean>(false);
+    const [stripePromise, setStripePromise] = useState<any>(null);
+
+    const loadStripeKey = async () => {
+        try {
+            const response = await axios.get('/api/payment/stripe-publish-key', {
+                headers: { Authorization: `Bearer ${authToken}` },
+            });
+            if (response.status === 200 && response.data.publishKey) {
+                setStripePromise(loadStripe(response.data.publishKey));
+            } else {
+                setError("Failed to load stripe publish key");
+            }
+        } catch (e: any) {
+            setError(e.message);
+        }
+    }
 
     const loadOrder = async () => {
         setError(null);
-
         try {
             if (id) {
                 const { result, error } = await getOrder(authToken, id);
@@ -132,11 +153,12 @@ const OrderPage: React.FC = () => {
     }
 
     const finishOrder = async () => {
-        //TODO: Do stuff
+        setShowPayment(!showPayment);
     }
 
     useEffect(() => {
         if (authToken) {
+            loadStripeKey(); // Load stripe key as soon as we know we have auth
             if (state && state.order) {
                 setOrder(state.order);
             } else {
@@ -195,6 +217,24 @@ const OrderPage: React.FC = () => {
                 </>
             ) : (
                 <p className="error-message">{error}</p>
+            )}
+            {stripePromise && (
+                <Elements stripe={stripePromise}>
+                    <PaymentModal
+                        isOpen={showPayment}
+                        onClose={() => setShowPayment(false)}
+                        authToken={authToken as string}
+                        orderId={order?.Id.toString() ?? ''}
+                        totalAmount={order?.FinalPrice ?? 0}
+                        onPaymentSuccess={() => {
+                            Swal.fire('Payment successful!', '', 'success');
+                            setShowPayment(false);
+                        }}
+                        onPaymentError={(errorMessage) => {
+                            Swal.fire('Error', errorMessage, 'error');
+                        }}
+                    />
+                </Elements>
             )}
         </div>
     );
