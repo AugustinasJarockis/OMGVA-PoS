@@ -5,13 +5,14 @@ import './ClickableListItem.css';
 interface ClickableListItemProps {
     url: string;
     text?: string;
+    stateContent?: any;
 }
 
 const ClickableListItem: React.FC<ClickableListItemProps> = (props: ClickableListItemProps) => {
     const navigate = useNavigate();
 
     const handleClick = async () => {
-        navigate(props.url);
+        navigate(props.url, { state: props.stateContent });
     };
 
     return (
