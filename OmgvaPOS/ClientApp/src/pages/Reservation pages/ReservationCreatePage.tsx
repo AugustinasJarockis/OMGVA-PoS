@@ -46,8 +46,8 @@ const ReservationCreatePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const reservationData: CreateReservation = {
-      TimeReserved: new Date(timeReserved),
+      const reservationData: CreateReservation = {
+      TimeReserved: timeReserved,
       EmployeeId: parseInt(employeeId ?? ""),
       CustomerId: customerId,
       PhoneNumber: phoneNumber ?? "",
