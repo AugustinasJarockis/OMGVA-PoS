@@ -3,18 +3,19 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { getAllItems } from '../../services/itemService';
 import SquareGridItem from '../../components/Grid/SquareGridItem';
 import './ItemPages.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ItemListPageProps {
-    token: string | null,
     itemGroup?: string
 }
 
-const ItemListPage: React.FC<ItemListPageProps> = ({ token: authToken, itemGroup: itemGroup }) => {
+const ItemListPage: React.FC<ItemListPageProps> = ({ itemGroup: itemGroup }) => {
     const [gridItems, setGridItems] = useState<Array<JSX.Element>>();
     const [error, setError] = useState<string | null>(null);
     const [group, setGroup] = useState<string | undefined>(undefined);
     const { state } = useLocation();
     const navigate = useNavigate();
+    const { authToken } = useAuth();
 
     const getItems = async () => {
         setError(null);
