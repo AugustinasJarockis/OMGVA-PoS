@@ -14,7 +14,7 @@ namespace OmgvaPOS.ItemVariationManagement
         private readonly IItemVariationService _itemVariationService = itemVariationService;
         private readonly IItemService _itemService = itemService;
 
-        [HttpGet("item/{itemId}")] //TODO: Check for potential additional errors //Not found is def missing. There is no checking that item exists?
+        [HttpGet("item/{itemId}")]
         [Authorize(Roles = "Admin, Owner, Employee")]
         [ProducesResponseType<List<ItemVariationDTO>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
