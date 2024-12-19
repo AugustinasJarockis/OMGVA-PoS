@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../../index.css';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../pages/Homepage.css';
-import { Order, OrderStatus, UpdateOrderRequest, getOrder, updateOrder } from '../../services/orderService';
+import { Order, OrderStatus, UpdateOrderRequest, cancelOrder, getOrder, updateOrder } from '../../services/orderService';
 import OrderItemListItem from '../../components/List/OrderItemListItem';
 import { deleteOrderItem } from '../../services/orderItemService';
 import PaymentModal from '../../components/Modals/PaymentModal';
@@ -48,7 +48,6 @@ const OrderPage: React.FC = () => {
                     return;
                 }
                 setOrder(result);
-
                 if (result?.OrderItems) {
                     setListItems(result?.OrderItems.map(item =>
                         <OrderItemListItem key={item.Id} orderCurrency={result?.Currency} orderItem={item} orderId={String(id)} updateOrder={ loadOrder } orderStatus={result?.Status} onDelete={onDeleteOrderItem} />
@@ -125,19 +124,17 @@ const OrderPage: React.FC = () => {
         }
     };
 
-    const cancelOrder = async () => {
-        const request: UpdateOrderRequest = {
-            Status: OrderStatus.Cancelled
-        }
-
+    const cancelCurrentOrder = async () => {
         try {
             if (id) {
-                const result = await updateOrder(authToken, id, request);
+                const result = await cancelOrder(authToken, id);
                 if (typeof result == "string") {
-                    setError("An error occurred while updating order status: " + result);
+                    setError("An error occurred while cancelling order: " + result);
                     return;
                 }
-                await loadOrder();
+                //console.log(result);
+                setOrder(result);
+                //loadOrder();
             }
             else {
                 setError("Could not identify the order");
@@ -213,7 +210,7 @@ const OrderPage: React.FC = () => {
                     <br/><br/>
                     {order.Status == OrderStatus.Open && <button onClick={finishOrder}>Finish order</button>}
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    {order.Status == OrderStatus.Open && <button onClick={cancelOrder}>Cancel order</button>}
+                    {order.Status == OrderStatus.Open && <button onClick={cancelCurrentOrder}>Cancel order</button>}
                     {order.Status == OrderStatus.Closed && <button onClick={refundOrder}>Refund order</button>}
                 </>
             ) : (

@@ -287,7 +287,7 @@ public class OrderService : IOrderService
         try {
             _orderItemDeletionService.ReturnItemsToInventory(order.OrderItems);
 
-            order.Status = OrderStatus.Refunded;
+            order.Status = OrderStatus.Cancelled;
             _orderRepository.UpdateOrder(order);
         }
         catch (Exception ex) {
