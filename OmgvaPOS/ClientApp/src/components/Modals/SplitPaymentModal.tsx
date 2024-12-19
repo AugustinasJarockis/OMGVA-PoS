@@ -50,10 +50,14 @@ const SplitPaymentModal: React.FC<SplitPaymentModalProps> = ({
         const item = orderItems.find(item => item.Id === itemId);
         if (!item) return;
 
-        const maxAllowed = item.Quantity > 1 ? item.Quantity - 1 : 0;
+        const maxAllowed = item.Quantity;
 
         if (quantity > maxAllowed) {
-            Swal.fire("Invalid Quantity", `You can only split up to ${maxAllowed} units for "${item.Name}".`, "warning");
+            Swal.fire(
+                "Invalid Quantity",
+                `You can only split up to ${maxAllowed} unit(s) for "${item.Name}".`,
+                "warning"
+            );
             setSelectedItems(prev => ({ ...prev, [itemId]: maxAllowed }));
             return;
         }
@@ -80,7 +84,11 @@ const SplitPaymentModal: React.FC<SplitPaymentModalProps> = ({
             }));
 
         if (splitOrderItems.length === 0) {
-            Swal.fire("No Items Selected", "Please select at least one item and quantity to split.", "warning");
+            Swal.fire(
+                "No Items Selected",
+                "Please select at least one item and specify the quantity to split.",
+                "warning"
+            );
             return;
         }
 
@@ -89,11 +97,6 @@ const SplitPaymentModal: React.FC<SplitPaymentModalProps> = ({
             const originalItem = orderItems.find(item => item.Id === splitItem.OrderItemId);
             if (!originalItem) {
                 Swal.fire("Error", "Selected item not found.", "error");
-                return;
-            }
-
-            if (splitItem.Quantity >= originalItem.Quantity) {
-                Swal.fire("Invalid Quantity", `Cannot split all units of "${originalItem.Name}". Please leave at least one unit in the original order.`, "warning");
                 return;
             }
         }
@@ -115,7 +118,11 @@ const SplitPaymentModal: React.FC<SplitPaymentModalProps> = ({
                 Swal.fire("Error", "An error occurred while splitting the order.", "error");
             }
         } catch (error: any) {
-            Swal.fire("Error", "An error occurred while splitting the order: " + (error.message || "Unknown error"), "error");
+            Swal.fire(
+                "Error",
+                "An error occurred while splitting the order: " + (error.message || "Unknown error"),
+                "error"
+            );
         }
     };
 
@@ -128,18 +135,14 @@ const SplitPaymentModal: React.FC<SplitPaymentModalProps> = ({
                     {orderItems.map(item => (
                         <li key={item.Id}>
                             <span>{item.Name} (Available: {item.Quantity})</span>
-                            {item.Quantity > 1 ? (
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max={item.Quantity - 1}
-                                    value={selectedItems[item.Id] || ''}
-                                    onChange={(e) => handleQuantityChange(item.Id, e.target.value)}
-                                    placeholder="0"
-                                />
-                            ) : (
-                                <span className="cannot-split">Cannot split this item.</span>
-                            )}
+                            <input
+                                type="number"
+                                min="1"
+                                max={item.Quantity}
+                                value={selectedItems[item.Id] || ''}
+                                onChange={(e) => handleQuantityChange(item.Id, e.target.value)}
+                                placeholder="0"
+                            />
                         </li>
                     ))}
                 </ul>

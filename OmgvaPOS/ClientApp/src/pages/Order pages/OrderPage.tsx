@@ -179,8 +179,6 @@ const OrderPage: React.FC = () => {
         setShowSplitPayment(true);
     }
 
-
-
     useEffect(() => {
         if (authToken) {
             loadStripeKey(); // Load stripe key as soon as we know we have auth
